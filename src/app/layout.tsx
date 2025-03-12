@@ -37,7 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NavBar />
-          <main className="text-zinc-700">
+          <main className="text-zinc-700 dark:text-zinc-300">
             <Container variant="constrainedPadded">{children}</Container>
           </main>
         </ThemeProvider>
