@@ -4,6 +4,7 @@ import Image from "next/image";
 import Logo from "@/public/logo.png";
 import Link from "next/link";
 import { Container } from "../ui/container";
+import { ModeToggle } from "./ModeToggle";
 
 const NavBar = () => {
   return (
@@ -17,7 +18,7 @@ const NavBar = () => {
         </Link>
 
         <ul className="flex flex-row gap-4 items-center">
-          <li>Theme</li>
+          <ModeToggle />
           <li>
             <Button>Post Job</Button>
           </li>
