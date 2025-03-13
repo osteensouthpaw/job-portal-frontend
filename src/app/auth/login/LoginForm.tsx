@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -130,9 +131,9 @@ export const LoginForm = () => {
               {/* Signup Link */}
               <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <Link href="register" className="underline underline-offset-4">
                   Sign up
-                </a>
+                </Link>
               </div>
             </form>
           </Form>
