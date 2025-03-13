@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
+import ErrorMessage from "@/components/general/ErrorMessage";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -107,16 +108,7 @@ export const LoginForm = () => {
                   </FormItem>
                 )}
               />
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>
-                    <div className="flex flex-row items-center gap-2">
-                      <AlertCircle className="h-4 w-4" />
-                      <p>wrong email or password</p>
-                    </div>
-                  </AlertDescription>
-                </Alert>
-              )}
+              {error && <ErrorMessage message="Invalid email or password" />}
 
               {/* Login Button */}
               <Button type="submit" className="w-full" disabled={isPending}>

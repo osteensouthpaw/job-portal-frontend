@@ -4,6 +4,7 @@ import "./globals.css";
 import NavBar from "@/components/general/NavBar";
 import { Container } from "@/components/ui/container";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
           <NavBar />
           <main className="text-zinc-700 dark:text-zinc-300">
             <Container variant="constrainedPadded">{children}</Container>
+            <Toaster richColors position="top-right" />
           </main>
         </ThemeProvider>
       </body>
