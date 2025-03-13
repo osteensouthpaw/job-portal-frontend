@@ -1,13 +1,21 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -17,14 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { toast } from "sonner"; // Ensure you have a toast component for notifications
+import { AlertCircle } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -37,33 +38,21 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<AxiosError>();
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setLoading(true);
-    try {
-      await axios.post("http://localhost:8080/api/v1/auth/login", data, {
-        withCredentials: true,
-      });
-
-      toast("Login successful", { description: "Redirecting to dashboard..." });
-
-      router.push("/");
-    } catch (error: any) {
-      toast("Login failed", {
-        description: error.response?.data?.message || "Invalid credentials",
-      });
-    } finally {
-      setLoading(false);
-    }
+    startTransition(() => {
+      axios
+        .post("http://localhost:8080/api/v1/auth/login", data, {
+          withCredentials: true,
+        })
+        .then((res) => router.push("/"))
+        .catch((err) => setError(err));
+    });
   };
 
   return (
@@ -84,6 +73,7 @@ export const LoginForm = () => {
             >
               {/* Email Field */}
               <FormField
+                disabled={isPending}
                 control={form.control}
                 name="email"
                 render={({ field }) => (
@@ -103,6 +93,7 @@ export const LoginForm = () => {
 
               {/* Password Field */}
               <FormField
+                disabled={isPending}
                 control={form.control}
                 name="password"
                 render={({ field }) => (
@@ -115,10 +106,20 @@ export const LoginForm = () => {
                   </FormItem>
                 )}
               />
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    <div className="flex flex-row items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      <p>wrong email or password</p>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
 
               {/* Login Button */}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Logging in..." : "Login"}
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? "Logging in..." : "Login"}
               </Button>
 
               {/* Google Login Button */}
