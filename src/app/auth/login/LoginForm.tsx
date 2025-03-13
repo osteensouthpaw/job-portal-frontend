@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,8 +9,30 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import axios from "axios";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
 export const LoginForm = () => {
+  const [error, setError] = useState();
+  const { register, handleSubmit } = useForm<LoginFormData>();
+  const router = useRouter();
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      await axios.post("http://localhost:8080/api/v1/auth/login", data);
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
   return (
     <div className="flex flex-col gap-6">
       <Card>
@@ -20,7 +43,7 @@ export const LoginForm = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -29,6 +52,7 @@ export const LoginForm = () => {
                   type="email"
                   placeholder="m@example.com"
                   required
+                  {...register("email")}
                 />
               </div>
               <div className="grid gap-2">
@@ -41,7 +65,12 @@ export const LoginForm = () => {
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  {...register("password")}
+                />
               </div>
               <Button type="submit" className="w-full">
                 Login
