@@ -25,9 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import authService from "@/services/auth-service";
 import Link from "next/link";
-import apiClient from "@/services/api-client";
-
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z
@@ -35,7 +34,7 @@ const loginSchema = z.object({
     .min(5, { message: "Password must be at least 5 characters long" }),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -47,10 +46,8 @@ export const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     startTransition(() => {
-      apiClient
-        .post("/auth/login", data, {
-          withCredentials: true,
-        })
+      authService
+        .login(data)
         .then((res) => router.push("/"))
         .catch((err) => setError(err));
     });

@@ -1,19 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import ErrorMessage from "@/components/general/ErrorMessage";
+import InfoMessage from "@/components/general/InfoMessage";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,14 +16,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { PhoneInput } from "@/components/ui/phone-input";
+import authService from "@/services/auth-service";
+import { AxiosError } from "axios";
 import { useState, useTransition } from "react";
-import axios, { AxiosError } from "axios";
-import ErrorMessage from "@/components/general/ErrorMessage";
-import InfoMessage from "@/components/general/InfoMessage";
-import apiClient from "@/services/api-client";
 
 export interface UserResponse {
   id: number;
@@ -71,11 +71,12 @@ const registerSchema = z
     message: "Passwords do not match",
   });
 
+export type RegisterFormData = z.infer<typeof registerSchema>;
+
 export default function RegisterForm() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
-  type RegisterFormData = z.infer<typeof registerSchema>;
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -90,13 +91,13 @@ export default function RegisterForm() {
 
   const onSubmit = (data: RegisterFormData) => {
     startTransition(() => {
-      apiClient
-        .post<UserResponse>("/auth/register", data)
-        .then((res) => {
+      authService
+        .register(data)
+        .then((res) =>
           setSuccess(
             "Successful! A verification link has been sent to your email"
-          );
-        })
+          )
+        )
         .catch((err: AxiosError) => {
           toast.error("Failed to submit the form. Please try again.");
           setError(err.response?.data.message);
