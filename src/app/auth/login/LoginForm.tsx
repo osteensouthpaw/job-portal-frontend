@@ -27,13 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import authService from "@/services/auth-service";
 import Link from "next/link";
-const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(5, { message: "Password must be at least 5 characters long" }),
-});
-
+import { loginSchema } from "@/schemas/validationSchemas";
 export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
@@ -42,6 +36,10 @@ export const LoginForm = () => {
   const [error, setError] = useState<AxiosError>();
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit = async (data: LoginFormData) => {
