@@ -29,6 +29,7 @@ import { useState, useTransition } from "react";
 import axios, { AxiosError } from "axios";
 import ErrorMessage from "@/components/general/ErrorMessage";
 import InfoMessage from "@/components/general/InfoMessage";
+import apiClient from "@/services/api-client";
 
 export interface UserResponse {
   id: number;
@@ -89,8 +90,8 @@ export default function RegisterForm() {
 
   const onSubmit = (data: RegisterFormData) => {
     startTransition(() => {
-      axios
-        .post<UserResponse>("http://localhost:8080/api/v1/auth/register", data)
+      apiClient
+        .post<UserResponse>("/auth/register", data)
         .then((res) => {
           setSuccess(
             "Successful! A verification link has been sent to your email"

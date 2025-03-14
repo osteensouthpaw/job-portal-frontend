@@ -1,13 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import ErrorMessage from "@/components/general/ErrorMessage";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,9 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import ErrorMessage from "@/components/general/ErrorMessage";
+import apiClient from "@/services/api-client";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -48,8 +47,8 @@ export const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     startTransition(() => {
-      axios
-        .post("http://localhost:8080/api/v1/auth/login", data, {
+      apiClient
+        .post("/auth/login", data, {
           withCredentials: true,
         })
         .then((res) => router.push("/"))
