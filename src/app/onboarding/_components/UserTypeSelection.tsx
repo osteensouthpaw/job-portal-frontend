@@ -1,7 +1,6 @@
-/* eslint-disable react/no-unescaped-entities */
 import { Button } from "@/components/ui/button";
 import { Building2, UserRound } from "lucide-react";
-import { UserType } from "../auth/register/RegisterForm";
+import { UserType } from "../../auth/register/RegisterForm";
 
 interface Props {
   onSelect: (type: UserType) => void;
