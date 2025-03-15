@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 
 export const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -24,3 +24,16 @@ export const registerSchema = z
     path: ["confirmPassword"],
     message: "Passwords do not match",
   });
+
+export const recruiterSchema = z.object({
+  companyName: z
+    .string()
+    .min(3, { message: "Name must be at least 2 characters long" })
+    .max(255),
+  companyLocation: z.tuple([z.string(), z.string().optional()]),
+  websiteUrl: z.string().url({ message: "Invalid url" }).min(7).max(255),
+  businessStream: z.string(),
+  establishmentDate: z.coerce.date(),
+  description: z.string().optional(),
+  companyLogo: z.string().optional(),
+});

@@ -42,18 +42,9 @@ import {
   FileUploaderContent,
   FileUploaderItem,
 } from "@/components/ui/file-upload";
+import { recruiterSchema } from "@/schemas/validationSchemas";
 
-const formSchema = z.object({
-  companyName: z.string().min(1).min(3).max(255),
-  companyLocation: z.tuple([z.string(), z.string().optional()]),
-  websiteUrl: z.string().min(1).min(7).max(255),
-  businessStream: z.string(),
-  establishmentDate: z.coerce.date(),
-  description: z.string().optional(),
-  companyLogo: z.string().optional(),
-});
-
-export default function MyForm() {
+export default function RecruiterForm() {
   const [countryName, setCountryName] = useState<string>("");
   const [stateName, setStateName] = useState<string>("");
 
@@ -99,20 +90,27 @@ export default function MyForm() {
   const [files, setFiles] = useState<File[] | null>(null);
 
   const dropZoneConfig = {
-    maxFiles: 5,
-    maxSize: 1024 * 1024 * 4,
-    multiple: true,
+    maxFiles: 1,
+    maxSize: 1024 * 1024 * 1,
+    multiple: false,
   };
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof recruiterSchema>>({
+    resolver: zodResolver(recruiterSchema),
     defaultValues: {
       establishmentDate: new Date(),
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof recruiterSchema>) {
     try {
-      console.log(values);
+      const formattedData = {
+        ...values,
+        establishmentDate: values.establishmentDate.toISOString().split("T")[0],
+        companyLocation: values.companyLocation[0],
+      };
+
+      console.log(formattedData);
+
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
