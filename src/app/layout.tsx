@@ -37,7 +37,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NavBar />
           <main className="text-zinc-700 dark:text-zinc-300">
             <Container variant="constrainedPadded">{children}</Container>
             <Toaster richColors position="top-right" />
