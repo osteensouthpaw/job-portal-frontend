@@ -33,7 +33,9 @@ export const recruiterSchema = z.object({
   companyLocation: z.tuple([z.string(), z.string().optional()]),
   websiteUrl: z.string().url({ message: "Invalid url" }).min(7).max(255),
   businessStream: z.string(),
-  establishmentDate: z.coerce.date(),
+  establishmentDate: z.coerce.date().refine((date) => date <= new Date(), {
+    message: "Date should be before today ",
+  }),
   description: z.string().optional(),
   companyLogo: z.string().optional(),
 });
