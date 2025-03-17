@@ -39,3 +39,28 @@ export const recruiterSchema = z.object({
   description: z.string().optional(),
   companyLogo: z.string().optional(),
 });
+
+export const jobSeekerSchema = z.object({
+  Proffession: z.string().min(1, "Profession is required."),
+  phone: z.string().optional(),
+  linkedinUrl: z.string().min(1, "LinkedIn URL is required.").optional(),
+  githubUrl: z.string().min(1, "GitHub URL is required.").optional(),
+  personalWebsiteUrl: z
+    .string()
+    .min(1, "Personal website URL is required.")
+    .optional(),
+  twitterUrl: z.string().min(1, "Twitter URL is required.").optional(),
+  experienceLevel: z.string().min(1, "Experience level is required."),
+  dateOfBirth: z.coerce
+    .date()
+    .optional()
+    .refine(
+      (date) => date !== undefined && date < new Date(),
+      "Date of birth cannot be in the future."
+    ),
+  currentAnnualSalary: z
+    .number()
+    .min(0, "Salary cannot be negative.")
+    .optional(),
+  bio: z.string().min(1, "Bio is required."),
+});

@@ -33,29 +33,18 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-
-const formSchema = z.object({
-  Proffession: z.string().min(1),
-  phone: z.string().optional(),
-  linkedinUrl: z.string().min(1).optional(),
-  githubUrl: z.string().min(1).optional(),
-  personalWebsiteUrl: z.string().min(1).optional(),
-  twitterUrl: z.string().min(1).optional(),
-  experienceLevel: z.string(),
-  dateOfBirth: z.coerce.date().optional(),
-  currentAnnualSalary: z.number().optional(),
-  bio: z.string(),
-});
+import MoneyInput from "@/components/ui/money-input";
+import { jobSeekerSchema } from "@/schemas/validationSchemas";
 
 export default function JobSeekerForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof jobSeekerSchema>>({
+    resolver: zodResolver(jobSeekerSchema),
     defaultValues: {
       dateOfBirth: new Date(),
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof jobSeekerSchema>) {
     try {
       console.log(values);
       toast(
@@ -256,19 +245,11 @@ export default function JobSeekerForm() {
           </div>
         </div>
 
-        <FormField
-          control={form.control}
+        <MoneyInput
+          form={form}
+          label="Current Annual Salary"
           name="currentAnnualSalary"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Current Annual Salary</FormLabel>
-              <FormControl>
-                <Input placeholder="100, 000" type="number" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          placeholder="salary"
         />
 
         <FormField
