@@ -1,39 +1,51 @@
 import apiClient from "./api-client";
 
-export interface JobPost {
+export interface OrganizationResponse {
   id: number;
+  companyName: string;
+  description: string;
+  businessStreamId: number;
+  establishmentDate: string;
+  companyLocation: string;
+  websiteUrl: string;
+}
+
+export interface JobPostResponse {
+  id: number;
+  organization: OrganizationResponse;
   location: string;
   jobTitle: string;
   description: string;
-  hourlyRate: number;
   jobType: JobType;
   workMode: WorkMode;
   experienceLevel: ExperienceLevel;
-  createdAt: string;
-  applicationDeadline: string;
+  salary: number;
+  isOpen: boolean;
+  applicationDeadline: string; // Assuming LocalDateTime is converted to string
+  createdAt: string; // Assuming LocalDateTime is converted to string
 }
 
 export enum JobType {
-  FULL_TIME = "FULL_TIME",
-  PART_TIME = "PART_TIME",
   CONTRACT = "CONTRACT",
-  FREELANCE = "FREELANCE",
+  FULL_TIME = "FULL_TIME",
+  INTERNSHIP = "INTERNSHIP",
 }
 
 export enum WorkMode {
   REMOTE = "REMOTE",
-  ONSITE = "ONSITE",
+  ON_SITE = "ON_SITE",
   HYBRID = "HYBRID",
 }
 
 export enum ExperienceLevel {
+  ENTRY_LEVEL = "ENTRY_LEVEL",
   JUNIOR = "JUNIOR",
-  MID = "MID",
+  PROFESSIONAL = "PROFESSIONAL",
   SENIOR = "SENIOR",
 }
 
 interface FetchJobPostsResponse {
-  content: JobPost[];
+  content: JobPostResponse[];
   totalElements: number;
 }
 
