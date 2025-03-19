@@ -14,7 +14,7 @@ import { ModeToggle } from "./ModeToggle";
 
 const NavBar = () => {
   return (
-    <nav className="flex flex-row justify-between items-center border-b py-3">
+    <nav className="flex flex-row justify-between items-center border-b py-3 bg-white dark:bg-black">
       <Link href="/" className="flex flex-row items-center gap-2">
         <Image src={Logo} alt="logo" width={40} height={40} />
         <h1 className="font-bold text-2xl hidden md:inline-flex">

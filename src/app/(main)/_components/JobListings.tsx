@@ -2,10 +2,10 @@ import jobPostService from "@/services/jobPost-service";
 import React from "react";
 import JobPostCard from "./JobPostCard";
 
-const JobList = async () => {
+const JobListings = async () => {
   const jobPosts = await jobPostService.jobPosts();
   return (
-    <div className="grid gap-3 mt-3">
+    <div className="grid gap-4">
       {jobPosts.map((jobPost) => (
         <JobPostCard jobPost={jobPost} key={jobPost.id} />
       ))}
@@ -13,4 +13,4 @@ const JobList = async () => {
   );
 };
 
-export default JobList;
+export default JobListings;
