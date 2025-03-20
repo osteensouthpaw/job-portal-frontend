@@ -2,10 +2,11 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { Label } from "@/components/ui/label";
+import LocationSelector from "@/components/ui/location-input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ExperienceLevel, JobType, WorkMode } from "@/services/jobPost-service";
-import { set } from "date-fns";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Props } from "react-phone-number-input";
 
 const jobTypes: { key: JobType; label: string }[] = [
   { key: JobType.CONTRACT, label: "Contract" },
@@ -28,6 +29,7 @@ const workModes: { key: WorkMode; label: string }[] = [
 
 const jobListingsFilter = () => {
   const [salaryRange, setSalaryRange] = useState<number[]>([]);
+  const [countryName, setCountryName] = useState<string>("");
 
   return (
     <Card className="px-3 md:min-w-48">
@@ -38,8 +40,9 @@ const jobListingsFilter = () => {
         <JobFilter title="Work Mode" filterTypes={workModes} />
         <SalaryRange
           salaryRange={salaryRange}
-          setSalaryRange={setSalaryRange}
+          setSalaryRange={(salary) => setSalaryRange(salary)}
         />
+        <Location setCountryName={(country) => setCountryName(country)} />
       </CardContent>
     </Card>
   );
@@ -72,7 +75,7 @@ const SalaryRange = ({
   setSalaryRange,
 }: {
   salaryRange: number[];
-  setSalaryRange: (salaryRange: number[]) => void;
+  setSalaryRange: Dispatch<SetStateAction<number[]>>;
 }) => {
   return (
     <div className="space-y-2">
@@ -85,6 +88,23 @@ const SalaryRange = ({
         min={1000}
         max={200000}
         step={10}
+      />
+    </div>
+  );
+};
+
+const Location = ({
+  setCountryName,
+}: {
+  setCountryName: Dispatch<SetStateAction<string>>;
+}) => {
+  return (
+    <div className="space-y-2">
+      <Label className="font-semibold text-lg">Location</Label>
+      <LocationSelector
+        onCountryChange={(country) => {
+          setCountryName(country?.name || "");
+        }}
       />
     </div>
   );
