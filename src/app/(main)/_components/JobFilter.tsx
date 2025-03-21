@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { JobType, ExperienceLevel, WorkMode } from "@/services/jobPost-service";
-import { subMinutes, subHours, subWeeks, subMonths } from "date-fns";
+import { ExperienceLevel, JobType, WorkMode } from "@/services/jobPost-service";
+import { subHours, subMinutes, subMonths, subWeeks } from "date-fns";
 
 interface Props {
   title: string;
@@ -10,16 +10,20 @@ interface Props {
     | typeof workModes
     | typeof experienceLevels
     | typeof DatesAfter;
+  onSelectFilter: (filterType: string) => void;
 }
 
-const JobFilter = ({ title, filterTypes }: Props) => {
+const JobFilter = ({ title, filterTypes, onSelectFilter }: Props) => {
   return (
     <div className="space-y-3">
       <Label className="font-semibold text-lg">{title}</Label>
-      <RadioGroup className="flex gap-3 flex-wrap">
+      <RadioGroup
+        className="flex gap-3 flex-wrap"
+        onValueChange={(value) => onSelectFilter(value)}
+      >
         {filterTypes.map((filter) => (
           <div className="flex items-center space-x-2" key={filter.label}>
-            <RadioGroupItem value={filter.label} id={filter.label} />
+            <RadioGroupItem value={filter.key.toString()} id={filter.label} />
             <Label htmlFor={filter.label}>{filter.label}</Label>
           </div>
         ))}

@@ -3,7 +3,9 @@ import React from "react";
 import JobPostCard from "./JobPostCard";
 
 const JobListings = async () => {
-  const jobPosts = await jobPostService.jobPosts();
+  const jobPosts = await jobPostService.jobPosts(
+    "?datePosted=2025-03-21T08:30:59"
+  );
   return (
     <div className="grid gap-4">
       {jobPosts.map((jobPost) => (

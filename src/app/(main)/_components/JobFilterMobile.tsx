@@ -16,12 +16,20 @@ interface Props {
   setCountryName: Dispatch<SetStateAction<string>>;
   salaryRange: number[];
   setSalaryRange: Dispatch<SetStateAction<number[]>>;
+  onSelectJobFilter: (jobFilter: string) => void;
+  onSelectWorkMode: (workMode: string) => void;
+  onSelectExperienceLevel: (experienceLevel: string) => void;
+  onSelectDatePosted: (datePosted: string) => void;
 }
 
 const JobFilterMobile = ({
   setCountryName,
   salaryRange,
   setSalaryRange,
+  onSelectJobFilter,
+  onSelectWorkMode,
+  onSelectExperienceLevel,
+  onSelectDatePosted,
 }: Props) => {
   return (
     <div className="md:hidden">
@@ -34,6 +42,10 @@ const JobFilterMobile = ({
             <DrawerTitle>Filter Job posts</DrawerTitle>
           </DrawerHeader>
           <JobFilterMobileTabs
+            onSelectDatePosted={onSelectDatePosted}
+            onSelectExperienceLevel={onSelectExperienceLevel}
+            onSelectJobFilter={onSelectJobFilter}
+            onSelectWorkMode={onSelectWorkMode}
             setCountryName={(countryName) => setCountryName(countryName)}
             salaryRange={salaryRange}
             setSalaryRange={(salaryRange) => setSalaryRange(salaryRange)}

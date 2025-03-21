@@ -1,3 +1,4 @@
+import { AxiosRequestConfig } from "axios";
 import apiClient from "./api-client";
 
 export interface OrganizationResponse {
@@ -50,9 +51,9 @@ interface FetchJobPostsResponse {
 }
 
 class JobPostService {
-  async jobPosts() {
+  async jobPosts(params: string) {
     return apiClient
-      .get<FetchJobPostsResponse>("/job-posts")
+      .get<FetchJobPostsResponse>("/job-posts" + `${params}`)
       .then((res) => res.data.content);
   }
 }
