@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import JobFilter, {
   DatesAfter,
@@ -17,7 +17,7 @@ import JobFilter, {
 import JobFilterMobile from "./JobFilterMobile";
 import Location from "./Location";
 import SalaryRange from "./SalaryRange";
-import jobPostService from "@/services/jobPost-service";
+import { useRouter } from "next/navigation";
 
 const jobListingsFilter = () => {
   const [salaryRange, setSalaryRange] = useState<number[]>([]);
@@ -27,19 +27,32 @@ const jobListingsFilter = () => {
   const [workMode, setWorkMode] = useState<string>();
   const [countryName, setCountryName] = useState<string>("");
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const handleFilter = () => {
     const params = new URLSearchParams(searchParams);
-    if (jobType) params.append("jobType", jobType);
-    if (experienceLevel) params.append("experienceLevel", experienceLevel);
+
+    if (jobType) params.set("jobType", jobType);
+    else params.delete("jobType");
+
+    if (experienceLevel) params.set("experienceLevel", experienceLevel);
+    else params.delete("experienceLevel");
+
     if (datePosted)
-      params.append(
+      params.set(
         "datePosted",
         new Date(datePosted).toISOString().replace(".000Z", "")
       );
-    if (workMode) params.append("workMode", workMode);
-    if (countryName) params.append("countryName", countryName);
-    console.log(decodeURIComponent(params.toString()));
+    else params.delete("datePosted");
+
+    if (workMode) params.set("workMode", workMode);
+    else params.delete("workMode");
+
+    if (countryName) params.set("countryName", countryName);
+    else params.delete("countryName");
+
+    // Update URL with new filters
+    router.push(`?${params.toString()}`);
   };
 
   return (

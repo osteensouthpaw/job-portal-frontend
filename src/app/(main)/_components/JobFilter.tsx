@@ -16,9 +16,9 @@ interface Props {
 const JobFilter = ({ title, filterTypes, onSelectFilter }: Props) => {
   return (
     <div className="space-y-3">
-      <Label className="font-semibold text-lg">{title}</Label>
+      <Label className="text-lg font-semibold">{title}</Label>
       <RadioGroup
-        className="flex gap-3 flex-wrap"
+        className="flex flex-wrap gap-3"
         onValueChange={(value) => onSelectFilter(value)}
       >
         {filterTypes.map((filter) => (
