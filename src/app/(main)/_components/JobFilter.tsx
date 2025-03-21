@@ -3,17 +3,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { JobType, ExperienceLevel, WorkMode } from "@/services/jobPost-service";
 import { subMinutes, subHours, subWeeks, subMonths } from "date-fns";
 
-const JobFilter = ({
-  title,
-  filterTypes,
-}: {
+interface Props {
   title: string;
   filterTypes:
     | typeof jobTypes
     | typeof workModes
     | typeof experienceLevels
     | typeof DatesAfter;
-}) => {
+}
+
+const JobFilter = ({ title, filterTypes }: Props) => {
   return (
     <div className="space-y-3">
       <Label className="font-semibold text-lg">{title}</Label>
