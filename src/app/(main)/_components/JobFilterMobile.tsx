@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/drawer";
 import { ArrowRight, FilterIcon } from "lucide-react";
 import JobFilterMobileTabs from "./JobFilterMobileTabs";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface Props {
   setCountryName: Dispatch<SetStateAction<string>>;
@@ -20,6 +20,8 @@ interface Props {
   onSelectWorkMode: (workMode: string) => void;
   onSelectExperienceLevel: (experienceLevel: string) => void;
   onSelectDatePosted: (datePosted: string) => void;
+  onApplyFilter: () => void;
+  onClearFilter: () => void;
 }
 
 const JobFilterMobile = ({
@@ -30,16 +32,36 @@ const JobFilterMobile = ({
   onSelectWorkMode,
   onSelectExperienceLevel,
   onSelectDatePosted,
+  onApplyFilter,
+  onClearFilter,
 }: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const handleApplyFilter = () => {
+    onApplyFilter();
+    setIsOpen((prev) => !prev);
+  };
+
+  const handleOnClearFilter = () => {
+    onClearFilter();
+    setIsOpen((prev) => !prev);
+  };
+
   return (
     <div className="md:hidden">
-      <Drawer>
+      <Drawer open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <DrawerTrigger className="mb-4 fixed z-10 top-20 size-10 rounded-full bg-primary flex justify-center items-center">
           <FilterIcon />
         </DrawerTrigger>
         <DrawerContent>
-          <DrawerHeader className="mx-auto">
+          <DrawerHeader className="mx-auto flex items-center">
             <DrawerTitle>Filter Job posts</DrawerTitle>
+            <Button
+              variant="link"
+              onClick={handleOnClearFilter}
+              className="justify-self-end"
+            >
+              Clear Filters
+            </Button>
           </DrawerHeader>
           <JobFilterMobileTabs
             onSelectDatePosted={onSelectDatePosted}
@@ -52,7 +74,7 @@ const JobFilterMobile = ({
           />
           <DrawerFooter className="flex flex-row justify-around border-t mt-2">
             <DrawerClose>Close</DrawerClose>
-            <Button>
+            <Button onClick={handleApplyFilter}>
               Apply
               <ArrowRight />
             </Button>

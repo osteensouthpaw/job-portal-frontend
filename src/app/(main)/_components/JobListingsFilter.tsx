@@ -22,10 +22,11 @@ import { useRouter } from "next/navigation";
 const jobListingsFilter = () => {
   const [salaryRange, setSalaryRange] = useState<number[]>([]);
   const [jobType, setJobType] = useState<string>();
-  const [experienceLevel, setExperienceLevel] = useState<string>("");
-  const [datePosted, setDatePosted] = useState<string>("");
+  const [experienceLevel, setExperienceLevel] = useState<string>();
+  const [datePosted, setDatePosted] = useState<string>();
   const [workMode, setWorkMode] = useState<string>();
   const [countryName, setCountryName] = useState<string>("");
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -55,10 +56,27 @@ const jobListingsFilter = () => {
     router.push(`?${params.toString()}`);
   };
 
+  const clearFilter = () => {
+    setJobType(undefined);
+    setExperienceLevel(undefined);
+    setDatePosted(undefined);
+    setWorkMode(undefined);
+    setCountryName("");
+    setSalaryRange([]);
+    router.push("/");
+  };
+
   return (
     <>
       <Card className="hidden md:block md:min-w-48 px-3">
-        <CardHeader className="text-2xl font-semibold">Filter</CardHeader>
+        <CardHeader className="text-2xl font-semibold">
+          <div className="flex justify-between">
+            <p>Filter</p>
+            <Button variant="destructive" onClick={clearFilter}>
+              Clear Filters
+            </Button>
+          </div>
+        </CardHeader>
         <CardContent className="space-y-10">
           <JobFilter
             title="Job Type"
@@ -93,6 +111,8 @@ const jobListingsFilter = () => {
         </CardFooter>
       </Card>
       <JobFilterMobile
+        onApplyFilter={handleFilter}
+        onClearFilter={clearFilter}
         onSelectJobFilter={(jobType) => setJobType(jobType)}
         onSelectWorkMode={(workMode) => setWorkMode(workMode)}
         onSelectExperienceLevel={(experienceLevel) =>

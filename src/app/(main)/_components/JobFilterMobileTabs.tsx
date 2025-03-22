@@ -27,6 +27,7 @@ const JobFilterMobileTabs = ({
 }: Props) => {
   return (
     <Tabs
+      defaultValue="jobType"
       orientation="vertical"
       className="max-w-md w-full flex items-start gap-4 justify-center h-max pr-3 mx-auto"
     >
@@ -58,12 +59,11 @@ const JobFilterMobileTabs = ({
         {tabs.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="w-full">
             <RadioGroup
-              defaultValue=""
               className="flex flex-col outline flex-wrap"
               onValueChange={(value) => {
                 switch (tab.value) {
                   case "jobType":
-                    onSelectJobFilter(tab.value);
+                    onSelectJobFilter(value);
                     break;
                   case "experienceLevel":
                     onSelectExperienceLevel(value);
