@@ -30,7 +30,19 @@ const jobListingsFilter = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const hasFilters = () => {
+    return (
+      jobType ||
+      experienceLevel ||
+      datePosted ||
+      workMode ||
+      countryName ||
+      salaryRange.length > 0
+    );
+  };
+
   const handleFilter = () => {
+    if (!hasFilters()) return;
     const params = new URLSearchParams(searchParams);
 
     if (jobType) params.set("jobType", jobType);
@@ -57,6 +69,7 @@ const jobListingsFilter = () => {
   };
 
   const clearFilter = () => {
+    if (!hasFilters()) return;
     setJobType(undefined);
     setExperienceLevel(undefined);
     setDatePosted(undefined);
