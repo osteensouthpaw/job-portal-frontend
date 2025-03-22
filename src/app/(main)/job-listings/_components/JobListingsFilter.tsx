@@ -63,7 +63,7 @@ const jobListingsFilter = () => {
     setWorkMode(undefined);
     setCountryName("");
     setSalaryRange([]);
-    router.push("/");
+    router.push("/job-listings");
   };
 
   return (
