@@ -1,4 +1,5 @@
 import NavBar from "@/components/general/NavBar";
+import { Container } from "@/components/ui/container";
 import React from "react";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
@@ -7,7 +8,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="sticky top-0 z-10">
         <NavBar />
       </div>
-      <div>{children}</div>
+      <div>
+        <Container variant="constrainedPadded">{children}</Container>
+      </div>
     </div>
   );
 };

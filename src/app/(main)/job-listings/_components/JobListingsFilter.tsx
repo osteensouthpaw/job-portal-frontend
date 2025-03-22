@@ -85,7 +85,11 @@ const jobListingsFilter = () => {
         <CardHeader className="text-2xl font-semibold">
           <div className="flex justify-between">
             <p>Filter</p>
-            <Button variant="destructive" onClick={clearFilter}>
+            <Button
+              variant="link"
+              onClick={clearFilter}
+              className="dark:text-red-500 text-destructive"
+            >
               Clear Filters
             </Button>
           </div>

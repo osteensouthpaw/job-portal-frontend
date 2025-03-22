@@ -11,7 +11,7 @@ interface Props {
 
 const JobPostCard = ({ jobPost }: Props) => {
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 hover:border-primary relative">
+    <Card className="shadow-none transition-all duration-300 hover:border-primary relative">
       <CardHeader>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex flex-col flex-grow">

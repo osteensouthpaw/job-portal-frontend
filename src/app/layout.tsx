@@ -37,8 +37,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="text-zinc-700 dark:text-zinc-300">
-            <Container variant="constrainedPadded">{children}</Container>
+          <main className="text-zinc-700 dark:text-zinc-300 bg-muted dark:bg-background">
+            {children}
             <Toaster richColors position="top-right" />
           </main>
         </ThemeProvider>

@@ -49,7 +49,7 @@ const JobFilterMobile = ({
   return (
     <div className="md:hidden">
       <Drawer open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
-        <DrawerTrigger className="mb-4 fixed z-10 top-20 size-10 rounded-full bg-primary flex justify-center items-center">
+        <DrawerTrigger className="mb-4 fixed !z-40 top-20 size-10 rounded-full bg-primary flex justify-center items-center">
           <FilterIcon />
         </DrawerTrigger>
         <DrawerContent>
@@ -58,7 +58,7 @@ const JobFilterMobile = ({
             <Button
               variant="link"
               onClick={handleOnClearFilter}
-              className="justify-self-end"
+              className="text-destructive dark:text-red-500"
             >
               Clear Filters
             </Button>

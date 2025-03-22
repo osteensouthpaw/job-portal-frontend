@@ -11,26 +11,31 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { ModeToggle } from "./ModeToggle";
+import { Container } from "../ui/container";
 
 const NavBar = () => {
   return (
-    <nav className="flex flex-row justify-between items-center border-b py-3 bg-white dark:bg-black">
-      <Link href="/job-listings" className="flex flex-row items-center gap-2">
-        <Image src={Logo} alt="logo" width={40} height={40} />
-        <h1 className="font-bold text-2xl hidden md:inline-flex">
-          Jobs<span className="text-primary font-semibold">:Mega</span>
-        </h1>
-      </Link>
-
-      <ul className="flex flex-row gap-4 items-center">
-        <ModeToggle />
-        <li>
-          <Button>Post Job</Button>
-        </li>
-        <li>
-          <ProfileDropdown />
-        </li>
-      </ul>
+    <nav className="bg-white dark:bg-black">
+      <Container
+        variant="constrainedPadded"
+        className="flex flex-row justify-between items-center border-b py-3  "
+      >
+        <Link href="/job-listings" className="flex flex-row items-center gap-2">
+          <Image src={Logo} alt="logo" width={40} height={40} />
+          <h1 className="font-bold text-2xl hidden md:inline-flex">
+            Jobs<span className="text-primary font-semibold">:Mega</span>
+          </h1>
+        </Link>
+        <ul className="flex flex-row gap-4 items-center">
+          <ModeToggle />
+          <li>
+            <Button>Post Job</Button>
+          </li>
+          <li>
+            <ProfileDropdown />
+          </li>
+        </ul>
+      </Container>
     </nav>
   );
 };
