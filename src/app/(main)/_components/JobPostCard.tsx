@@ -27,7 +27,7 @@ const JobPostCard = ({ jobPost }: Props) => {
                 {jobPost.jobType}
               </Badge>
               <span className="hidden md:inline text-muted-foreground">•</span>
-              <Badge className="rounded-full">{jobPost.location}</Badge>
+              <Badge className="rounded-full">{jobPost.workMode}</Badge>
               <span className="hidden md:inline text-muted-foreground">•</span>
               <p className="text-sm text-muted-foreground">
                 {formatCurrency(jobPost.salary)}
@@ -49,7 +49,7 @@ const JobPostCard = ({ jobPost }: Props) => {
         </div>
         <div className="!mt-5">
           <p className="text-base text-muted-foreground line-clamp-2">
-            {jobPost.organization.description}
+            {jobPost.description}
           </p>
         </div>
       </CardHeader>

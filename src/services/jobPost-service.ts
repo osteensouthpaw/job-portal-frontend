@@ -54,7 +54,6 @@ class JobPostService {
   async jobPosts(filters: Record<string, string>) {
     const params = new URLSearchParams(filters).toString();
     const url = `/job-posts${params ? `?${params}` : ""}`;
-    console.log({ url });
     return apiClient
       .get<FetchJobPostsResponse>(url)
       .then((res) => res.data.content);
