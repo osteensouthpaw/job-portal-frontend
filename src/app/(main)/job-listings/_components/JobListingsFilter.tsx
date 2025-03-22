@@ -92,11 +92,13 @@ const jobListingsFilter = () => {
         </CardHeader>
         <CardContent className="space-y-10">
           <JobFilter
+            selectedFilter={jobType}
             title="Job Type"
             filterTypes={jobTypes}
             onSelectFilter={(jobType) => setJobType(jobType)}
           />
           <JobFilter
+            selectedFilter={experienceLevel}
             title="Experience Level"
             filterTypes={experienceLevels}
             onSelectFilter={(experienceLevel) =>
@@ -104,6 +106,7 @@ const jobListingsFilter = () => {
             }
           />
           <JobFilter
+            selectedFilter={workMode}
             title="Work Mode"
             filterTypes={workModes}
             onSelectFilter={(workMode) => setWorkMode(workMode)}
@@ -114,6 +117,7 @@ const jobListingsFilter = () => {
           />
           <Location setCountryName={(country) => setCountryName(country)} />
           <JobFilter
+            selectedFilter={datePosted}
             filterTypes={DatesAfter}
             title="Date Posted"
             onSelectFilter={(datePosted) => setDatePosted(datePosted)}

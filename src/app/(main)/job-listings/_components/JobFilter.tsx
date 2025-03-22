@@ -11,13 +11,20 @@ interface Props {
     | typeof experienceLevels
     | typeof DatesAfter;
   onSelectFilter: (filterType: string) => void;
+  selectedFilter?: string;
 }
 
-const JobFilter = ({ title, filterTypes, onSelectFilter }: Props) => {
+const JobFilter = ({
+  title,
+  filterTypes,
+  onSelectFilter,
+  selectedFilter,
+}: Props) => {
   return (
     <div className="space-y-3">
       <Label className="text-lg font-semibold">{title}</Label>
       <RadioGroup
+        value={selectedFilter || ""}
         className="flex flex-wrap gap-3"
         onValueChange={(value) => onSelectFilter(value)}
       >
