@@ -6,8 +6,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import JobFilter, {
   DatesAfter,
   experienceLevels,
@@ -17,15 +16,23 @@ import JobFilter, {
 import JobFilterMobile from "./JobFilterMobile";
 import Location from "./Location";
 import SalaryRange from "./SalaryRange";
-import { useRouter } from "next/navigation";
+import { useFilters } from "../Provider";
 
 const jobListingsFilter = () => {
-  const [salaryRange, setSalaryRange] = useState<number[]>([]);
-  const [jobType, setJobType] = useState<string>();
-  const [experienceLevel, setExperienceLevel] = useState<string>();
-  const [datePosted, setDatePosted] = useState<string>();
-  const [workMode, setWorkMode] = useState<string>();
-  const [countryName, setCountryName] = useState<string>("");
+  const {
+    jobType,
+    experienceLevel,
+    datePosted,
+    workMode,
+    countryName,
+    salaryRange,
+    setCountryName,
+    setDatePosted,
+    setExperienceLevel,
+    setJobType,
+    setSalaryRange,
+    setWorkMode,
+  } = useFilters();
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -134,15 +141,6 @@ const jobListingsFilter = () => {
       <JobFilterMobile
         onApplyFilter={handleFilter}
         onClearFilter={clearFilter}
-        onSelectJobFilter={(jobType) => setJobType(jobType)}
-        onSelectWorkMode={(workMode) => setWorkMode(workMode)}
-        onSelectExperienceLevel={(experienceLevel) =>
-          setExperienceLevel(experienceLevel)
-        }
-        onSelectDatePosted={(datePosted) => setDatePosted(datePosted)}
-        setCountryName={(country) => setCountryName(country)}
-        salaryRange={salaryRange}
-        setSalaryRange={(salaryRange) => setSalaryRange(salaryRange)}
       />
     </>
   );

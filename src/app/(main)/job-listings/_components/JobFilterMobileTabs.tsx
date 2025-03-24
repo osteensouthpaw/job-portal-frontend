@@ -1,30 +1,26 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@radix-ui/react-label";
-import { Dispatch, SetStateAction } from "react";
+import { useFilters } from "../Provider";
 import { DatesAfter, experienceLevels, jobTypes, workModes } from "./JobFilter";
 import Location from "./Location";
 import SalaryRange from "./SalaryRange";
 
-interface Props {
-  setCountryName: Dispatch<SetStateAction<string>>;
-  salaryRange: number[];
-  setSalaryRange: Dispatch<SetStateAction<number[]>>;
-  onSelectJobFilter: (jobFilter: string) => void;
-  onSelectWorkMode: (workMode: string) => void;
-  onSelectExperienceLevel: (experienceLevel: string) => void;
-  onSelectDatePosted: (datePosted: string) => void;
-}
-
-const JobFilterMobileTabs = ({
-  setCountryName,
-  salaryRange,
-  setSalaryRange,
-  onSelectJobFilter,
-  onSelectWorkMode,
-  onSelectExperienceLevel,
-  onSelectDatePosted,
-}: Props) => {
+const JobFilterMobileTabs = () => {
+  const {
+    setJobType,
+    setCountryName,
+    setDatePosted,
+    setExperienceLevel,
+    setSalaryRange,
+    setWorkMode,
+    countryName,
+    salaryRange,
+    jobType,
+    experienceLevel,
+    workMode,
+    datePosted,
+  } = useFilters();
   return (
     <Tabs
       defaultValue="jobType"
@@ -59,20 +55,29 @@ const JobFilterMobileTabs = ({
         {tabs.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="w-full">
             <RadioGroup
+              value={
+                tab.value === "jobType"
+                  ? jobType
+                  : tab.value === "experienceLevel"
+                  ? experienceLevel
+                  : tab.value === "workMode"
+                  ? workMode
+                  : datePosted
+              }
               className="flex flex-col outline flex-wrap"
               onValueChange={(value) => {
                 switch (tab.value) {
                   case "jobType":
-                    onSelectJobFilter(value);
+                    setJobType(value);
                     break;
                   case "experienceLevel":
-                    onSelectExperienceLevel(value);
+                    setExperienceLevel(value);
                     break;
                   case "workMode":
-                    onSelectWorkMode(value);
+                    setWorkMode(value);
                     break;
                   case "datePosted":
-                    onSelectDatePosted(value);
+                    setDatePosted(value);
                     break;
                   default:
                     break;
@@ -124,7 +129,7 @@ const tabs: {
   },
   {
     name: "Experience Level",
-    value: "experienceLeveL",
+    value: "experienceLevel",
     content: experienceLevels,
   },
   {

@@ -9,32 +9,15 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ArrowRight, FilterIcon } from "lucide-react";
+import { useState } from "react";
 import JobFilterMobileTabs from "./JobFilterMobileTabs";
-import { Dispatch, SetStateAction, useState } from "react";
 
 interface Props {
-  setCountryName: Dispatch<SetStateAction<string>>;
-  salaryRange: number[];
-  setSalaryRange: Dispatch<SetStateAction<number[]>>;
-  onSelectJobFilter: (jobFilter: string) => void;
-  onSelectWorkMode: (workMode: string) => void;
-  onSelectExperienceLevel: (experienceLevel: string) => void;
-  onSelectDatePosted: (datePosted: string) => void;
   onApplyFilter: () => void;
   onClearFilter: () => void;
 }
 
-const JobFilterMobile = ({
-  setCountryName,
-  salaryRange,
-  setSalaryRange,
-  onSelectJobFilter,
-  onSelectWorkMode,
-  onSelectExperienceLevel,
-  onSelectDatePosted,
-  onApplyFilter,
-  onClearFilter,
-}: Props) => {
+const JobFilterMobile = ({ onApplyFilter, onClearFilter }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const handleApplyFilter = () => {
     onApplyFilter();
@@ -63,15 +46,7 @@ const JobFilterMobile = ({
               Clear Filters
             </Button>
           </DrawerHeader>
-          <JobFilterMobileTabs
-            onSelectDatePosted={onSelectDatePosted}
-            onSelectExperienceLevel={onSelectExperienceLevel}
-            onSelectJobFilter={onSelectJobFilter}
-            onSelectWorkMode={onSelectWorkMode}
-            setCountryName={(countryName) => setCountryName(countryName)}
-            salaryRange={salaryRange}
-            setSalaryRange={(salaryRange) => setSalaryRange(salaryRange)}
-          />
+          <JobFilterMobileTabs />
           <DrawerFooter className="flex flex-row justify-around border-t mt-2">
             <DrawerClose>Close</DrawerClose>
             <Button onClick={handleApplyFilter}>
