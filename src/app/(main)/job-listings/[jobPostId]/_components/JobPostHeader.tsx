@@ -1,20 +1,25 @@
+import { JobPostResponse } from "@/services/jobPost-service";
 import { Calendar1, House, MapPin } from "lucide-react";
 import React from "react";
 
-const JobPostHeader = () => {
+interface Props {
+  jobPost: JobPostResponse;
+}
+
+const JobPostHeader = ({ jobPost }: Props) => {
   return (
     <div className="space-y-10">
       <h3 className="font-semibold text-2xl md:text-3xl lg:text-4xl">
-        Relationship Executive
+        {jobPost.jobTitle}
       </h3>
       <div className="md:space-y-2">
-        <OrganizationInfo name="Company Name">
+        <OrganizationInfo name={jobPost.organization.companyName}>
           <House size={16} />
         </OrganizationInfo>
-        <OrganizationInfo name="Company Location">
+        <OrganizationInfo name={jobPost.location}>
           <MapPin size={16} />
         </OrganizationInfo>
-        <OrganizationInfo name="Created on">
+        <OrganizationInfo name={new Date(jobPost.createdAt).toDateString()}>
           <Calendar1 size={16} />
         </OrganizationInfo>
       </div>

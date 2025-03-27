@@ -4,8 +4,13 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import DefinitionItem from "./DefinitionItem";
+import { JobPostResponse } from "@/services/jobPost-service";
 
-const UserReactionCard = () => {
+interface Props {
+  jobPost: JobPostResponse;
+}
+
+const UserReactionCard = ({ jobPost }: Props) => {
   return (
     <Card className="shadow-none p-3 border-0 space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-col lg:justify-normal lg:items-stretch">

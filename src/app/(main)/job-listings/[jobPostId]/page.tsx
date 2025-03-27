@@ -1,28 +1,36 @@
-import Deadline from "./_components/Deadline";
+import jobPostService from "@/services/jobPost-service";
 import EligibilityCard from "./_components/EligibilityCard";
 import JobDescriptionCard from "./_components/JobDescriptionCard";
 import JobPostHeader from "./_components/JobPostHeader";
 import UserReactionCard from "./_components/UserReactionCard";
 
-const JobPostDetailPage = () => {
+interface Props {
+  params: Promise<{ jobPostId: string }>;
+}
+
+const JobPostDetailPage = async ({ params }: Props) => {
+  const { jobPostId } = await params;
+  console.log(jobPostId);
+  const jobPost = await jobPostService.getJobPostById(parseInt(jobPostId));
+
   return (
     <div className="mt-10">
       <div className="space-y-4 lg:hidden">
-        <JobPostHeader />
+        <JobPostHeader jobPost={jobPost} />
         <div className="space-y-4">
-          <UserReactionCard />
+          <UserReactionCard jobPost={jobPost} />
           <EligibilityCard />
         </div>
-        <JobDescriptionCard />
+        <JobDescriptionCard jobPost={jobPost} />
       </div>
 
       <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8">
         <div className="space-y-16 col-span-2">
-          <JobPostHeader />
-          <JobDescriptionCard />
+          <JobPostHeader jobPost={jobPost} />
+          <JobDescriptionCard jobPost={jobPost} />
         </div>
         <div className="space-y-4 md:sticky top-28 self-start overflow-auto h-auto">
-          <UserReactionCard />
+          <UserReactionCard jobPost={jobPost} />
           <EligibilityCard />
         </div>
       </div>
