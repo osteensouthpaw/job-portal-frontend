@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-muted dark:bg-background`}
       >
         <ThemeProvider
           attribute="class"
@@ -37,7 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="text-zinc-700 dark:text-zinc-300 bg-muted dark:bg-background">
+          <main className="text-zinc-700 dark:text-zinc-300 ">
             {children}
             <Toaster richColors position="top-right" />
           </main>

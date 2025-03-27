@@ -7,7 +7,7 @@ import DefinitionItem from "./DefinitionItem";
 
 const UserReactionCard = () => {
   return (
-    <Card className="shadow-none p-3 border-0 space-y-4">
+    <Card className="shadow-none p-3 border-0 space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-col lg:justify-normal lg:items-stretch">
         <div className="flex justify-between md:gap-6">
           <div className="flex flex-col">
