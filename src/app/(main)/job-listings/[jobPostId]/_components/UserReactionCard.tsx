@@ -5,12 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import DefinitionItem from "./DefinitionItem";
 import { JobPostResponse } from "@/services/jobPost-service";
+import { differenceInDays } from "date-fns";
 
 interface Props {
   jobPost: JobPostResponse;
 }
 
 const UserReactionCard = ({ jobPost }: Props) => {
+  const days = differenceInDays(
+    new Date(),
+    jobPost.applicationDeadline
+  ).toString();
   return (
     <Card className="shadow-none p-3 border-0 space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-col lg:justify-normal lg:items-stretch">
@@ -44,7 +49,10 @@ const UserReactionCard = ({ jobPost }: Props) => {
         <DefinitionItem term="Impressions" description="1200">
           <House />
         </DefinitionItem>
-        <DefinitionItem term="Application Deadline" description="20 days left">
+        <DefinitionItem
+          term="Application Deadline"
+          description={`${days} days remaining`}
+        >
           <Clock />
         </DefinitionItem>
       </div>
