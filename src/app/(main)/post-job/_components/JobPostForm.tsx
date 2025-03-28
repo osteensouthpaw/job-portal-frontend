@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -33,6 +32,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import TipTapEditor from "./TipTapEditor";
 
 const formSchema = z.object({
   jobTitle: z.string().min(1).min(10).max(2000),
@@ -302,13 +302,8 @@ export default function MyForm() {
             <FormItem>
               <FormLabel>Job Description</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="text here..."
-                  className="resize-none"
-                  {...field}
-                />
+                <TipTapEditor field={field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
