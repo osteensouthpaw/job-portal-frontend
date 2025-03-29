@@ -1,3 +1,4 @@
+import { ExperienceLevel, JobType, WorkMode } from "@/services/jobPost-service";
 import * as z from "zod";
 
 export const loginSchema = z.object({
@@ -63,4 +64,42 @@ export const jobSeekerSchema = z.object({
     .min(0, "Salary cannot be negative.")
     .optional(),
   bio: z.string().min(1, "Bio is required."),
+});
+
+export const jobPostSchema = z.object({
+  jobTitle: z
+    .string()
+    .min(10, { message: "Job title must be at least 10 characters." })
+    .max(2000, { message: "Job title cannot exceed 2000 characters." }),
+
+  jobType: z.nativeEnum(JobType, {
+    message: "Please select a valid job type.",
+  }),
+
+  location: z.tuple([
+    z.string().min(1, { message: "Country is required." }),
+    z.string().optional(),
+  ]),
+
+  workMode: z.nativeEnum(WorkMode, {
+    message: "Please select a valid work mode.",
+  }),
+
+  salary: z
+    .number()
+    .min(1, { message: "Salary must be a positive number." })
+    .max(1000000, { message: "Salary cannot exceed 1,000,000." }),
+
+  experienceLevel: z.nativeEnum(ExperienceLevel, {
+    message: "Please select a valid experience level.",
+  }),
+
+  applicationDeadline: z.coerce
+    .date()
+    .min(new Date(), { message: "Deadline must be at least tomorrow." }),
+
+  description: z
+    .string()
+    .min(20, { message: "Description must be at least 20 characters." })
+    .max(5000, { message: "Description cannot exceed 5000 characters." }),
 });

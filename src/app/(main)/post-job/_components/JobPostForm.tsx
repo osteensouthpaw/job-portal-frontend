@@ -33,35 +33,47 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import TipTapEditor from "./TipTapEditor";
-
-const formSchema = z.object({
-  jobTitle: z.string().min(1).min(10).max(2000),
-  jobType: z.string(),
-  location: z.tuple([z.string(), z.string().optional()]),
-  workMode: z.string(),
-  salary: z.number(),
-  experienceLevel: z.string(),
-  applicationDeadline: z.coerce.date(),
-  description: z.string(),
-});
+import { jobPostSchema } from "@/schemas/validationSchemas";
+import {
+  experienceLevels,
+  jobTypes,
+  workModes,
+} from "../../job-listings/_components/JobFilter";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export default function MyForm() {
   const [countryName, setCountryName] = useState<string>("");
   const [stateName, setStateName] = useState<string>("");
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof jobPostSchema>>({
+    resolver: zodResolver(jobPostSchema),
     defaultValues: {
+      jobTitle: "",
+      jobType: undefined,
+      location: [""],
+      workMode: undefined,
+      salary: 0,
+      experienceLevel: undefined,
       applicationDeadline: new Date(),
+      description: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof jobPostSchema>) {
     try {
-      console.log(values);
+      const formattedData = {
+        ...values,
+        applicationDeadline: values.applicationDeadline
+          .toISOString()
+          .split("T")[0],
+        location: values.location[0],
+      };
+      console.log(formattedData);
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+          <code className="text-white">
+            {JSON.stringify(formattedData, null, 2)}
+          </code>
         </pre>
       );
     } catch (error) {
@@ -76,6 +88,7 @@ export default function MyForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 max-w-3xl mx-auto py-10"
       >
+        {/* job title */}
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
@@ -94,6 +107,7 @@ export default function MyForm() {
             />
           </div>
 
+          {/* location */}
           <div className="col-span-6">
             <FormField
               control={form.control}
@@ -111,13 +125,11 @@ export default function MyForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
+                      {jobTypes.map((jobType) => (
+                        <SelectItem value={jobType.key} key={jobType.key}>
+                          {jobType.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
@@ -145,13 +157,6 @@ export default function MyForm() {
                           stateName || "",
                         ]);
                       }}
-                      onStateChange={(state) => {
-                        setStateName(state?.name || "");
-                        form.setValue(field.name, [
-                          form.getValues(field.name)[0] || "",
-                          state?.name || "",
-                        ]);
-                      }}
                     />
                   </FormControl>
 
@@ -161,6 +166,7 @@ export default function MyForm() {
             />
           </div>
 
+          {/* workMode */}
           <div className="col-span-6">
             <FormField
               control={form.control}
@@ -178,13 +184,11 @@ export default function MyForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
+                      {workModes.map((workMode) => (
+                        <SelectItem key={workMode.key} value={workMode.key}>
+                          {workMode.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
@@ -195,16 +199,17 @@ export default function MyForm() {
           </div>
         </div>
 
+        {/* salary */}
         <FormField
           control={form.control}
           name="salary"
           render={({ field: { value, onChange } }) => (
             <FormItem>
-              <FormLabel>Price - {value}</FormLabel>
+              <FormLabel>Salary - {formatCurrency(value)}</FormLabel>
               <FormControl>
                 <Slider
-                  min={0}
-                  max={100}
+                  min={1000}
+                  max={500000}
                   step={5}
                   defaultValue={[5]}
                   onValueChange={(vals) => {
@@ -218,6 +223,7 @@ export default function MyForm() {
           )}
         />
 
+        {/* experience Level */}
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
@@ -236,13 +242,11 @@ export default function MyForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
+                      {experienceLevels.map((level) => (
+                        <SelectItem key={level.key} value={level.key}>
+                          {level.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
@@ -295,6 +299,7 @@ export default function MyForm() {
           </div>
         </div>
 
+        {/* description */}
         <FormField
           control={form.control}
           name="description"

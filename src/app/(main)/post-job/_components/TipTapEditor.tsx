@@ -25,6 +25,7 @@ const TipTapEditor = ({ field }: { field: any }) => {
         class:
           "prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none min-h-[300px] p-4 max-w-none dark:prose-invert",
       },
+      transformPastedHTML: (html) => html,
     },
     onUpdate: ({ editor }) => {
       field.onChange(JSON.stringify(editor.getJSON()));
