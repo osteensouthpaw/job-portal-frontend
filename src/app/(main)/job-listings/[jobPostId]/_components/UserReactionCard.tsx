@@ -12,9 +12,8 @@ interface Props {
 }
 
 const UserReactionCard = ({ jobPost }: Props) => {
-  const days = differenceInDays(
-    new Date(),
-    jobPost.applicationDeadline
+  const difference = Math.abs(
+    differenceInDays(new Date(), jobPost.applicationDeadline)
   ).toString();
   return (
     <Card className="shadow-none p-3 border-0 space-y-6">
@@ -39,7 +38,13 @@ const UserReactionCard = ({ jobPost }: Props) => {
             <Share />
           </Button>
         </div>
-        <Button className="w-full md:w-max ml-auto lg:w-full">Apply</Button>
+        <Button
+          variant={jobPost.isOpen ? "default" : "destructive"}
+          disabled={!jobPost.isOpen}
+          className="w-full md:w-max ml-auto lg:w-full"
+        >
+          {jobPost.isOpen ? "Apply" : "Closed"}
+        </Button>
       </div>
       <hr />
       <div className="flex flex-col gap-4 md:flex-row md:justify-between lg:flex-col lg:justify-normal flex-wrap">
@@ -51,7 +56,7 @@ const UserReactionCard = ({ jobPost }: Props) => {
         </DefinitionItem>
         <DefinitionItem
           term="Application Deadline"
-          description={`${days} days remaining`}
+          description={`${difference} days remaining`}
         >
           <Clock />
         </DefinitionItem>

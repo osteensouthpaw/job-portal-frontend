@@ -1,6 +1,6 @@
 export function formatRelativeTime(date: Date): string {
   const now = new Date();
-  const diffInTime = now.getTime() - new Date(date).getTime();
+  const diffInTime = Math.abs(now.getTime() - new Date(date).getTime());
   const diffInDays = Math.floor(diffInTime / (1000 * 60 * 60 * 24));
   const diffInWeeks = Math.floor(diffInDays / 7);
   const diffInMonths = Math.floor(diffInDays / 30);

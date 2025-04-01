@@ -11,7 +11,7 @@ const JobDescriptionCard = ({ jobPost }: Props) => {
   return (
     <Card className="shadow-none border-0 p-3 relative">
       <div className="hidden absolute -top-32 right-0 lg:block">
-        <Deadline deadline={jobPost.applicationDeadline} />
+        {jobPost.isOpen && <Deadline deadline={jobPost.applicationDeadline} />}
       </div>
 
       <CardHeader>

@@ -24,6 +24,7 @@ const JobPostDetailPage = async ({ params }: Props) => {
         <JobDescriptionCard jobPost={jobPost} />
       </div>
 
+      {/* large screen display */}
       <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8">
         <div className="space-y-16 col-span-2">
           <JobPostHeader jobPost={jobPost} />
