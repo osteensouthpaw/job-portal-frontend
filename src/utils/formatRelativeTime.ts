@@ -7,22 +7,22 @@ export function formatRelativeTime(date: Date): string {
   const diffInYears = Math.floor(diffInMonths / 12);
 
   if (diffInDays === 0) {
-    return "Posted Today";
+    return "Today";
   } else if (diffInDays === 1) {
-    return "Posted 1 day ago";
+    return "1 day";
   } else if (diffInDays < 7) {
-    return `Posted ${diffInDays} days ago`;
+    return `${diffInDays} days`;
   } else if (diffInWeeks === 1) {
-    return "Posted 1 week ago";
+    return "1 week";
   } else if (diffInWeeks < 4) {
-    return `Posted ${diffInWeeks} weeks ago`;
+    return `${diffInWeeks} weeks`;
   } else if (diffInMonths === 1) {
-    return "Posted 1 month ago";
+    return "1 month";
   } else if (diffInMonths < 12) {
-    return `Posted ${diffInMonths} months ago`;
+    return `${diffInMonths} months`;
   } else if (diffInYears === 1) {
-    return "Posted 1 year ago";
+    return "1 year";
   } else {
-    return `Posted ${diffInYears} years ago`;
+    return `${diffInYears} years`;
   }
 }

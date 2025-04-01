@@ -10,7 +10,7 @@ interface Props {
 const JobDescriptionCard = ({ jobPost }: Props) => {
   return (
     <Card className="shadow-none border-0 p-3 relative">
-      <div className="hidden absolute -top-28 right-0 lg:block">
+      <div className="hidden absolute -top-32 right-0 lg:block">
         <Deadline deadline={jobPost.applicationDeadline} />
       </div>
 

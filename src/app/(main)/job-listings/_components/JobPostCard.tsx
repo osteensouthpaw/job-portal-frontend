@@ -51,7 +51,7 @@ const JobPostCard = ({ jobPost }: Props) => {
                 </h1>
               </div>
               <p className="text-sm text-muted-foreground md:text-right">
-                {formatRelativeTime(new Date(jobPost.createdAt))}
+                {formatRelativeTime(new Date(jobPost.createdAt))} ago
               </p>
             </div>
           </div>
