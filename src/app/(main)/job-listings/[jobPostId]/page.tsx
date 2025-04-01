@@ -1,5 +1,5 @@
 import jobPostService from "@/services/jobPost-service";
-import EligibilityCard from "./_components/EligibilityCard";
+import JobDetailsCard from "./_components/EligibilityCard";
 import JobDescriptionCard from "./_components/JobDescriptionCard";
 import JobPostHeader from "./_components/JobPostHeader";
 import UserReactionCard from "./_components/UserReactionCard";
@@ -19,7 +19,7 @@ const JobPostDetailPage = async ({ params }: Props) => {
         <JobPostHeader jobPost={jobPost} />
         <div className="space-y-4">
           <UserReactionCard jobPost={jobPost} />
-          <EligibilityCard />
+          <JobDetailsCard jobPost={jobPost} />
         </div>
         <JobDescriptionCard jobPost={jobPost} />
       </div>
@@ -32,7 +32,7 @@ const JobPostDetailPage = async ({ params }: Props) => {
         </div>
         <div className="space-y-4 md:sticky top-28 self-start overflow-auto h-auto">
           <UserReactionCard jobPost={jobPost} />
-          <EligibilityCard />
+          <JobDetailsCard jobPost={jobPost} />
         </div>
       </div>
     </div>
