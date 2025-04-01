@@ -1,5 +1,5 @@
 import jobPostService from "@/services/jobPost-service";
-import JobDetailsCard from "./_components/EligibilityCard";
+import JobDetailsCard from "./_components/JobDetailsCard";
 import JobDescriptionCard from "./_components/JobDescriptionCard";
 import JobPostHeader from "./_components/JobPostHeader";
 import UserReactionCard from "./_components/UserReactionCard";
