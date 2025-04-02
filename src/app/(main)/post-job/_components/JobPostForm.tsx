@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -40,8 +40,13 @@ import {
   workModes,
 } from "../../job-listings/_components/JobFilter";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { JobPostResponse } from "@/services/jobPost-service";
 
-export default function MyForm() {
+interface Props {
+  jobPost?: JobPostResponse;
+}
+
+export default function JobPostForm({ jobPost }: Props) {
   const [countryName, setCountryName] = useState<string>("");
   const [stateName, setStateName] = useState<string>("");
 
@@ -58,6 +63,24 @@ export default function MyForm() {
       description: "",
     },
   });
+
+  useEffect(() => {
+    if (jobPost) {
+      form.reset({
+        jobTitle: jobPost.jobTitle,
+        jobType: jobPost.jobType,
+        location: [jobPost.location || ""],
+        workMode: jobPost.workMode || "",
+        salary: jobPost.salary,
+        experienceLevel: jobPost.experienceLevel || "",
+        applicationDeadline: jobPost.applicationDeadline
+          ? new Date(jobPost.applicationDeadline)
+          : new Date(),
+        // description: jobPost.description,
+      });
+      console.log({ description: jobPost.description });
+    }
+  }, [jobPost, form]);
 
   function onSubmit(values: z.infer<typeof jobPostSchema>) {
     try {
@@ -208,10 +231,9 @@ export default function MyForm() {
               <FormLabel>Salary - {formatCurrency(value)}</FormLabel>
               <FormControl>
                 <Slider
-                  min={1000}
                   max={500000}
                   step={5}
-                  defaultValue={[5]}
+                  defaultValue={[jobPost?.salary || 0]}
                   onValueChange={(vals) => {
                     onChange(vals[0]);
                   }}

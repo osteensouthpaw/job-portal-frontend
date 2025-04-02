@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { MenuBar } from "./MenuBar";
 
 const TipTapEditor = ({ field }: { field: any }) => {
+  console.log({ description: field.value });
   const editor = useEditor({
     extensions: [
       StarterKit,

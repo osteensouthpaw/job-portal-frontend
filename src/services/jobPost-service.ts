@@ -1,4 +1,6 @@
+import { notFound } from "next/navigation";
 import apiClient from "./api-client";
+import { UserResponse } from "@/app/auth/register/RegisterForm";
 
 export interface OrganizationResponse {
   id: number;
@@ -12,6 +14,7 @@ export interface OrganizationResponse {
 
 export interface JobPostResponse {
   id: number;
+  recruiter: UserResponse;
   organization: OrganizationResponse;
   location: string;
   jobTitle: string;
@@ -59,10 +62,13 @@ class JobPostService {
   }
 
   async getJobPostById(jobPostId: number) {
-    console.log({ jobPostId });
     return apiClient
       .get<JobPostResponse>("/job-posts/" + jobPostId)
-      .then((res) => res.data);
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error(err);
+        return notFound();
+      });
   }
 }
 

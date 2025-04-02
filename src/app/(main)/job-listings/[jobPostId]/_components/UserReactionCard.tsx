@@ -1,3 +1,4 @@
+"use client";
 import { Card } from "@/components/ui/card";
 import { Calendar, Share, House, Clock } from "lucide-react";
 import React from "react";
@@ -6,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import DefinitionItem from "./DefinitionItem";
 import { JobPostResponse } from "@/services/jobPost-service";
 import { differenceInDays } from "date-fns";
+import { useAuth } from "@/app/AuthProvider";
+import Link from "next/link";
 
 interface Props {
   jobPost: JobPostResponse;
@@ -15,6 +18,7 @@ const UserReactionCard = ({ jobPost }: Props) => {
   const difference = Math.abs(
     differenceInDays(new Date(), jobPost.applicationDeadline)
   ).toString();
+
   return (
     <Card className="shadow-none p-3 border-0 space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-col lg:justify-normal lg:items-stretch">
@@ -45,6 +49,9 @@ const UserReactionCard = ({ jobPost }: Props) => {
         >
           {jobPost.isOpen ? "Apply" : "Closed"}
         </Button>
+        <Link href={`${jobPost.id}/edit`}>
+          <Button className="w-full md:w-max ml-auto lg:w-full">Edit</Button>
+        </Link>
       </div>
       <hr />
       <div className="flex flex-col gap-4 md:flex-row md:justify-between lg:flex-col lg:justify-normal flex-wrap">

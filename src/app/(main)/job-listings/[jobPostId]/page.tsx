@@ -10,7 +10,6 @@ interface Props {
 
 const JobPostDetailPage = async ({ params }: Props) => {
   const { jobPostId } = await params;
-  console.log(jobPostId);
   const jobPost = await jobPostService.getJobPostById(parseInt(jobPostId));
 
   return (
