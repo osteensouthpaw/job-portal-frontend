@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import AuthProvider from "./AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className="text-zinc-700 dark:text-zinc-300 ">
-            {children}
+            <AuthProvider>{children}</AuthProvider>
             <Toaster richColors position="top-right" />
           </main>
         </ThemeProvider>

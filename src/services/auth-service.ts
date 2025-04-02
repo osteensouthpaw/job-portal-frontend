@@ -6,12 +6,25 @@ import {
 } from "@/app/auth/register/RegisterForm";
 
 class AuthService {
-  login(data: LoginFormData) {
-    return apiClient.post("/auth/login", data);
+  async login(data: LoginFormData) {
+    return apiClient.post<UserResponse>(`/auth/login`, data);
   }
 
-  register(data: RegisterFormData) {
+  async logout() {
+    return apiClient.post("/auth/logout");
+  }
+
+  async register(data: RegisterFormData) {
     return apiClient.post<UserResponse>("/auth/register", data);
+  }
+
+  async getSession() {
+    try {
+      const res = await apiClient.get<UserResponse>("/auth/me");
+      return res.data;
+    } catch (err) {
+      return null;
+    }
   }
 }
 

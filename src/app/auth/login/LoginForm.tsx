@@ -3,10 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { useAuth } from "@/app/AuthProvider";
 import ErrorMessage from "@/components/general/ErrorMessage";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,15 +26,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { loginSchema } from "@/schemas/validationSchemas";
 import authService from "@/services/auth-service";
 import Link from "next/link";
-import { loginSchema } from "@/schemas/validationSchemas";
 export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<AxiosError>();
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | undefined>();
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -41,14 +42,25 @@ export const LoginForm = () => {
       password: "",
     },
   });
+  const { setUser } = useAuth();
 
   const onSubmit = async (data: LoginFormData) => {
-    startTransition(() => {
-      authService
-        .login(data)
-        .then((res) => router.push("/"))
-        .catch((err) => setError(err));
-    });
+    setIsPending(true);
+    setError(undefined);
+    authService
+      .login(data)
+      .then((res) => {
+        setIsPending(false);
+        setUser(res.data);
+        router.push("/post-job");
+      })
+      .catch((err) => {
+        if (err instanceof AxiosError) {
+          setError(err.response?.data.message);
+          setIsPending(false);
+        }
+      })
+      .finally(() => setIsPending(false));
   };
 
   return (
@@ -69,7 +81,6 @@ export const LoginForm = () => {
             >
               {/* Email Field */}
               <FormField
-                disabled={isPending}
                 control={form.control}
                 name="email"
                 render={({ field }) => (
@@ -89,7 +100,6 @@ export const LoginForm = () => {
 
               {/* Password Field */}
               <FormField
-                disabled={isPending}
                 control={form.control}
                 name="password"
                 render={({ field }) => (
