@@ -25,22 +25,22 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { jobPostSchema } from "@/schemas/validationSchemas";
+import { JobPostResponse } from "@/services/jobPost-service";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import TipTapEditor from "./TipTapEditor";
-import { jobPostSchema } from "@/schemas/validationSchemas";
 import {
   experienceLevels,
   jobTypes,
   workModes,
 } from "../../job-listings/_components/JobFilter";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { JobPostResponse } from "@/services/jobPost-service";
+import TipTapEditor from "./TipTapEditor";
 
 interface Props {
   jobPost?: JobPostResponse;
@@ -53,34 +53,18 @@ export default function JobPostForm({ jobPost }: Props) {
   const form = useForm<z.infer<typeof jobPostSchema>>({
     resolver: zodResolver(jobPostSchema),
     defaultValues: {
-      jobTitle: "",
-      jobType: undefined,
+      jobTitle: jobPost?.jobTitle,
+      jobType: jobPost?.jobType,
       location: [""],
-      workMode: undefined,
-      salary: 0,
-      experienceLevel: undefined,
-      applicationDeadline: new Date(),
-      description: "",
+      workMode: jobPost?.workMode,
+      salary: jobPost?.salary || 0,
+      experienceLevel: jobPost?.experienceLevel,
+      applicationDeadline: jobPost?.applicationDeadline
+        ? new Date(jobPost.applicationDeadline)
+        : new Date(),
+      description: jobPost?.description,
     },
   });
-
-  useEffect(() => {
-    if (jobPost) {
-      form.reset({
-        jobTitle: jobPost.jobTitle,
-        jobType: jobPost.jobType,
-        location: [jobPost.location || ""],
-        workMode: jobPost.workMode || "",
-        salary: jobPost.salary,
-        experienceLevel: jobPost.experienceLevel || "",
-        applicationDeadline: jobPost.applicationDeadline
-          ? new Date(jobPost.applicationDeadline)
-          : new Date(),
-        // description: jobPost.description,
-      });
-      console.log({ description: jobPost.description });
-    }
-  }, [jobPost, form]);
 
   function onSubmit(values: z.infer<typeof jobPostSchema>) {
     try {
@@ -92,13 +76,6 @@ export default function JobPostForm({ jobPost }: Props) {
         location: values.location[0],
       };
       console.log(formattedData);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">
-            {JSON.stringify(formattedData, null, 2)}
-          </code>
-        </pre>
-      );
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -109,7 +86,7 @@ export default function JobPostForm({ jobPost }: Props) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 max-w-3xl mx-auto py-10"
+        className="space-y-8 max-w-3xl mx-auto py-10 px-6"
       >
         {/* job title */}
         <div className="grid grid-cols-12 gap-4">
@@ -130,7 +107,7 @@ export default function JobPostForm({ jobPost }: Props) {
             />
           </div>
 
-          {/* location */}
+          {/* jobtype */}
           <div className="col-span-6">
             <FormField
               control={form.control}
@@ -144,10 +121,10 @@ export default function JobPostForm({ jobPost }: Props) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Internship" />
+                        <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent defaultValue={jobPost?.jobType}>
                       {jobTypes.map((jobType) => (
                         <SelectItem value={jobType.key} key={jobType.key}>
                           {jobType.label}
@@ -163,6 +140,7 @@ export default function JobPostForm({ jobPost }: Props) {
           </div>
         </div>
 
+        {/* location */}
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
@@ -203,10 +181,10 @@ export default function JobPostForm({ jobPost }: Props) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Remote" />
+                        <SelectValue />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent defaultValue={jobPost?.workMode}>
                       {workModes.map((workMode) => (
                         <SelectItem key={workMode.key} value={workMode.key}>
                           {workMode.label}
@@ -335,7 +313,7 @@ export default function JobPostForm({ jobPost }: Props) {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">{jobPost ? "Update" : "Submit"}</Button>
       </form>
     </Form>
   );

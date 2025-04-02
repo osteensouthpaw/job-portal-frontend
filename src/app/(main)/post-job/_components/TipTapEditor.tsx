@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { MenuBar } from "./MenuBar";
 
 const TipTapEditor = ({ field }: { field: any }) => {
-  console.log({ description: field.value });
+  console.log({ tiptapdescription: field.value });
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -29,15 +29,15 @@ const TipTapEditor = ({ field }: { field: any }) => {
       transformPastedHTML: (html) => html,
     },
     onUpdate: ({ editor }) => {
-      field.onChange(JSON.stringify(editor.getJSON()));
+      field.onChange(editor.getText());
     },
-    content: field.value ? JSON.parse(field.value) : "",
+    content: field.value,
     immediatelyRender: false,
   });
 
   useEffect(() => {
-    if (editor && field.value && editor.getHTML() !== field.value) {
-      editor.commands.setContent(JSON.parse(field.value));
+    if (editor && field.value && editor.getText() !== field.value) {
+      editor.commands.setContent(field.value);
     }
   }, [editor, field.value]);
 
