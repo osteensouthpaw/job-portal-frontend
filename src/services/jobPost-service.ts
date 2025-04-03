@@ -53,7 +53,7 @@ interface FetchJobPostsResponse {
 }
 
 class JobPostService {
-  async jobPosts(filters: Record<string, string>) {
+  async jobPosts(filters?: Record<string, string>) {
     const params = new URLSearchParams(filters).toString();
     const url = `/job-posts${params ? `?${params}` : ""}`;
     return apiClient
@@ -69,6 +69,10 @@ class JobPostService {
         console.error(err);
         return notFound();
       });
+  }
+
+  async getJobPostsByRecruiter() {
+    return apiClient.get<FetchJobPostsResponse>("/");
   }
 }
 
