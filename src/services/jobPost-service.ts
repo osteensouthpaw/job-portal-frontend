@@ -24,6 +24,8 @@ export interface JobPostResponse {
   experienceLevel: ExperienceLevel;
   salary: number;
   isOpen: boolean;
+  totalApplications: number;
+  totalLikes: number;
   applicationDeadline: string; // Assuming LocalDateTime is converted to string
   createdAt: string; // Assuming LocalDateTime is converted to string
 }

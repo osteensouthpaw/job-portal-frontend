@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { Calendar, Share, House, Clock } from "lucide-react";
+import { Calendar, Share, House, Clock, Heart } from "lucide-react";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ interface Props {
 }
 
 const UserReactionCard = ({ jobPost }: Props) => {
+  const { user } = useAuth();
   const difference = Math.abs(
     differenceInDays(new Date(), jobPost.applicationDeadline)
   ).toString();
@@ -22,26 +23,30 @@ const UserReactionCard = ({ jobPost }: Props) => {
   return (
     <Card className="shadow-none p-3 border-0 space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-col lg:justify-normal lg:items-stretch">
-        <div className="flex justify-between md:gap-6">
-          <div className="flex flex-col">
-            <p className="text-base font-semibold">Osteen Omega</p>
-            <small>osteenomega2@gmail.com</small>
-          </div>
-          <Badge>Eligible</Badge>
-        </div>
-        <div className="flex justify-between">
-          <div className="flex">
-            <Button variant="ghost">
-              <Calendar />
-            </Button>
-            <Button variant="ghost">
-              <Calendar />
-            </Button>
-          </div>
-          <Button variant="outline">
-            <Share />
-          </Button>
-        </div>
+        {jobPost.isOpen && user && (
+          <>
+            <div className="flex justify-between md:gap-6">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold">{`${user.firstName} ${user.lastName}`}</p>
+                <small>{user.email}</small>
+              </div>
+              <Badge>Eligible</Badge>
+            </div>
+            <div className="flex justify-between">
+              <div className="flex">
+                <Button variant="ghost">
+                  <Heart />
+                </Button>
+                <Button variant="ghost">
+                  <Calendar />
+                </Button>
+              </div>
+              <Button variant="outline">
+                <Share />
+              </Button>
+            </div>
+          </>
+        )}
         <Button
           variant={jobPost.isOpen ? "default" : "destructive"}
           disabled={!jobPost.isOpen}
@@ -49,21 +54,31 @@ const UserReactionCard = ({ jobPost }: Props) => {
         >
           {jobPost.isOpen ? "Apply" : "Closed"}
         </Button>
-        <Link href={`${jobPost.id}/edit`}>
-          <Button className="w-full md:w-max ml-auto lg:w-full">Edit</Button>
-        </Link>
+        {jobPost.recruiter.id == user?.id && (
+          <Link href={`${jobPost.id}/edit`}>
+            <Button className="w-full md:w-max ml-auto lg:w-full">Edit</Button>
+          </Link>
+        )}
       </div>
       <hr />
       <div className="flex flex-col gap-4 md:flex-row md:justify-between lg:flex-col lg:justify-normal flex-wrap">
-        <DefinitionItem term="Applied" description="100">
+        <DefinitionItem
+          term="Applied"
+          description={jobPost.totalApplications.toString()}
+        >
           <House />
         </DefinitionItem>
-        <DefinitionItem term="Impressions" description="1200">
+        <DefinitionItem
+          term="Impressions"
+          description={jobPost.totalLikes.toString()}
+        >
           <House />
         </DefinitionItem>
         <DefinitionItem
           term="Application Deadline"
-          description={`${difference} days remaining`}
+          description={`${difference} days ${
+            jobPost.isOpen ? "remaining" : "passed"
+          }`}
         >
           <Clock />
         </DefinitionItem>
