@@ -25,28 +25,28 @@ import {
 // Menu items.
 const items = [
   {
-    title: "Search",
-    url: "/dashboard/search",
-    icon: Search,
-  },
-  {
-    title: "Reports",
-    url: "/dashboard/reports",
-    icon: Flag,
-  },
-  {
-    title: "History",
-    url: "/dashboard/history",
-    icon: History,
-  },
-  {
     title: "Profile",
-    url: "/dashboard/profile",
+    url: "/user/profile",
     icon: UserRoundCog,
   },
   {
+    title: "Applications",
+    url: "/user/job-applications",
+    icon: Search,
+  },
+  {
+    title: "Favourites",
+    url: "/user/favourites",
+    icon: Flag,
+  },
+  {
+    title: "Recently Viewed",
+    url: "/user/recently-viewed",
+    icon: History,
+  },
+  {
     title: "Settings",
-    url: "/dashboard/settings",
+    url: "/user/settings",
     icon: Settings,
   },
 ];
@@ -72,13 +72,13 @@ export default function DashboardSidebar() {
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
 
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
+                      <span className="text-lg">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
