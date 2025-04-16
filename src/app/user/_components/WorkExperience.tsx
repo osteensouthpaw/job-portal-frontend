@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { formatDuration, intervalToDuration } from "date-fns";
-import { Building2, Calendar1Icon } from "lucide-react";
+import { Building2, Calendar1Icon, Edit2, Plus } from "lucide-react";
 
 const WorkExperience = () => {
   const experienceDuration = intervalToDuration({
@@ -11,7 +12,18 @@ const WorkExperience = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-lg">Work Experience</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="font-semibold text-lg">Work Experience</h3>
+        <div className="flex gap-1">
+          <Button variant="ghost" className="rounded-full">
+            <Plus />
+          </Button>
+          <Button variant="ghost" className="rounded-full">
+            <Edit2 />
+          </Button>
+        </div>
+      </div>
+
       <div className="space-y-9">
         <div className="flex gap-3">
           <Badge variant="secondary" className="self-start size-10 text-center">

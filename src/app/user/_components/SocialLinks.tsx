@@ -1,11 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { Github, Linkedin, Plus, Twitter } from "lucide-react";
 import Link from "next/link";
 
 const SocialLinks = () => {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-lg">Social Links</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="font-semibold text-lg">Social Links</h3>
+        <Button variant="ghost" className="rounded-full">
+          <Plus />
+        </Button>
+      </div>
       <ul className="flex gap-4 flex-wrap">
         <li>
           <Link href="#">
