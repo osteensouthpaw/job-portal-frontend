@@ -50,14 +50,13 @@ export const LoginForm = () => {
     authService
       .login(data)
       .then((res) => {
-        setIsPending(false);
         setUser(res.data);
         router.push("/post-job");
+        router.refresh();
       })
       .catch((err) => {
         if (err instanceof AxiosError) {
           setError(err.response?.data.message);
-          setIsPending(false);
         }
       })
       .finally(() => setIsPending(false));

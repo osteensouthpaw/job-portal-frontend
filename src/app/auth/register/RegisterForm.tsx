@@ -58,13 +58,13 @@ export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | undefined>();
+  const [errors, setError] = useState<string | string[] | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: "",
+      name: "",
       email: "",
       phone: "",
       password: "",
@@ -111,7 +111,7 @@ export default function RegisterForm() {
                   {/* Name Field */}
                   <FormField
                     control={form.control}
-                    name="firstName"
+                    name="name"
                     render={({ field }) => (
                       <FormItem className="grid gap-2">
                         <FormLabel htmlFor="name">Full Name</FormLabel>
@@ -153,13 +153,6 @@ export default function RegisterForm() {
                         <FormLabel htmlFor="phone">Phone Number</FormLabel>
                         <FormControl>
                           <PhoneInput {...field} defaultCountry="KE" />
-                          {/* <Input
-                          id="phone"
-                          placeholder="555-123-4567"
-                          type="tel"
-                          autoComplete="tel"
-                          {...field}
-                        /> */}
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -207,7 +200,7 @@ export default function RegisterForm() {
                       </FormItem>
                     )}
                   />
-                  {error && <ErrorMessage message={error} />}
+                  {errors && <ErrorMessage message={errors} />}
                   {success && <InfoMessage message={success} />}
 
                   <Button type="submit" className="w-full">

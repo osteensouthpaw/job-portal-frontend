@@ -33,7 +33,7 @@ const JobDetailsCard = ({ jobPost }: Props) => {
   ];
 
   return (
-    <Card className="p-3 shadow-none border-0 space-y-4 text-gray-200">
+    <Card className="p-3 shadow-none border-0 space-y-4">
       <CardTitle className="font-semibold text-lg">Job Details</CardTitle>
       <div className="space-y-1">
         {jobDetails.map(
