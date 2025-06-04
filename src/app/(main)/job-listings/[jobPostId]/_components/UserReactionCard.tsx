@@ -47,12 +47,15 @@ const UserReactionCard = ({ jobPost }: Props) => {
             </div>
           </>
         )}
+
         <Button
           variant={jobPost.isOpen ? "default" : "destructive"}
           disabled={!jobPost.isOpen}
           className="w-full md:w-max ml-auto lg:w-full"
         >
-          {jobPost.isOpen ? "Apply" : "Closed"}
+          <Link href={"/"} className="w-full">
+            {jobPost.isOpen ? "Apply" : "Closed"}
+          </Link>
         </Button>
         {jobPost.recruiter.id == user?.id && (
           <Link href={`${jobPost.id}/edit`}>
