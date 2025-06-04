@@ -32,7 +32,6 @@ import Link from "next/link";
 export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
-  const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const form = useForm<LoginFormData>({
@@ -51,13 +50,10 @@ export const LoginForm = () => {
       .login(data)
       .then((res) => {
         setUser(res.data);
-        router.push("/post-job");
-        router.refresh();
+        window.location.href = "/job-listings";
       })
       .catch((err) => {
-        if (err instanceof AxiosError) {
-          setError(err.response?.data.message);
-        }
+        if (err instanceof AxiosError) setError(err.response?.data.message);
       })
       .finally(() => setIsPending(false));
   };

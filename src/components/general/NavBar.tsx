@@ -1,7 +1,10 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Logo from "@/public/logo.png";
@@ -12,8 +15,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { ModeToggle } from "./ModeToggle";
 import { Container } from "../ui/container";
+import authService from "@/services/auth-service";
+import { UserResponse } from "@/app/auth/register/RegisterForm";
+import { useAuth } from "@/app/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const NavBar = () => {
+  const { user } = useAuth();
+
   return (
     <nav className="bg-white dark:bg-black">
       <Container
@@ -29,33 +38,48 @@ const NavBar = () => {
         <ul className="flex flex-row gap-4 items-center">
           <ModeToggle />
           <li>
-            <Button>Post Job</Button>
+            <Link href="/auth/login">
+              <Button>Login</Button>
+            </Link>
           </li>
-          <li>
-            <ProfileDropdown />
-          </li>
+          {user && (
+            <li>
+              <ProfileDropdown user={user} />
+            </li>
+          )}
         </ul>
       </Container>
     </nav>
   );
 };
 
-const ProfileDropdown = () => {
+const ProfileDropdown = ({
+  user: { firstName, lastName, imageUrl },
+}: {
+  user: UserResponse;
+}) => {
+  const { logout } = useAuth();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex flex-row items-center">
           <Avatar>
-            <AvatarImage src="" />
+            <AvatarImage src={imageUrl} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <ChevronDown size={20} />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem>One</DropdownMenuItem>
-        <DropdownMenuItem>Two</DropdownMenuItem>
-        <DropdownMenuItem>Three</DropdownMenuItem>
+        <DropdownMenuLabel>{`${firstName} ${lastName}`}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <DropdownMenuItem>Billing</DropdownMenuItem>
+        <DropdownMenuItem>Team</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <button onClick={logout}>Log out</button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
