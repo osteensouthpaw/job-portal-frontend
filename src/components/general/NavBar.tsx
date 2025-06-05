@@ -1,4 +1,6 @@
 "use client";
+import { UserResponse, UserType } from "@/app/auth/register/RegisterForm";
+import { useAuth } from "@/app/AuthProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +15,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { ModeToggle } from "./ModeToggle";
 import { Container } from "../ui/container";
-import authService from "@/services/auth-service";
-import { UserResponse } from "@/app/auth/register/RegisterForm";
-import { useAuth } from "@/app/AuthProvider";
-import { useRouter } from "next/navigation";
+import { ModeToggle } from "./ModeToggle";
+import SearchInput from "../ui/search-input";
 
 const NavBar = () => {
   const { user } = useAuth();
@@ -35,13 +34,23 @@ const NavBar = () => {
             Jobs<span className="text-primary font-semibold">:Mega</span>
           </h1>
         </Link>
+        <SearchInput />
         <ul className="flex flex-row gap-4 items-center">
           <ModeToggle />
-          <li>
-            <Link href="/auth/login">
-              <Button>Login</Button>
-            </Link>
-          </li>
+          {!user && (
+            <li>
+              <Link href="/auth/login">
+                <Button>Login</Button>
+              </Link>
+            </li>
+          )}
+          {user?.userType === UserType.RECRUITER && (
+            <li>
+              <Link href="/post-job">
+                <Button>Post Job</Button>
+              </Link>
+            </li>
+          )}
           {user && (
             <li>
               <ProfileDropdown user={user} />
