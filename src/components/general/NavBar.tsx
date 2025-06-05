@@ -10,14 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Logo from "@/public/logo.png";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOutIcon, Settings, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
-import { ModeToggle } from "./ModeToggle";
 import SearchInput from "../ui/search-input";
+import { ModeToggle } from "./ModeToggle";
 
 const NavBar = () => {
   const { user } = useAuth();
@@ -79,15 +79,33 @@ const ProfileDropdown = ({
           <ChevronDown size={20} />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         <DropdownMenuLabel>{`${firstName} ${lastName}`}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Billing</DropdownMenuItem>
-        <DropdownMenuItem>Team</DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/user/profile">
+            <div className="flex gap-2">
+              <User size={18} />
+              <p>Profile</p>
+            </div>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/user/settings">
+            <div className="flex gap-2">
+              <Settings size={18} />
+              <p>Settings</p>
+            </div>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <button onClick={logout}>Log out</button>
+          <button onClick={logout}>
+            <div className="flex gap-2">
+              <LogOutIcon color="red" size={18} />
+              <p>Log out</p>
+            </div>
+          </button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

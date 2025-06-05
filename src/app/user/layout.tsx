@@ -1,5 +1,6 @@
 import DashboardSidebar from "@/components/dashboard/dashboard-sidebar";
 import NavBar from "@/components/general/NavBar";
+import { Container } from "@/components/ui/container";
 import {
   SidebarInset,
   SidebarProvider,
@@ -14,8 +15,10 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
       <SidebarInset>
         <NavBar />
         <main className="p-4">
-          <SidebarTrigger />
-          {children}
+          <Container variant="constrainedPadded">
+            <SidebarTrigger />
+            {children}
+          </Container>
         </main>
       </SidebarInset>
     </SidebarProvider>
