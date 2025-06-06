@@ -17,6 +17,7 @@ import {
   ArrowLeft,
   Flag,
   History,
+  LayoutDashboard,
   Search,
   Settings,
   UserRoundCog,
@@ -24,6 +25,11 @@ import {
 
 // Menu items.
 const items = [
+  {
+    title: "Dashboard",
+    url: "/user/dashboard",
+    icon: LayoutDashboard,
+  },
   {
     title: "Profile",
     url: "/user/profile",
@@ -58,7 +64,7 @@ export default function DashboardSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/">
+              <Link href="/job-listings">
                 <ArrowLeft />
                 <span>Back to site</span>
               </Link>
