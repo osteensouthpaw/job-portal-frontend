@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
 
-const UserBio = () => {
+const UserBio = ({ about }: { about: string }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -11,12 +11,7 @@ const UserBio = () => {
         </Button>
       </div>
 
-      <p className="">
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Veritatis,
-        laborum a praesentium officiis quaerat exercitationem hic optio aliquam,
-        nesciunt tempora, sit amet. Doloremque consectetur tempora molestias
-        reprehenderit aut alias doloribus?
-      </p>
+      <p className="">{about}</p>
     </div>
   );
 };

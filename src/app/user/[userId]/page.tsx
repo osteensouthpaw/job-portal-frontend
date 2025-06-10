@@ -12,13 +12,26 @@ import Education from "../_components/Education";
 import SocialLinks from "../_components/SocialLinks";
 import Resume from "../_components/Resume";
 import ProfileHeader from "../_components/ProfileHeader";
+import { findJobSeekerProfile } from "@/services/profile-service";
+import { cookies } from "next/headers";
 
-const UserProfilePage = () => {
+interface Props {
+  params: Promise<{ userId: string }>;
+}
+
+const UserProfilePage = async ({ params }: Props) => {
+  const { userId } = await params;
+  const cookieHeader = (await cookies()).toString();
+  const jobSeekerProfile = await findJobSeekerProfile(
+    parseInt(userId),
+    cookieHeader
+  );
+
   return (
     <>
       <Card className="mb-4">
         <CardHeader>
-          <ProfileHeader />
+          <ProfileHeader jobSeekerProfile={jobSeekerProfile} />
         </CardHeader>
       </Card>
       <Card className="border-0 shadow-none dark:border dark:shadow-md">
@@ -27,17 +40,22 @@ const UserProfilePage = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <Separator />
-          <UserBio /> {/* user about */}
+          <UserBio about={jobSeekerProfile.bio || " "} /> {/* user about */}
           <Separator />
           <Resume />
           <Separator />
-          <UserSkills />
+          <UserSkills skillSet={jobSeekerProfile.skills} />
           <Separator />
-          <WorkExperience />
+          <WorkExperience experiences={jobSeekerProfile.experiences} />
           <Separator />
-          <Education />
+          <Education educationList={jobSeekerProfile.educations} />
           <Separator />
-          <SocialLinks />
+          <SocialLinks
+            linkedin={jobSeekerProfile.linkedInUrl}
+            github={jobSeekerProfile.gitHubUrl}
+            twitter={jobSeekerProfile.twitterUrl}
+            personalWebsite={jobSeekerProfile.personalWebsiteUrl}
+          />
         </CardContent>
       </Card>
     </>

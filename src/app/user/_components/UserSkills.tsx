@@ -1,9 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SkillSetResponse } from "@/services/profile-service";
 import { Edit2 } from "lucide-react";
 import React from "react";
 
-const UserSkills = () => {
+const UserSkills = ({ skillSet }: { skillSet: SkillSetResponse[] }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -13,11 +14,11 @@ const UserSkills = () => {
         </Button>
       </div>
       <div className="flex gap-2 flex-wrap">
-        <Badge variant="outline">Java</Badge>
-        <Badge variant="outline">Javascript</Badge>
-        <Badge variant="outline">React</Badge>
-        <Badge variant="outline">Prisma</Badge>
-        <Badge variant="outline">C</Badge>
+        {skillSet.map(({ id, skill }) => (
+          <Badge key={id} variant="outline">
+            {skill}
+          </Badge>
+        ))}
       </div>
     </div>
   );

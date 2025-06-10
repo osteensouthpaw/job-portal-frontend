@@ -1,9 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { JobSeekerProfileResponse } from "@/services/profile-service";
 import { Building2, DownloadCloud, Edit, Share } from "lucide-react";
 import Link from "next/link";
 
-const ProfileHeader = () => {
+const ProfileHeader = ({
+  jobSeekerProfile,
+}: {
+  jobSeekerProfile: JobSeekerProfileResponse;
+}) => {
   return (
     <div className="flex flex-col md:flex-row relative gap-6">
       <Badge
@@ -14,8 +19,10 @@ const ProfileHeader = () => {
       </Badge>
       <div className="space-y-5 flex-grow">
         <div>
-          <h2 className="text-3xl font-semibold">Osteen Omega</h2>
-          <p className="text-muted-foreground">osteen@gmail.com</p>
+          <h2 className="text-3xl font-semibold">{`${jobSeekerProfile.jobSeeker.firstName} ${jobSeekerProfile.jobSeeker.lastName}`}</h2>
+          <p className="text-muted-foreground">
+            {jobSeekerProfile.jobSeeker.email}
+          </p>
         </div>
         <div className="space-y-1">
           <div className="flex gap-2">
