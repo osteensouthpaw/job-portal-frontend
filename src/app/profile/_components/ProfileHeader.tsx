@@ -6,9 +6,15 @@ import Link from "next/link";
 
 const ProfileHeader = ({
   jobSeekerProfile,
+  isProfileOwner,
 }: {
   jobSeekerProfile: JobSeekerProfileResponse;
+  isProfileOwner: boolean;
 }) => {
+  const currentExperience = jobSeekerProfile.experiences.find(
+    (experience) => experience.isCurrentJob
+  );
+
   return (
     <div className="flex flex-col md:flex-row relative gap-6">
       <Badge
@@ -25,10 +31,12 @@ const ProfileHeader = ({
           </p>
         </div>
         <div className="space-y-1">
-          <div className="flex gap-2">
-            <Building2 size={22} />
-            <p>Spring Enterprise</p>
-          </div>
+          {currentExperience && (
+            <div className="flex gap-2">
+              <Building2 size={22} />
+              <p>{currentExperience.companyName}</p>
+            </div>
+          )}
           <div className="flex gap-2">
             <DownloadCloud size={22} />
             <Link href="#">
@@ -44,9 +52,11 @@ const ProfileHeader = ({
         >
           <Share size={22} />
         </Button>
-        <Button className="w-full">
-          Edit Profile <Edit />
-        </Button>
+        {isProfileOwner && (
+          <Button className="w-full">
+            Edit Profile <Edit />
+          </Button>
+        )}
       </div>
     </div>
   );

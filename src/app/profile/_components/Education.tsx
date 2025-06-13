@@ -6,21 +6,25 @@ import { Calendar1Icon, Edit2, GraduationCap, Plus } from "lucide-react";
 
 const Education = ({
   educationList,
+  isProfileOwner,
 }: {
   educationList: EducationResponse[];
+  isProfileOwner: boolean;
 }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="font-semibold text-lg">Education</h3>
-        <div className="flex gap-1">
-          <Button variant="ghost" className="rounded-full">
-            <Plus />
-          </Button>
-          <Button variant="ghost" className="rounded-full">
-            <Edit2 />
-          </Button>
-        </div>
+        {isProfileOwner && (
+          <div className="flex gap-1">
+            <Button variant="ghost" className="rounded-full">
+              <Plus />
+            </Button>
+            <Button variant="ghost" className="rounded-full">
+              <Edit2 />
+            </Button>
+          </div>
+        )}
       </div>
 
       {educationList.map((education) => (

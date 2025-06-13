@@ -13,7 +13,7 @@ const EditJobPostPage = async ({ params }: Props) => {
   const jobPost = await jobPostService.getJobPostById(parseInt(jobPostId));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2">
         <Card>
           <JobPostForm jobPost={jobPost} />

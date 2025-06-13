@@ -18,9 +18,11 @@ class AuthService {
     return apiClient.post<UserResponse>("/auth/register", data);
   }
 
-  async getSession() {
+  async getSession(cookieHeader?: string) {
     try {
-      const res = await apiClient.get<UserResponse>("/auth/me");
+      const res = await apiClient.get<UserResponse>("/auth/me", {
+        headers: { Cookie: cookieHeader },
+      });
       return res.data;
     } catch (err) {
       return null;

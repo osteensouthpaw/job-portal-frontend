@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Edit2, WholeWord } from "lucide-react";
-import React from "react";
 
-const Resume = () => {
+const Resume = ({ isProfileOwner }: { isProfileOwner: boolean }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="font-semibold text-lg">Resume</h3>
-        <Button variant="ghost" className="rounded-full">
-          <Edit2 />
-        </Button>
+        {isProfileOwner && (
+          <Button variant="ghost" className="rounded-full">
+            <Edit2 />
+          </Button>
+        )}
       </div>
       <div className="flex gap-4">
         <WholeWord />

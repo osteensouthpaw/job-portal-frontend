@@ -8,7 +8,7 @@ interface Props {
 
 const HomePage = async ({ searchParams }: Props) => {
   return (
-    <div className="md:grid grid-cols-3 gap-8 mt-4">
+    <div className="md:grid grid-cols-3 gap-8">
       <div
         className=" md:sticky top-20 self-start md:h-[calc(100vh-5rem)] overflow-auto [&::-webkit-scrollbar]:w-2
   [&::-webkit-scrollbar-track]:rounded-full

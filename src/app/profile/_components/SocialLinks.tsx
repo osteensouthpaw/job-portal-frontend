@@ -13,17 +13,26 @@ interface Props {
   github?: string;
   twitter?: string;
   personalWebsite?: string;
+  isProfileOwner: boolean;
 }
 
-const SocialLinks = ({ linkedin, github, twitter, personalWebsite }: Props) => {
+const SocialLinks = ({
+  linkedin,
+  github,
+  twitter,
+  personalWebsite,
+  isProfileOwner,
+}: Props) => {
   return (
     <TooltipProvider>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="font-semibold text-lg">Social Links</h3>
-          <Button variant="ghost" className="rounded-full">
-            <Plus />
-          </Button>
+          {isProfileOwner && (
+            <Button variant="ghost" className="rounded-full">
+              <Plus />
+            </Button>
+          )}
         </div>
         <ul className="flex gap-4 flex-wrap">
           {github && (

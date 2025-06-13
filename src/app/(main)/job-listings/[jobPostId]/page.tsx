@@ -13,7 +13,7 @@ const JobPostDetailPage = async ({ params }: Props) => {
   const jobPost = await jobPostService.getJobPostById(parseInt(jobPostId));
 
   return (
-    <div className="mt-10">
+    <div>
       <div className="space-y-4 lg:hidden">
         <JobPostHeader jobPost={jobPost} />
         <div className="space-y-4">

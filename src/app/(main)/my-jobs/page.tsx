@@ -13,7 +13,7 @@ import {
 const MyJobsPage = async () => {
   const jobPosts = await jobPostService.jobPosts();
   return (
-    <div className="mt-10">
+    <div>
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">My Jobs</CardTitle>

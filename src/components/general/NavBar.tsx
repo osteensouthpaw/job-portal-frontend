@@ -63,7 +63,7 @@ const NavBar = () => {
 };
 
 const ProfileDropdown = ({
-  user: { firstName, lastName, imageUrl },
+  user: { firstName, lastName, imageUrl, id },
 }: {
   user: UserResponse;
 }) => {
@@ -83,7 +83,7 @@ const ProfileDropdown = ({
         <DropdownMenuLabel>{`${firstName} ${lastName}`}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href="/user/profile">
+          <Link href={`/profile/me`}>
             <div className="flex gap-2">
               <User size={18} />
               <p>Profile</p>
@@ -91,7 +91,7 @@ const ProfileDropdown = ({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/user/settings">
+          <Link href="/profile/settings">
             <div className="flex gap-2">
               <Settings size={18} />
               <p>Settings</p>

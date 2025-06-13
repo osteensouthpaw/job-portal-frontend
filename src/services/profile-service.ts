@@ -58,7 +58,7 @@ export interface JobSeekerProfileResponse {
 
 export async function findJobSeekerProfile(
   id: number,
-  cookieHeader: string
+  cookieHeader?: string
 ): Promise<JobSeekerProfileResponse> {
   return apiClient
     .get(`job-seekers/${id}`, { headers: { Cookie: cookieHeader } })

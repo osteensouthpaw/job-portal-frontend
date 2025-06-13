@@ -7,21 +7,25 @@ import { Building2, Calendar1Icon, Edit2, Plus } from "lucide-react";
 
 const WorkExperience = ({
   experiences,
+  isProfileOwner,
 }: {
   experiences: ExperienceResponse[];
+  isProfileOwner: boolean;
 }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="font-semibold text-lg">Work Experience</h3>
-        <div className="flex gap-1">
-          <Button variant="ghost" className="rounded-full">
-            <Plus />
-          </Button>
-          <Button variant="ghost" className="rounded-full">
-            <Edit2 />
-          </Button>
-        </div>
+        {isProfileOwner && (
+          <div className="flex gap-1">
+            <Button variant="ghost" className="rounded-full">
+              <Plus />
+            </Button>
+            <Button variant="ghost" className="rounded-full">
+              <Edit2 />
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="space-y-9">

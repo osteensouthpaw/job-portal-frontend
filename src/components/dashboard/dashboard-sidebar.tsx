@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 import {
@@ -22,42 +23,44 @@ import {
   Settings,
   UserRoundCog,
 } from "lucide-react";
-
-// Menu items.
-const items = [
-  {
-    title: "Dashboard",
-    url: "/user/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Profile",
-    url: "/user/profile",
-    icon: UserRoundCog,
-  },
-  {
-    title: "Applications",
-    url: "/user/job-applications",
-    icon: Search,
-  },
-  {
-    title: "Favourites",
-    url: "/user/favourites",
-    icon: Flag,
-  },
-  {
-    title: "Recently Viewed",
-    url: "/user/recently-viewed",
-    icon: History,
-  },
-  {
-    title: "Settings",
-    url: "/user/settings",
-    icon: Settings,
-  },
-];
+import { useAuth } from "@/app/AuthProvider";
 
 export default function DashboardSidebar() {
+  const { user } = useAuth();
+
+  const items = [
+    {
+      title: "Dashboard",
+      url: "/profile/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Profile",
+      url: "/profile/me",
+      icon: UserRoundCog,
+    },
+    {
+      title: "Applications",
+      url: "/profile/job-applications",
+      icon: Search,
+    },
+    {
+      title: "Favourites",
+      url: "/profile/favourites",
+      icon: Flag,
+    },
+    {
+      title: "Recently Viewed",
+      url: "/profile/recently-viewed",
+      icon: History,
+    },
+    {
+      title: "Settings",
+      url: "/profile/settings",
+      icon: Settings,
+    },
+  ];
+
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
