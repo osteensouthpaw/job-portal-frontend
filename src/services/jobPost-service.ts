@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import apiClient from "./api-client";
 import { UserResponse } from "@/app/auth/register/RegisterForm";
+import { PageResponse } from "@/components/general/Pagination";
 
 export interface OrganizationResponse {
   id: number;
@@ -49,18 +50,13 @@ export enum ExperienceLevel {
   SENIOR = "SENIOR",
 }
 
-interface FetchJobPostsResponse {
-  content: JobPostResponse[];
-  totalElements: number;
-}
-
 class JobPostService {
   async jobPosts(filters?: Record<string, string>) {
     const params = new URLSearchParams(filters).toString();
     const url = `/job-posts${params ? `?${params}` : ""}`;
     return apiClient
-      .get<FetchJobPostsResponse>(url)
-      .then((res) => res.data.content);
+      .get<PageResponse<JobPostResponse>>(url)
+      .then((res) => res.data);
   }
 
   async getJobPostById(jobPostId: number) {
@@ -74,7 +70,7 @@ class JobPostService {
   }
 
   async getJobPostsByRecruiter() {
-    return apiClient.get<FetchJobPostsResponse>("/");
+    return apiClient.get<PageResponse<JobPostResponse>>("/");
   }
 }
 

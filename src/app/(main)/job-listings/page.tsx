@@ -1,4 +1,3 @@
-import React from "react";
 import JobListings from "./_components/JobListings";
 import JobListingsFilter from "./_components/JobListingsFilter";
 

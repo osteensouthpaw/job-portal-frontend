@@ -20,7 +20,7 @@ const MyJobsPage = async () => {
           <CardDescription>Manage your Job Listings Here</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable data={jobPosts} columns={columns} />
+          <DataTable data={jobPosts.content} columns={columns} />
         </CardContent>
       </Card>
     </div>
