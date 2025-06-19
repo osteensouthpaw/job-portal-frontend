@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 import React from "react";
 import { Alert, AlertDescription } from "../ui/alert";
 
-const ErrorMessage = ({ message }: { message: string }) => {
+const ErrorMessage = ({ message }: { message: string | string[] }) => {
   return (
     <Alert variant="destructive">
       <AlertDescription>

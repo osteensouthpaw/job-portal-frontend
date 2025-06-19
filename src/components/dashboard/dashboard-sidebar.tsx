@@ -14,6 +14,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
+import { useAuth } from "@/app/AuthProvider";
+import { UserType } from "@/app/auth/register/RegisterForm";
 import {
   ArrowLeft,
   Flag,
@@ -23,10 +25,11 @@ import {
   Settings,
   UserRoundCog,
 } from "lucide-react";
-import { useAuth } from "@/app/AuthProvider";
+import { usePathname } from "next/navigation";
 
 export default function DashboardSidebar() {
   const { user } = useAuth();
+  const pathname = usePathname();
 
   const items = [
     {
@@ -81,18 +84,24 @@ export default function DashboardSidebar() {
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
 
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span className="text-lg">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            {user && user.userType !== UserType.PENDING && (
+              <SidebarMenu className="space-y-2">
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className="py-5"
+                    >
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span className="text-lg">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

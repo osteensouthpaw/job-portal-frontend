@@ -7,8 +7,9 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect } from "react";
 import { MenuBar } from "./MenuBar";
+import { ControllerRenderProps } from "react-hook-form";
 
-const TipTapEditor = ({ field }: { field: any }) => {
+const TipTapEditor = ({ field }: { field: ControllerRenderProps }) => {
   console.log({ tiptapdescription: field.value });
   const editor = useEditor({
     extensions: [

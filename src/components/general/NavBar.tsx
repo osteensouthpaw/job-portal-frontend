@@ -63,7 +63,7 @@ const NavBar = () => {
 };
 
 const ProfileDropdown = ({
-  user: { firstName, lastName, imageUrl, id },
+  user: { firstName, lastName, imageUrl },
 }: {
   user: UserResponse;
 }) => {

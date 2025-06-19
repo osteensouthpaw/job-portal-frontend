@@ -2,7 +2,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExperienceResponse } from "@/services/profile-service";
 import { calculateDuration } from "@/utils/calculateDuration";
-import { formatDuration, intervalToDuration } from "date-fns";
 import { Building2, Calendar1Icon, Edit2, Plus } from "lucide-react";
 
 const WorkExperience = ({

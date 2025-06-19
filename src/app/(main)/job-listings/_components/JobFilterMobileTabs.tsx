@@ -62,6 +62,8 @@ const JobFilterMobileTabs = () => {
                   ? experienceLevel
                   : tab.value === "workMode"
                   ? workMode
+                  : tab.value === "countryName"
+                  ? countryName
                   : datePosted
               }
               className="flex flex-col outline flex-wrap"
@@ -141,6 +143,16 @@ const tabs: {
     name: "Date Posted",
     value: "datePosted",
     content: DatesAfter,
+  },
+  {
+    name: "Location",
+    value: "countryName",
+    content: [],
+  },
+  {
+    name: "Salary Range",
+    value: "salaryRange",
+    content: [],
   },
 ];
 

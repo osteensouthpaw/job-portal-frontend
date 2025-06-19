@@ -3,15 +3,15 @@ import { PropsWithChildren } from "react";
 import { useForm } from "react-hook-form";
 
 export default function SearchInput() {
-  const { register, handleSubmit } = useForm<{ search: string }>();
+  const { register } = useForm<{ search: string }>();
 
-  const onSubmit = (data: { search: string }) => {
-    //send api request
-  };
+  // const onSubmit = (data: { search: string }) => {
+  //   //send api request
+  // };
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      // onSubmit={handleSubmit(onSubmit)}
       className="grid w-full max-w-sm items-center gap-1.5"
     >
       <div className="relative">

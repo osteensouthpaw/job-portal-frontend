@@ -7,10 +7,16 @@ import Logo from "@/public/logo.png";
 import { Card, CardContent } from "@/components/ui/card";
 import RecruiterForm from "./RecruiterForm";
 import JobSeekerForm from "./JobSeekerForm";
+import { useAuth } from "@/app/AuthProvider";
+import { redirect } from "next/navigation";
 
 const OnboadingForm = () => {
   const [step, setStep] = useState(1);
   const [userType, setUserType] = useState<UserType | null>(null);
+  const { user } = useAuth();
+
+  if (user === null) return redirect("/auth/login");
+  if (user.userType !== UserType.PENDING) return redirect("/job-listings");
 
   const handleUserTypeSelection = (userType: UserType) => {
     setStep(2);
@@ -18,10 +24,10 @@ const OnboadingForm = () => {
   };
 
   const renderStep = () => {
-    if (step == 1)
+    if (step === 1)
       return <UserTypeSelection onSelect={handleUserTypeSelection} />;
-    else if (step == 2)
-      return userType == UserType.RECRUITER ? (
+    else if (step === 2)
+      return userType === UserType.RECRUITER ? (
         <RecruiterForm />
       ) : (
         <JobSeekerForm />

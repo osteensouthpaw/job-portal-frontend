@@ -18,7 +18,7 @@ import Location from "./Location";
 import SalaryRange from "./SalaryRange";
 import { useFilters } from "../Provider";
 
-const jobListingsFilter = () => {
+const JobListingsFilter = () => {
   const {
     jobType,
     experienceLevel,
@@ -70,6 +70,14 @@ const jobListingsFilter = () => {
 
     if (countryName) params.set("countryName", countryName);
     else params.delete("countryName");
+
+    if (salaryRange.length > 0) {
+      params.set("minSalary", String(salaryRange[0]));
+      params.set("maxSalary", String(salaryRange[1]));
+    } else {
+      params.delete("minSalary");
+      params.delete("maxSalary");
+    }
 
     // Update URL with new filters
     router.push(`?${params.toString()}`);
@@ -146,4 +154,4 @@ const jobListingsFilter = () => {
   );
 };
 
-export default jobListingsFilter;
+export default JobListingsFilter;

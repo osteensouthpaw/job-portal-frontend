@@ -1,5 +1,4 @@
-import { AlertCircle, AlertTriangle, CheckCircle } from "lucide-react";
-import React from "react";
+import { CheckCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
 
 const InfoMessage = ({ message }: { message: string }) => {

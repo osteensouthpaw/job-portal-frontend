@@ -97,6 +97,7 @@ export default function RecruiterForm() {
   const form = useForm<z.infer<typeof recruiterSchema>>({
     resolver: zodResolver(recruiterSchema),
     defaultValues: {
+      companyLocation: [countryName, stateName],
       establishmentDate: new Date(),
     },
   });
@@ -328,7 +329,7 @@ export default function RecruiterForm() {
         <FormField
           control={form.control}
           name="companyLogo"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel>Logo</FormLabel>
               <FormControl>

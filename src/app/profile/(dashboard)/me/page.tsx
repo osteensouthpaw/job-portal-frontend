@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 const UserProfilePage = async () => {
   const cookieHeader = (await cookies()).toString();
@@ -29,7 +30,13 @@ const UserProfilePage = async () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Continue with this link to complete your profile:</p>
+        <p className="text-secondary-foreground">
+          Continue with this{" "}
+          <Link href="/onboarding" className="text-primary">
+            link
+          </Link>{" "}
+          to complete your profile
+        </p>
       </CardContent>
     </Card>
   );

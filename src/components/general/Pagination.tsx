@@ -1,16 +1,14 @@
 "use client";
-import React from "react";
 import {
-  Pagination as ShadcnPagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  Pagination as ShadcnPagination,
 } from "@/components/ui/pagination";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export interface PageResponse<T> {
   content: T[];
@@ -34,8 +32,6 @@ interface PaginationProps {
 
 const Pagination = ({
   pageNumber,
-  pageSize,
-  totalElements,
   totalPages,
   first,
   last,

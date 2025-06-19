@@ -12,11 +12,11 @@ import { ColumnDef } from "@tanstack/react-table";
 interface TableProps<T> {
   title: string;
   description: string;
-  content: any[];
+  content: T[];
   columns: ColumnDef<T>[];
 }
 
-const Table = ({ title, description, content, columns }: TableProps<any>) => {
+const Table = <T,>({ title, description, content, columns }: TableProps<T>) => {
   return (
     <Card>
       <CardHeader>

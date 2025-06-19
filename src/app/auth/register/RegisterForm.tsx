@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { useAuth } from "@/app/AuthProvider";
 import ErrorMessage from "@/components/general/ErrorMessage";
 import InfoMessage from "@/components/general/InfoMessage";
 import { Button } from "@/components/ui/button";
@@ -27,10 +28,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { PhoneInput } from "@/components/ui/phone-input";
+import { registerSchema } from "@/schemas/validationSchemas";
 import authService from "@/services/auth-service";
 import { AxiosError } from "axios";
-import { useState, useTransition } from "react";
-import { registerSchema } from "@/schemas/validationSchemas";
+import { useState } from "react";
 
 export interface UserResponse {
   id: number;
@@ -57,9 +58,10 @@ export enum UserType {
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
-  const [isPending, startTransition] = useTransition();
   const [errors, setError] = useState<string | string[] | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+  const [isLoading, setLoading] = useState(false);
+  const { setUser } = useAuth();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -73,19 +75,22 @@ export default function RegisterForm() {
   });
 
   const onSubmit = (data: RegisterFormData) => {
-    startTransition(() => {
-      authService
-        .register(data)
-        .then((res) =>
-          setSuccess(
-            "Successful! A verification link has been sent to your email"
-          )
-        )
-        .catch((err: AxiosError) => {
+    setLoading(true);
+    authService
+      .register(data)
+      .then((res) => {
+        setSuccess(
+          "Successful! A verification link has been sent to your email"
+        );
+        setUser(res.data);
+      })
+      .catch((err) => {
+        if (err instanceof AxiosError) {
           toast.error("Failed to submit the form. Please try again.");
           setError(err.response?.data.message);
-        });
-    });
+        }
+      })
+      .finally(() => setLoading(false));
     setError(undefined);
     setSuccess(undefined);
   };
@@ -106,7 +111,7 @@ export default function RegisterForm() {
               className="space-y-8"
               noValidate
             >
-              <fieldset disabled={isPending}>
+              <fieldset disabled={isLoading}>
                 <div className="grid gap-4">
                   {/* Name Field */}
                   <FormField

@@ -48,14 +48,14 @@ interface Props {
 
 export default function JobPostForm({ jobPost }: Props) {
   const [countryName, setCountryName] = useState<string>("");
-  const [stateName, setStateName] = useState<string>("");
+  const [stateName] = useState<string>("");
 
   const form = useForm<z.infer<typeof jobPostSchema>>({
     resolver: zodResolver(jobPostSchema),
     defaultValues: {
       jobTitle: jobPost?.jobTitle,
       jobType: jobPost?.jobType,
-      location: [""],
+      location: [countryName, stateName],
       workMode: jobPost?.workMode,
       salary: jobPost?.salary || 0,
       experienceLevel: jobPost?.experienceLevel,
