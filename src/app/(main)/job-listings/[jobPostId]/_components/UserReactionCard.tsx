@@ -53,7 +53,7 @@ const UserReactionCard = ({ jobPost }: Props) => {
           disabled={!jobPost.isOpen}
           className="w-full md:w-max ml-auto lg:w-full"
         >
-          <Link href={"/"} className="w-full">
+          <Link href={`${jobPost.id}/apply`} className="w-full">
             {jobPost.isOpen ? "Apply" : "Closed"}
           </Link>
         </Button>

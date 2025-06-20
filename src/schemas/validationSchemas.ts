@@ -103,3 +103,37 @@ export const jobPostSchema = z.object({
     .min(20, { message: "Description must be at least 20 characters." })
     .max(5000, { message: "Description cannot exceed 5000 characters." }),
 });
+
+export const jobApplicationSchema = z.object({
+  phone_number: z
+    .string()
+    .optional()
+    .or(z.literal("").transform(() => undefined)), // treat empty string as undefined if needed
+
+  email: z
+    .string({ required_error: "Email is required" })
+    .email("Invalid email address"),
+
+  firstName: z
+    .string({ required_error: "First name is required" })
+    .min(1, "First name cannot be empty"),
+
+  lastName: z.string().min(1, "Last name cannot be empty").optional(),
+
+  experience: z
+    .number({ required_error: "Experience is required" })
+    .min(0, "Experience must be at least 0 years")
+    .max(20, "Experience must not exceed 20 years"),
+
+  location: z
+    .string({ required_error: "Location is required" })
+    .min(1, "Location cannot be empty"),
+
+  resume: z
+    .string({ required_error: "Resume is required" })
+    .min(1, "Resume file is required"),
+
+  coverLetter: z
+    .string({ required_error: "Cover letter is required" })
+    .max(1000, "Cover letter must not exceed 1000 characters"),
+});
