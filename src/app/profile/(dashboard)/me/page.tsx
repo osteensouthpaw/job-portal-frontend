@@ -17,7 +17,10 @@ const UserProfilePage = async () => {
   const user = await authService.getSession(cookieHeader);
   if (!user) return redirect("/auth/login");
 
-  const jobSeekerProfile = await findJobSeekerProfile(user.id, cookieHeader);
+  const jobSeekerProfile = await findJobSeekerProfile(user.id, cookieHeader)
+    .then((res) => res.data)
+    .catch((err) => console.log(err));
+
   return jobSeekerProfile ? (
     <UserProfile jobSeekerProfile={jobSeekerProfile} />
   ) : (

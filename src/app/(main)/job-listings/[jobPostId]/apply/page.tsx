@@ -7,8 +7,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { findJobSeekerProfile } from "@/services/profile-service";
+import { cookies } from "next/headers";
+import authService from "@/services/auth-service";
+import { redirect } from "next/navigation";
 
-const JobApplicationPage = () => {
+const JobApplicationPage = async () => {
+  const cookieHeader = (await cookies()).toString();
+  const user = await authService.getSession(cookieHeader);
+  if (!user) return redirect("/auth/login");
+  const jobSeekerProfile = await findJobSeekerProfile(user.id, cookieHeader)
+    .then((res) => res.data)
+    .catch((err) => console.log(err));
+
   return (
     <Card>
       <CardHeader className="md:text-center">
@@ -18,7 +29,7 @@ const JobApplicationPage = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <JobApplicationForm />
+        <JobApplicationForm jobSeekerProfile={jobSeekerProfile!} />
       </CardContent>
     </Card>
   );

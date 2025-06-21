@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
 import { jobApplicationSchema } from "@/schemas/validationSchemas";
+import { JobSeekerProfileResponse } from "@/services/profile-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CloudUpload, Paperclip } from "lucide-react";
 import { useState } from "react";
@@ -28,7 +29,11 @@ import { z } from "zod";
 
 export type JobApplicationFormData = z.infer<typeof jobApplicationSchema>;
 
-export default function JobApplicationForm() {
+interface Props {
+  jobSeekerProfile: JobSeekerProfileResponse;
+}
+
+export default function JobApplicationForm({ jobSeekerProfile }: Props) {
   const [files, setFiles] = useState<File[] | null>(null);
 
   const dropZoneConfig = {
@@ -39,6 +44,16 @@ export default function JobApplicationForm() {
 
   const form = useForm<JobApplicationFormData>({
     resolver: zodResolver(jobApplicationSchema),
+    defaultValues: {
+      phone_number: jobSeekerProfile.phone,
+      email: jobSeekerProfile.jobSeeker.email,
+      firstName: jobSeekerProfile.jobSeeker.firstName,
+      lastName: jobSeekerProfile.jobSeeker.lastName,
+      experience: 0,
+      location: "",
+      resume: "https://resumeurl.com",
+      coverLetter: "",
+    },
   });
 
   function onSubmit(values: JobApplicationFormData) {
@@ -62,34 +77,34 @@ export default function JobApplicationForm() {
         className="space-y-8 max-w-3xl mx-auto py-10"
       >
         <FormField
+          disabled
           control={form.control}
           name="phone_number"
-          render={({ field }) => (
+          render={() => (
             <FormItem className="flex flex-col items-start">
               <FormLabel>Phone number</FormLabel>
               <FormControl className="w-full">
-                <PhoneInput
-                  placeholder="Placeholder"
-                  {...field}
-                  defaultCountry="TR"
-                />
+                <PhoneInput readOnly value={jobSeekerProfile.phone} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
         <FormField
+          disabled
           control={form.control}
           name="email"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="" type="email" {...field} />
+                <Input
+                  readOnly
+                  value={jobSeekerProfile.jobSeeker.email}
+                  type="email"
+                />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -98,13 +113,18 @@ export default function JobApplicationForm() {
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
+              disabled
               control={form.control}
               name="firstName"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
-                  <FormLabel>firstName</FormLabel>
+                  <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="" type="text" {...field} />
+                    <Input
+                      readOnly
+                      type="text"
+                      value={jobSeekerProfile.jobSeeker.firstName}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -115,13 +135,17 @@ export default function JobApplicationForm() {
 
           <div className="col-span-6">
             <FormField
+              disabled
               control={form.control}
               name="lastName"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="" type="" {...field} />
+                    <Input
+                      readOnly
+                      value={jobSeekerProfile.jobSeeker.lastName}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -138,10 +162,15 @@ export default function JobApplicationForm() {
             <FormItem>
               <FormLabel>Experience</FormLabel>
               <FormControl>
-                <Input placeholder="" type="number" {...field} />
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value ?? ""}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
               </FormControl>
               <FormDescription>
-                This is how long you've worked proffessionaly
+                This is how long you've worked professionally
               </FormDescription>
               <FormMessage />
             </FormItem>

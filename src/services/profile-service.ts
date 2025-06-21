@@ -49,22 +49,16 @@ export interface JobSeekerProfileResponse {
   linkedInUrl: string;
   gitHubUrl: string;
   twitterUrl: string;
-  dateOfBirth: string; // ISO date string
+  dateOfBirth: string;
+  phone: string; // ISO date string
   experienceLevel: ExperienceLevel;
   experiences: ExperienceResponse[];
   skills: SkillSetResponse[];
   educations: EducationResponse[];
 }
 
-export async function findJobSeekerProfile(
-  id: number,
-  cookieHeader?: string
-): Promise<JobSeekerProfileResponse> {
-  return apiClient
-    .get(`job-seekers/${id}`, { headers: { Cookie: cookieHeader } })
-    .then((res) => res.data)
-    .catch((err) => {
-      console.error(err);
-      return null;
-    });
+export async function findJobSeekerProfile(id: number, cookieHeader?: string) {
+  return await apiClient.get<JobSeekerProfileResponse>(`job-seekers/${id}`, {
+    headers: { Cookie: cookieHeader },
+  });
 }

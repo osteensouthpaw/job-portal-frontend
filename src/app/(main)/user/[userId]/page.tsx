@@ -12,9 +12,11 @@ const UserProfilePage = async ({ params }: Props) => {
   const jobSeekerProfile = await findJobSeekerProfile(
     parseInt(userId),
     cookieHeader
-  );
+  )
+    .then((res) => res.data)
+    .catch((err) => console.log(err));
 
-  return <UserProfile jobSeekerProfile={jobSeekerProfile} />;
+  return <UserProfile jobSeekerProfile={jobSeekerProfile!} />;
 };
 
 export default UserProfilePage;
