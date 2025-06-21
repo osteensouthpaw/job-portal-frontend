@@ -119,9 +119,7 @@ export const jobApplicationSchema = z.object({
   location: z
     .string({ message: "Location is required" })
     .min(1, "Location cannot be empty"),
-  resume: z
-    .string({ message: "Resume is required" })
-    .min(1, "Resume file is required"),
+  resumeUrl: z.string().min(1, "Resume file is required"),
   coverLetter: z
     .string({ message: "Cover letter is required" })
     .max(1000, "Cover letter must not exceed 1000 characters"),

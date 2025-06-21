@@ -1,12 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import {
-  FileInput,
-  FileUploader,
-  FileUploaderContent,
-  FileUploaderItem,
-} from "@/components/ui/file-upload";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -20,8 +14,10 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
 import { jobApplicationSchema } from "@/schemas/validationSchemas";
 import { JobSeekerProfileResponse } from "@/services/profile-service";
+import { UploadDropzone } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CloudUpload, Paperclip } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -34,13 +30,10 @@ interface Props {
 }
 
 export default function JobApplicationForm({ jobSeekerProfile }: Props) {
-  const [files, setFiles] = useState<File[] | null>(null);
-
-  const dropZoneConfig = {
-    maxFiles: 5,
-    maxSize: 1024 * 1024 * 4,
-    multiple: true,
-  };
+  const [isUploadComplete, setUploadComplete] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const router = useRouter();
+  const params = useParams();
 
   const form = useForm<JobApplicationFormData>({
     resolver: zodResolver(jobApplicationSchema),
@@ -51,7 +44,7 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
       lastName: jobSeekerProfile.jobSeeker.lastName,
       experience: 0,
       location: "",
-      resume: "https://resumeurl.com",
+      resumeUrl: "",
       coverLetter: "",
     },
   });
@@ -64,6 +57,8 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
         </pre>
       );
+
+      router.push(`${params.jobPostId}`);
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -194,45 +189,49 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
 
         <FormField
           control={form.control}
-          name="resume"
+          name="resumeUrl"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Resume</FormLabel>
               <FormControl>
-                <FileUploader
-                  value={files}
-                  onValueChange={setFiles}
-                  dropzoneOptions={dropZoneConfig}
-                  className="relative bg-background rounded-lg p-2"
-                >
-                  <FileInput
-                    id="fileInput"
-                    className="outline-dashed outline-1 outline-slate-500"
-                  >
-                    <div className="flex items-center justify-center flex-col p-8 w-full ">
-                      <CloudUpload className="text-gray-500 w-10 h-10" />
-                      <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">Click to upload</span>
-                        &nbsp; or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        SVG, PNG, JPG or GIF
+                {field.value ? (
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-4 items-center">
+                      <FileText />
+                      <p className="text-muted-foreground text-sm">
+                        {fileName}
                       </p>
                     </div>
-                  </FileInput>
-                  <FileUploaderContent>
-                    {files &&
-                      files.length > 0 &&
-                      files.map((file, i) => (
-                        <FileUploaderItem key={i} index={i}>
-                          <Paperclip className="h-4 w-4 stroke-current" />
-                          <span>{file.name}</span>
-                        </FileUploaderItem>
-                      ))}
-                  </FileUploaderContent>
-                </FileUploader>
+                    <Trash2
+                      className="text-muted-foreground cursor-pointer hover:text-red-500 transition-colors"
+                      size={20}
+                      onClick={() => field.onChange("")}
+                    />
+                  </div>
+                ) : (
+                  <UploadDropzone
+                    endpoint="resumeUploader"
+                    onUploadProgress={(progress) => {
+                      toast.info(`Upload progress: ${progress}%`);
+                    }}
+                    onClientUploadComplete={(res) => {
+                      field.onChange(res[0].serverData.fileUrl);
+                      setUploadComplete(true);
+                      setFileName(res[0].name);
+                      console.log({ res });
+                      toast.success("Upload Successful");
+                    }}
+                    onUploadError={(error: Error) => {
+                      console.log(error);
+                      toast.error(`Upload failed: ${error.message}`);
+                    }}
+                    className="ut-button:bg-primary ut-button:text-white ut-button:hover:bg-primary/90 ut-label:text-muted-foreground ut-allowed-content:text-muted-foreground border-primary"
+                  />
+                )}
               </FormControl>
-              <FormDescription>Select a file to upload.</FormDescription>
+              {!isUploadComplete && (
+                <FormDescription>Select a file to upload.</FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -256,7 +255,9 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
             </FormItem>
           )}
         />
-        <Button type="submit">Apply</Button>
+        <Button type="submit" disabled={!isUploadComplete}>
+          Apply
+        </Button>
       </form>
     </Form>
   );
