@@ -37,11 +37,13 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  searchField: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  searchField,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -73,10 +75,10 @@ export function DataTable<TData, TValue>({
           <Input
             placeholder="Search by job title..."
             value={
-              (table.getColumn("jobTitle")?.getFilterValue() as string) ?? ""
+              (table.getColumn(searchField)?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("jobTitle")?.setFilterValue(event.target.value)
+              table.getColumn(searchField)?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />

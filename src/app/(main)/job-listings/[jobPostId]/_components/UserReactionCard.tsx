@@ -53,9 +53,9 @@ const UserReactionCard = ({ jobPost }: Props) => {
   }, []);
 
   useEffect(() => {
-    findApplicationByUser(jobPost.id).then((res) =>
-      setJobApplication(res.data)
-    );
+    findApplicationByUser(jobPost.id)
+      .then((res) => setJobApplication(res.data))
+      .catch((err) => null);
   }, [jobPost]);
 
   const isElligible =

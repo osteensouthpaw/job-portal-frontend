@@ -14,9 +14,16 @@ interface TableProps<T> {
   description: string;
   content: T[];
   columns: ColumnDef<T>[];
+  searchField: string;
 }
 
-const Table = <T,>({ title, description, content, columns }: TableProps<T>) => {
+const Table = <T,>({
+  title,
+  description,
+  content,
+  columns,
+  searchField,
+}: TableProps<T>) => {
   return (
     <Card>
       <CardHeader>
@@ -24,7 +31,7 @@ const Table = <T,>({ title, description, content, columns }: TableProps<T>) => {
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <DataTable data={content} columns={columns} />
+        <DataTable data={content} columns={columns} searchField={searchField} />
       </CardContent>
     </Card>
   );
