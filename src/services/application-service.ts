@@ -18,6 +18,12 @@ export interface JobApplicationResponse {
   appliedDate: string; // Assuming LocalDateTime is converted to string
 }
 
+export interface JobApplicationRequest {
+  jobPostId: number;
+  resumeUrl: string;
+  coverLetter: string;
+}
+
 // Get all job applications for the current logged in user (job seeker)
 export async function userJobApplications(cookieHeader?: string) {
   return await apiClient
@@ -25,4 +31,22 @@ export async function userJobApplications(cookieHeader?: string) {
       headers: { Cookie: cookieHeader },
     })
     .then((res) => res.data);
+}
+
+export async function createJobApplication({
+  jobPostId,
+  resumeUrl,
+  coverLetter,
+}: JobApplicationRequest) {
+  return await apiClient.post<JobApplicationResponse>(`/job-applications`, {
+    jobPostId,
+    resumeUrl,
+    coverLetter,
+  });
+}
+
+export async function findApplicationByUser(jobPostId: number) {
+  return await apiClient.get<JobApplicationResponse>(
+    `/job-applications/${jobPostId}`
+  );
 }

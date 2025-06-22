@@ -13,6 +13,10 @@ import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
 import { jobApplicationSchema } from "@/schemas/validationSchemas";
+import {
+  createJobApplication,
+  JobApplicationRequest,
+} from "@/services/application-service";
 import { JobSeekerProfileResponse } from "@/services/profile-service";
 import { UploadDropzone } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,8 +36,10 @@ interface Props {
 export default function JobApplicationForm({ jobSeekerProfile }: Props) {
   const [isUploadComplete, setUploadComplete] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState(false);
   const router = useRouter();
   const params = useParams();
+  const jobPostId = parseInt(params.jobPostId!.toString());
 
   const form = useForm<JobApplicationFormData>({
     resolver: zodResolver(jobApplicationSchema),
@@ -50,19 +56,23 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
   });
 
   function onSubmit(values: JobApplicationFormData) {
-    try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-
-      router.push(`${params.jobPostId}`);
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+    const applicationRequest: JobApplicationRequest = {
+      jobPostId,
+      resumeUrl: values.resumeUrl,
+      coverLetter: values.coverLetter,
+    };
+    setLoading(true);
+    createJobApplication(applicationRequest)
+      .then((res) => {
+        res.data;
+        toast.success("application successful!");
+        router.back();
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(`Something went wrong ${err}`);
+      })
+      .finally(() => setLoading(false));
   }
 
   return (
@@ -255,7 +265,7 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={!isUploadComplete}>
+        <Button type="submit" disabled={!isUploadComplete || isLoading}>
           Apply
         </Button>
       </form>

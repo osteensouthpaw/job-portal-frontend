@@ -1,5 +1,3 @@
-import React from "react";
-import JobApplicationForm from "../_components/JobApplicationForm";
 import {
   Card,
   CardContent,
@@ -7,10 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import authService from "@/services/auth-service";
 import { findJobSeekerProfile } from "@/services/profile-service";
 import { cookies } from "next/headers";
-import authService from "@/services/auth-service";
 import { redirect } from "next/navigation";
+import JobApplicationForm from "../_components/JobApplicationForm";
 
 const JobApplicationPage = async () => {
   const cookieHeader = (await cookies()).toString();
@@ -19,6 +18,8 @@ const JobApplicationPage = async () => {
   const jobSeekerProfile = await findJobSeekerProfile(user.id, cookieHeader)
     .then((res) => res.data)
     .catch((err) => console.log(err));
+
+  // check if an application exists and redirect to the application
 
   return (
     <Card>

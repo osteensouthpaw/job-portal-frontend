@@ -12,13 +12,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  findApplicationByUser,
+  JobApplicationResponse,
+} from "@/services/application-service";
 import { JobPostResponse } from "@/services/jobPost-service";
 import {
   findJobSeekerProfile,
   JobSeekerProfileResponse,
 } from "@/services/profile-service";
 import { differenceInDays } from "date-fns";
-import { Calendar, Clock, Heart, House, Share } from "lucide-react";
+import { Calendar, Clock, Edit, Heart, House, Share } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,6 +35,8 @@ interface Props {
 const UserReactionCard = ({ jobPost }: Props) => {
   const [jobSeekerProfile, setJobSeekerProfile] =
     useState<JobSeekerProfileResponse>();
+  const [jobApplication, setJobApplication] =
+    useState<JobApplicationResponse | null>();
   const { user } = useAuth();
   const [isOpen, setOpen] = useState(false);
   const router = useRouter();
@@ -44,7 +50,13 @@ const UserReactionCard = ({ jobPost }: Props) => {
       .catch((err) => {
         console.log(err);
       });
-  });
+  }, []);
+
+  useEffect(() => {
+    findApplicationByUser(jobPost.id).then((res) =>
+      setJobApplication(res.data)
+    );
+  }, [jobPost]);
 
   const isElligible =
     jobSeekerProfile?.experienceLevel === jobPost.experienceLevel;
@@ -78,10 +90,22 @@ const UserReactionCard = ({ jobPost }: Props) => {
               </div>
             </>
           )}
-
           {jobPost.recruiter.id === user?.id ? (
             <Button className="w-full md:w-max ml-auto lg:w-full">
               <Link href={`${jobPost.id}/edit`}>Edit</Link>
+            </Button>
+          ) : jobApplication ? (
+            <Button
+              className="bg-orange-600/90"
+              onClick={() =>
+                //todo: go to jobapplication page: => review application
+                router.push("/job-listings")
+              }
+            >
+              <p className="capitalize text-base flex items-center gap-2">
+                {jobApplication.applicationStatus.toLocaleLowerCase()}
+                <Edit />
+              </p>
             </Button>
           ) : (
             <Button
