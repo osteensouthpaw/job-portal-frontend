@@ -72,6 +72,21 @@ class JobPostService {
   async getJobPostsByRecruiter() {
     return apiClient.get<PageResponse<JobPostResponse>>("/");
   }
+
+  async getLikedJobPosts(cookieHeader?: string) {
+    return apiClient.get<PageResponse<JobPostResponse>>(
+      "/job-posts/liked-posts",
+      { headers: { Cookie: cookieHeader } }
+    );
+  }
+
+  async toggleLike(jobPostId: number) {
+    return apiClient.post<boolean>(`/job-posts/${jobPostId}/like`);
+  }
+
+  async isLiked(jobPostId: number) {
+    return apiClient.get<boolean>(`/job-posts/${jobPostId}/is-liked`);
+  }
 }
 
 export default new JobPostService();

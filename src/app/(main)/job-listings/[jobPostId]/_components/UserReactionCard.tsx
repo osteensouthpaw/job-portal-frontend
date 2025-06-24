@@ -16,7 +16,7 @@ import {
   findApplicationByUser,
   JobApplicationResponse,
 } from "@/services/application-service";
-import { JobPostResponse } from "@/services/jobPost-service";
+import jobPostService, { JobPostResponse } from "@/services/jobPost-service";
 import {
   findJobSeekerProfile,
   JobSeekerProfileResponse,
@@ -37,20 +37,20 @@ const UserReactionCard = ({ jobPost }: Props) => {
     useState<JobSeekerProfileResponse>();
   const [jobApplication, setJobApplication] =
     useState<JobApplicationResponse | null>();
+  const [isLiked, setLike] = useState<boolean>();
   const { user } = useAuth();
   const [isOpen, setOpen] = useState(false);
   const router = useRouter();
-  const difference = Math.abs(
-    differenceInDays(new Date(), jobPost.applicationDeadline)
-  ).toString();
 
   useEffect(() => {
-    findJobSeekerProfile(user?.id || 0)
-      .then((res) => setJobSeekerProfile(res.data))
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    if (user) {
+      findJobSeekerProfile(user.id)
+        .then((res) => setJobSeekerProfile(res.data))
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [user]);
 
   useEffect(() => {
     findApplicationByUser(jobPost.id)
@@ -58,8 +58,28 @@ const UserReactionCard = ({ jobPost }: Props) => {
       .catch((err) => null);
   }, [jobPost]);
 
+  useEffect(() => {
+    if (user) {
+      jobPostService
+        .isLiked(jobPost.id)
+        .then((res) => {
+          setLike(res.data);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [user, jobPost]);
+
+  const difference = Math.abs(
+    differenceInDays(new Date(), jobPost.applicationDeadline)
+  ).toString();
+
+  const toggleLike = (id: number) => {
+    jobPostService.toggleLike(id).then((res) => setLike(res.data));
+  };
+
   const isElligible =
     jobSeekerProfile?.experienceLevel === jobPost.experienceLevel;
+
   return (
     <>
       <Card className="shadow-none p-3 border-0 space-y-6">
@@ -77,8 +97,15 @@ const UserReactionCard = ({ jobPost }: Props) => {
               )}
               <div className="flex justify-between">
                 <div className="flex">
-                  <Button variant="ghost">
-                    <Heart />
+                  <Button
+                    variant="ghost"
+                    onClick={() => toggleLike(jobPost.id)}
+                  >
+                    <Heart
+                      className={`${
+                        isLiked && "cursor-pointer fill-red-600 text-red-500"
+                      }`}
+                    />
                   </Button>
                   <Button variant="ghost">
                     <Calendar />
