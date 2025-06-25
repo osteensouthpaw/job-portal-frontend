@@ -45,8 +45,11 @@ export async function createJobApplication({
   });
 }
 
-export async function findApplicationByUser(jobPostId: number) {
+export async function findApplicationByUser(
+  jobPostId: number,
+  applicantId: number
+) {
   return await apiClient.get<JobApplicationResponse>(
-    `/job-applications/${jobPostId}`
+    `/job-applications/${jobPostId}/applicants/${applicantId}`
   );
 }

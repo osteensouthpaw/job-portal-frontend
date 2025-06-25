@@ -6,15 +6,10 @@ import jobPostService, { JobPostResponse } from "@/services/jobPost-service";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Heart } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 const LikedPostCard = ({ jobPost }: { jobPost: JobPostResponse }) => {
-  const [isLiked, setLike] = useState<boolean>(true);
-
   const toggleLike = (id: number) => {
-    jobPostService.toggleLike(id).then((res) => {
-      setLike(res.data);
-    });
+    jobPostService.toggleLike(id);
   };
 
   return (
@@ -52,14 +47,12 @@ const LikedPostCard = ({ jobPost }: { jobPost: JobPostResponse }) => {
             <div className="md:ml-auto">
               <div className="flex items-center gap-2">
                 <Button variant="ghost" onClick={() => toggleLike(jobPost.id)}>
-                  <Heart
-                    className={`${
-                      isLiked && "cursor-pointer fill-red-600 text-red-500"
-                    }`}
-                  />
+                  <Heart className="cursor-pointer fill-red-600 text-red-500" />
                 </Button>
               </div>
-              <div>{new Date(jobPost.applicationDeadline).toDateString()}</div>
+              <div className="text-muted-foreground text-sm">
+                {new Date(jobPost.applicationDeadline).toDateString()}
+              </div>
             </div>
           </div>
         </CardHeader>

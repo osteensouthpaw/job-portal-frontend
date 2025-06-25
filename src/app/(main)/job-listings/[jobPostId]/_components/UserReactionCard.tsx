@@ -53,10 +53,12 @@ const UserReactionCard = ({ jobPost }: Props) => {
   }, [user]);
 
   useEffect(() => {
-    findApplicationByUser(jobPost.id)
-      .then((res) => setJobApplication(res.data))
-      .catch((err) => null);
-  }, [jobPost]);
+    if (user) {
+      findApplicationByUser(jobPost.id, user.id)
+        .then((res) => setJobApplication(res.data))
+        .catch((err) => null);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
