@@ -47,9 +47,20 @@ export async function createJobApplication({
 
 export async function findApplicationByUser(
   jobPostId: number,
-  applicantId: number
+  applicantId: number,
+  cookieHeader?: string
 ) {
   return await apiClient.get<JobApplicationResponse>(
-    `/job-applications/${jobPostId}/applicants/${applicantId}`
+    `/job-applications/${jobPostId}/applicants/${applicantId}`,
+    { headers: { Cookie: cookieHeader } }
   );
+}
+
+export async function deleteApplication(
+  jobPostId: number,
+  cookieHeader?: string
+) {
+  return apiClient.delete(`/job-applications/${jobPostId}`, {
+    headers: { Cookie: cookieHeader },
+  });
 }
