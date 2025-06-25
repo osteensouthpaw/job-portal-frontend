@@ -10,8 +10,14 @@ import { findJobSeekerProfile } from "@/services/profile-service";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import JobApplicationForm from "../components/JobApplicationForm";
+import { findApplicationByUser } from "@/services/application-service";
 
-const JobApplicationPage = async () => {
+interface Props {
+  params: Promise<{ jobPostId: string }>;
+}
+
+const JobApplicationPage = async ({ params }: Props) => {
+  const { jobPostId } = await params;
   const cookieHeader = (await cookies()).toString();
   const user = await authService.getSession(cookieHeader);
   if (!user) return redirect("/auth/login");
@@ -19,7 +25,16 @@ const JobApplicationPage = async () => {
     .then((res) => res.data)
     .catch((err) => console.log(err));
 
-  // check if an application exists and redirect to the application
+  const jobApplication = await findApplicationByUser(
+    parseInt(jobPostId),
+    user.id,
+    cookieHeader
+  )
+    .then((res) => res.data)
+    .catch((err) => console.log(err));
+
+  if (jobApplication)
+    return redirect(`/job-listings/${jobPostId}/job-application`);
 
   return (
     <Card>

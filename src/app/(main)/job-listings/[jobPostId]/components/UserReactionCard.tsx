@@ -126,10 +126,7 @@ const UserReactionCard = ({ jobPost }: Props) => {
           ) : jobApplication ? (
             <Button
               className="bg-orange-600/90"
-              onClick={() =>
-                //todo: go to jobapplication page: => review application
-                router.push("/job-listings")
-              }
+              onClick={() => router.push(`${jobPost.id}/job-application`)}
             >
               <p className="capitalize text-base flex items-center gap-2">
                 {jobApplication.applicationStatus.toLocaleLowerCase()}
