@@ -1,4 +1,4 @@
-import { jobApplicationColumns } from "@/app/(main)/job-listings/[jobPostId]/_components/Columns";
+import { jobApplicationColumns } from "@/app/(main)/job-listings/[jobPostId]/components/Columns";
 import Table from "@/components/general/Table";
 import { userJobApplications } from "@/services/application-service";
 import { cookies } from "next/headers";

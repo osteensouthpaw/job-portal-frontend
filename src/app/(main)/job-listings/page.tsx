@@ -1,5 +1,5 @@
-import JobListings from "./_components/JobListings";
-import JobListingsFilter from "./_components/JobListingsFilter";
+import JobListings from "./components/JobListings";
+import JobListingsFilter from "./components/JobListingsFilter";
 
 interface Props {
   searchParams: Promise<Record<string, string>>;

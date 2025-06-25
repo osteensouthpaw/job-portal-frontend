@@ -1,5 +1,5 @@
 import jobPostService from "@/services/jobPost-service";
-import { jobPostColumns } from "../job-listings/[jobPostId]/_components/Columns";
+import { jobPostColumns } from "../job-listings/[jobPostId]/components/Columns";
 import Table from "@/components/general/Table";
 
 const MyJobsPage = async () => {

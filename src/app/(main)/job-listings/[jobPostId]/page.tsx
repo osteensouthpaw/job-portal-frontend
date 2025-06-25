@@ -1,8 +1,8 @@
 import jobPostService from "@/services/jobPost-service";
-import JobDetailsCard from "./_components/JobDetailsCard";
-import JobDescriptionCard from "./_components/JobDescriptionCard";
-import JobPostHeader from "./_components/JobPostHeader";
-import UserReactionCard from "./_components/UserReactionCard";
+import JobDetailsCard from "./components/JobDetailsCard";
+import JobDescriptionCard from "./components/JobDescriptionCard";
+import JobPostHeader from "./components/JobPostHeader";
+import UserReactionCard from "./components/UserReactionCard";
 
 interface Props {
   params: Promise<{ jobPostId: string }>;

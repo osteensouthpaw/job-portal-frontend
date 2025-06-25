@@ -9,7 +9,7 @@ import authService from "@/services/auth-service";
 import { findJobSeekerProfile } from "@/services/profile-service";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import JobApplicationForm from "../_components/JobApplicationForm";
+import JobApplicationForm from "../components/JobApplicationForm";
 
 const JobApplicationPage = async () => {
   const cookieHeader = (await cookies()).toString();

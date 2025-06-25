@@ -39,7 +39,7 @@ import {
   experienceLevels,
   jobTypes,
   workModes,
-} from "../../job-listings/_components/JobFilter";
+} from "../../job-listings/components/JobFilter";
 import TipTapEditor from "./TipTapEditor";
 
 interface Props {
