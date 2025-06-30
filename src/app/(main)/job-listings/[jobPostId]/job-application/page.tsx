@@ -2,15 +2,24 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { findApplicationByUser } from "@/services/application-service";
+import { Separator } from "@/components/ui/separator";
+import {
+  ApplicationStatus,
+  findApplicationByUser,
+} from "@/services/application-service";
 import authService from "@/services/auth-service";
+import { findJobSeekerProfile } from "@/services/profile-service";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import JobApplicationDetailCard from "../components/JobApplicationCard";
 import CancelApplicationButton from "./CancelApplicationButton";
+import Experience from "./Experience";
+import PersonalInfo from "./PersonalInfo";
+import ViewResume from "./ViewResume";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   params: Promise<{ jobPostId: string }>;
@@ -29,19 +38,71 @@ const JobApplicationDetailPage = async ({ params }: Props) => {
     .then((res) => res.data)
     .catch((err) => console.log(err));
 
+  if (!jobApplication) return notFound();
+
+  const profile = await findJobSeekerProfile(
+    jobApplication.appliedUser.id,
+    cookieHeader
+  )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.log(err);
+    });
+  if (!profile) return notFound();
+
   return (
-    <Card>
+    <Card className="max-w-3xl mx-auto mt-10">
       <CardHeader>
-        <CardTitle>Job Application Details</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-2xl font-bold">
+            View Job Application
+            <Badge
+              variant={
+                jobApplication.applicationStatus === ApplicationStatus.APPLIED
+                  ? "default"
+                  : jobApplication.applicationStatus ===
+                    ApplicationStatus.ACCEPTED
+                  ? "destructive"
+                  : "secondary"
+              }
+            >
+              {jobApplication.applicationStatus}
+            </Badge>
+          </CardTitle>
+        </div>
+
         <CardDescription>
-          Here you can view the details of your job application, including the
-          job title, company, and your application status.
+          Here is a summary of your job application details. You can cancel your
+          application by clicking the "Cancel Application" button below.
         </CardDescription>
-        <CancelApplicationButton jobPostId={parseInt(jobPostId)} />
       </CardHeader>
-      <CardContent className="p-6">
-        <JobApplicationDetailCard jobApplication={jobApplication!} />
+      <CardContent className="space-y-6">
+        <PersonalInfo
+          email={jobApplication.appliedUser.email}
+          firstName={jobApplication.appliedUser.firstName}
+          lastName={jobApplication.appliedUser.lastName}
+          phone={profile.phone}
+        />
+        <Separator />
+        <Experience
+          experience={2}
+          location={jobApplication.appliedPost.location}
+        />
+        <Separator />
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Cover Letter</h3>
+          <div className="bg-muted p-4 rounded-md text-sm whitespace-pre-line">
+            {jobApplication.coverLetter}
+          </div>
+        </div>
+        <Separator />
+        <ViewResume resumeUrl={jobApplication.resumeUrl} />
       </CardContent>
+      <CardFooter>
+        {jobApplication.applicationStatus === ApplicationStatus.APPLIED && (
+          <CancelApplicationButton jobPostId={parseInt(jobPostId)} />
+        )}
+      </CardFooter>
     </Card>
   );
 };

@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -12,7 +11,7 @@ import {
 import { deleteApplication } from "@/services/application-service";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const CancelApplicationButton = ({ jobPostId }: { jobPostId: number }) => {

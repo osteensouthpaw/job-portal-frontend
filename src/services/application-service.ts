@@ -3,7 +3,7 @@ import apiClient from "./api-client";
 import { UserResponse } from "@/app/auth/register/RegisterForm";
 import { JobPostResponse } from "./jobPost-service";
 
-enum ApplicationStatus {
+export enum ApplicationStatus {
   APPLIED = "APPLIED",
   ACCEPTED = "ACCEPTED",
   REJECTED = "REJECTED",
