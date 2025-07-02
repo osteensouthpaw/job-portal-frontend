@@ -42,6 +42,7 @@ const UpdateNameForm = () => {
   async function onSubmit(values: ProfileFormData) {
     setIsSubmitting(true);
     setSuccess(false);
+    console.log(values);
     // TODO: API call to update user
     setTimeout(() => {
       setIsSubmitting(false);

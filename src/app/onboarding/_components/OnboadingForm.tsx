@@ -1,14 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import UserTypeSelection from "./UserTypeSelection";
-import { UserType } from "../../auth/register/RegisterForm";
-import Image from "next/image";
-import Logo from "@/public/logo.png";
-import { Card, CardContent } from "@/components/ui/card";
-import RecruiterForm from "./RecruiterForm";
-import JobSeekerForm from "./JobSeekerForm";
 import { useAuth } from "@/app/AuthProvider";
+import { Card, CardContent } from "@/components/ui/card";
+import Logo from "@/public/logo.png";
+import Image from "next/image";
 import { redirect } from "next/navigation";
+import { useState } from "react";
+import { UserType } from "../../auth/register/RegisterForm";
+import JobSeekerForm from "./JobSeekerForm";
+import RecruiterForm from "./RecruiterForm";
+import UserTypeSelection from "./UserTypeSelection";
 
 const OnboadingForm = () => {
   const [step, setStep] = useState(1);

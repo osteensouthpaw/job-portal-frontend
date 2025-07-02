@@ -33,7 +33,7 @@ export const ourFileRouter = {
       maxFileSize: "128KB",
     },
   })
-    .middleware(async ({ req }) => {
+    .middleware(async () => {
       const cookieString = (await cookies()).toString();
       const user = await authService.getSession(cookieString);
       if (!user) throw new UploadThingError("Unauthorized");

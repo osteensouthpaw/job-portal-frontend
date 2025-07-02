@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -18,35 +21,33 @@ import {
 import { Input } from "@/components/ui/input";
 import LocationSelector from "@/components/ui/location-input";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { format } from "date-fns";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { CloudUpload, Paperclip } from "lucide-react";
-import {
-  FileInput,
-  FileUploader,
-  FileUploaderContent,
-  FileUploaderItem,
-} from "@/components/ui/file-upload";
+import { cn } from "@/lib/utils";
 import { recruiterSchema } from "@/schemas/validationSchemas";
+import { UploadDropzone } from "@/utils/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import {
+  Calendar as CalendarIcon,
+  Check,
+  ChevronsUpDown,
+  FileText,
+  Trash2,
+} from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 export default function RecruiterForm() {
   const [countryName, setCountryName] = useState<string>("");
   const [stateName, setStateName] = useState<string>("");
+  const [isUploadComplete, setUploadComplete] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const languages = [
     {
@@ -87,13 +88,6 @@ export default function RecruiterForm() {
     },
   ] as const;
 
-  const [files, setFiles] = useState<File[] | null>(null);
-
-  const dropZoneConfig = {
-    maxFiles: 1,
-    maxSize: 1024 * 1024 * 1,
-    multiple: false,
-  };
   const form = useForm<z.infer<typeof recruiterSchema>>({
     resolver: zodResolver(recruiterSchema),
     defaultValues: {
@@ -329,48 +323,53 @@ export default function RecruiterForm() {
         <FormField
           control={form.control}
           name="companyLogo"
-          render={() => (
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>Logo</FormLabel>
+              <FormLabel>Resume</FormLabel>
               <FormControl>
-                <FileUploader
-                  value={files}
-                  onValueChange={setFiles}
-                  dropzoneOptions={dropZoneConfig}
-                  className="relative bg-background rounded-lg p-2"
-                >
-                  <FileInput
-                    id="fileInput"
-                    className="outline-dashed outline-1 outline-slate-500"
-                  >
-                    <div className="flex items-center justify-center flex-col p-8 w-full ">
-                      <CloudUpload className="text-gray-500 w-10 h-10" />
-                      <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">Click to upload</span>
-                        &nbsp; or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        SVG, PNG, JPG or GIF
+                {field.value ? (
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-4 items-center">
+                      <FileText />
+                      <p className="text-muted-foreground text-sm">
+                        {fileName}
                       </p>
                     </div>
-                  </FileInput>
-                  <FileUploaderContent>
-                    {files &&
-                      files.length > 0 &&
-                      files.map((file, i) => (
-                        <FileUploaderItem key={i} index={i}>
-                          <Paperclip className="h-4 w-4 stroke-current" />
-                          <span>{file.name}</span>
-                        </FileUploaderItem>
-                      ))}
-                  </FileUploaderContent>
-                </FileUploader>
+                    <Trash2
+                      className="text-muted-foreground cursor-pointer hover:text-red-500 transition-colors"
+                      size={20}
+                      onClick={() => field.onChange("")}
+                    />
+                  </div>
+                ) : (
+                  <UploadDropzone
+                    endpoint="imageUploader"
+                    onUploadProgress={(progress) => {
+                      toast.info(`Upload progress: ${progress}%`);
+                    }}
+                    onClientUploadComplete={(res) => {
+                      field.onChange(res[0].serverData.fileUrl);
+                      setUploadComplete(true);
+                      setFileName(res[0].name);
+                      console.log({ res });
+                      toast.success("Upload Successful");
+                    }}
+                    onUploadError={(error: Error) => {
+                      console.log(error);
+                      toast.error(`Upload failed: ${error.message}`);
+                    }}
+                    className="ut-button:bg-primary ut-button:text-white ut-button:hover:bg-primary/90 ut-label:text-muted-foreground ut-allowed-content:text-muted-foreground border-primary"
+                  />
+                )}
               </FormControl>
-              <FormDescription>Select a file to upload.</FormDescription>
+              {!isUploadComplete && (
+                <FormDescription>Select an image to upload.</FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}
         />
+
         <Button type="submit">Submit</Button>
       </form>
     </Form>

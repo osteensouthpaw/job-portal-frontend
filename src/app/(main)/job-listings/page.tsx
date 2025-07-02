@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import JobListings from "./components/JobListings";
 import JobListingsFilter from "./components/JobListingsFilter";
 
@@ -17,7 +18,9 @@ const HomePage = async ({ searchParams }: Props) => {
   dark:[&::-webkit-scrollbar-track]:bg-neutral-700
   dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
       >
-        <JobListingsFilter />
+        <Suspense>
+          <JobListingsFilter />
+        </Suspense>
       </div>
 
       <div className="col-span-2 col-start-2 overflow-auto">

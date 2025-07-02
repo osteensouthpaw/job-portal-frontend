@@ -44,6 +44,7 @@ const ChangePasswordForm = () => {
   async function onSubmit(values: ChangePasswordFormData) {
     setIsSubmitting(true);
     setSuccess(false);
+    console.log(values);
     // TODO: Send to API
     setTimeout(() => {
       setIsSubmitting(false);

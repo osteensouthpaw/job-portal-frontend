@@ -20,7 +20,7 @@ const CancelApplicationButton = ({ jobPostId }: { jobPostId: number }) => {
 
   const cancelApplication = (jobPostId: number) => {
     deleteApplication(jobPostId)
-      .then((res) => {
+      .then(() => {
         toast.success("Successful");
         router.push(`/job-listings/${jobPostId}`);
       })
