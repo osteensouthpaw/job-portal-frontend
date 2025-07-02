@@ -26,7 +26,7 @@ export interface JobApplicationRequest {
 
 // Get all job applications for the current logged in user (job seeker)
 export async function userJobApplications(cookieHeader?: string) {
-  return await apiClient
+  return apiClient
     .get<PageResponse<JobApplicationResponse>>(`/job-applications`, {
       headers: { Cookie: cookieHeader },
     })
@@ -38,7 +38,7 @@ export async function createJobApplication({
   resumeUrl,
   coverLetter,
 }: JobApplicationRequest) {
-  return await apiClient.post<JobApplicationResponse>(`/job-applications`, {
+  return apiClient.post<JobApplicationResponse>(`/job-applications`, {
     jobPostId,
     resumeUrl,
     coverLetter,
@@ -50,7 +50,7 @@ export async function findApplicationByUser(
   applicantId: number,
   cookieHeader?: string
 ) {
-  return await apiClient.get<JobApplicationResponse>(
+  return apiClient.get<JobApplicationResponse>(
     `/job-applications/${jobPostId}/applicants/${applicantId}`,
     { headers: { Cookie: cookieHeader } }
   );

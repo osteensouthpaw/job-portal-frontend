@@ -26,15 +26,12 @@ export const jobPostColumns: ColumnDef<JobPostResponse>[] = [
 export const jobApplicationColumns: ColumnDef<JobApplicationResponse>[] = [
   {
     accessorKey: "jobTitle",
-    header: "Job Post",
+    header: "Job Title",
     cell: ({ row }) => {
       const jobTitle = row.original.appliedPost.jobTitle;
       const jobPostId = row.original.appliedPost.id;
       return (
-        <Link
-          href={`/job-listings/${jobPostId}`}
-          className="hover:underline decoration-u"
-        >
+        <Link href={`/job-listings/${jobPostId}`} className="hover:underline">
           {jobTitle}
         </Link>
       );
@@ -53,7 +50,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationResponse>[] = [
     },
   },
   {
-    accessorKey: "appliedPost.applicationDeadline",
+    accessorKey: "applicationDeadline",
     header: "Deadline",
     accessorFn: (row) => {
       const deadline = row.appliedPost.applicationDeadline;

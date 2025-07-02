@@ -36,7 +36,7 @@ const UserFavouritesPage = async () => {
           watchlist.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="grid gap-6">
         {jobPosts.content.map((jobPost) => (
           <LikedPostCard jobPost={jobPost} key={jobPost.id} />
         ))}
