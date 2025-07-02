@@ -1,10 +1,9 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/app/AuthProvider";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -13,10 +12,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { updateUser } from "@/services/user-service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 export const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -29,25 +32,44 @@ export type ProfileFormData = z.infer<typeof profileSchema>;
 const UpdateNameForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { user, setUser } = useAuth();
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      bio: "",
+      firstName: user?.firstName,
+      lastName: user?.lastName,
     },
   });
 
+  if (!user) {
+    return (
+      <div className="text-red-500">
+        You must be logged in to update your profile.
+      </div>
+    );
+  }
+
   async function onSubmit(values: ProfileFormData) {
     setIsSubmitting(true);
-    setSuccess(false);
-    console.log(values);
-    // TODO: API call to update user
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccess(true);
-    }, 1000);
+    updateUser({
+      firstName: values.firstName,
+      lastName: values.lastName,
+      imageUrl: user!.imageUrl,
+    })
+      .then((res) => {
+        setUser(res.data);
+        toast.success("Profile updated successfully!");
+        setSuccess(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err instanceof AxiosError) {
+          setSuccess(false);
+          toast.error(`"An error occured":${err.response?.data.message}`);
+        }
+      })
+      .finally(() => setIsSubmitting(false));
   }
 
   const firstName = form.watch("firstName");
@@ -74,12 +96,13 @@ const UpdateNameForm = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
+              defaultValue={user.firstName}
               name="firstName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -88,29 +111,13 @@ const UpdateNameForm = () => {
 
             <FormField
               control={form.control}
+              defaultValue={user.lastName}
               name="lastName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us something about yourself..."
-                      {...field}
-                    />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

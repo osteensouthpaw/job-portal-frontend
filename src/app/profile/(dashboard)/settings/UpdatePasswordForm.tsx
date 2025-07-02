@@ -14,6 +14,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { z } from "zod";
 import { useState } from "react";
+import { updatePassword } from "@/services/user-service";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export const changePasswordSchema = z
   .object({
@@ -31,7 +34,6 @@ export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 const ChangePasswordForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-
   const form = useForm<ChangePasswordFormData>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
@@ -41,15 +43,32 @@ const ChangePasswordForm = () => {
     },
   });
 
-  async function onSubmit(values: ChangePasswordFormData) {
+  async function onSubmit({
+    currentPassword,
+    newPassword,
+    confirmPassword,
+  }: ChangePasswordFormData) {
     setIsSubmitting(true);
-    setSuccess(false);
-    console.log(values);
-    // TODO: Send to API
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccess(true);
-    }, 1000);
+    console.log("Submitting password change", {
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
+    updatePassword(currentPassword, newPassword, confirmPassword)
+      .then(() => setSuccess(true))
+      .catch((err) => {
+        console.log(err);
+        if (err instanceof AxiosError)
+          toast.error(
+            `Could not update Password, ${
+              err.response?.data.message || "Unknown error"
+            }`
+          );
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        form.reset();
+      });
   }
 
   return (
