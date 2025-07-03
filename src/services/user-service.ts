@@ -32,3 +32,7 @@ export async function getUserConnectedAccounts() {
     `/users/user-connected-accounts`
   );
 }
+
+export async function deleteUserAccount() {
+  return apiClient.delete("/users/delete-account");
+}
