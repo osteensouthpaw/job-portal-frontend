@@ -28,5 +28,7 @@ export async function updatePassword(
 }
 
 export async function getUserConnectedAccounts() {
-  return apiClient.get<UserConnectedAccount[]>(`/users/connected-accounts`);
+  return apiClient.get<UserConnectedAccount[]>(
+    `/users/user-connected-accounts`
+  );
 }
