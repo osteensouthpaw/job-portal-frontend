@@ -2,13 +2,15 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import DangerZone from "./DangerZone";
 import LinkedAccounts from "./LinkedAccounts";
 import UpdateNameForm from "./UpdateNameForm";
 import ChangePasswordForm from "./UpdatePasswordForm";
-import { Separator } from "@/components/ui/separator";
 
 const UserSettingsPage = () => {
   return (
@@ -45,6 +47,18 @@ const UserSettingsPage = () => {
             <LinkedAccounts />
           </section>
         </CardContent>
+        <CardFooter>
+          <section className="rounded-lg p-6 border border-destructive bg-destructive/10 shadow-sm">
+            <h2 className="text-lg font-semibold mb-2 text-destructive">
+              Danger Zone
+            </h2>
+            <p className="text-destructive mb-4 text-sm">
+              Deleting your account is irreversible. All your data will be
+              permanently removed.
+            </p>
+            <DangerZone />
+          </section>
+        </CardFooter>
       </Card>
     </div>
   );
