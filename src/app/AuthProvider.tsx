@@ -1,25 +1,98 @@
 "use client";
 import AuthContext from "@/contexts/AuthContext";
-import authService from "@/services/auth-service";
-import { PropsWithChildren, useContext, useEffect, useState } from "react";
+import {
+  AuthResponse,
+  UserResponse,
+  getSession,
+  login as userLogin,
+} from "@/services/auth-service";
+import {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { LoginFormData } from "./auth/login/LoginForm";
-import { UserResponse } from "./auth/register/RegisterForm";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
+import apiClient from "@/services/api-client";
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<UserResponse | null>(null);
+  const [token, setToken] = useState<string | undefined>(undefined);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    authService.getSession().then((res) => setUser(res));
+    if (!isInitialized) {
+      getSession()
+        .then(({ data }) => {
+          setUser(data.userResponse);
+          setToken(data.token);
+        })
+        .catch((err) => console.log("No session found"))
+        .finally(() => setIsInitialized(true));
+    }
+  }, [isInitialized]);
+
+  //request interceptor
+  useLayoutEffect(() => {
+    const requestInterceptor = apiClient.interceptors.request.use((config) => {
+      token
+        ? (config.headers.Authorization = `Bearer ${token}`)
+        : delete config.headers.Authorization;
+
+      return config;
+    });
+
+    return () => apiClient.interceptors.request.eject(requestInterceptor);
+  }, [token]);
+
+  //response interceptor
+  useLayoutEffect(() => {
+    const responseInterceptor = apiClient.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const previousRequest = error?.config;
+        if (error?.response?.status === 401 && !previousRequest._retry) {
+          previousRequest._retry = true;
+          try {
+            const newAccessToken = await apiClient
+              .post<AuthResponse>("auth/refresh")
+              .then((res) => res.data.token);
+            setToken(newAccessToken);
+            previousRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return apiClient(previousRequest);
+          } catch (error) {
+            return Promise.reject(error);
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => apiClient.interceptors.response.eject(responseInterceptor);
   }, []);
 
   const login = async (data: LoginFormData) => {
-    const res = await authService.login(data);
-    setUser(res.data);
+    await userLogin(data)
+      .then(({ data }) => {
+        setUser(data.userResponse);
+        setToken(data.token);
+      })
+      .catch((err) => {
+        const errorMessage =
+          err instanceof AxiosError
+            ? err.response?.data?.message || err.message
+            : "Login failed";
+        toast.error(errorMessage);
+      });
   };
 
   const logout = async () => {
-    await authService.logout();
     setUser(null);
+    setToken(undefined);
   };
 
   return (

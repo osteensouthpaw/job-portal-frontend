@@ -3,10 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
-import { useAuth } from "@/app/AuthProvider";
 import ErrorMessage from "@/components/general/ErrorMessage";
 import InfoMessage from "@/components/general/InfoMessage";
 import { Button } from "@/components/ui/button";
@@ -29,31 +27,8 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { registerSchema } from "@/schemas/validationSchemas";
-import authService from "@/services/auth-service";
-import { AxiosError } from "axios";
 import { useState } from "react";
-
-export interface UserResponse {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  imageUrl: string;
-  gender: Gender;
-  userType: UserType;
-}
-
-export enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-}
-
-export enum UserType {
-  ADMIN = "ADMIN",
-  JOB_SEEKER = "JOB_SEEKER",
-  RECRUITER = "RECRUITER",
-  PENDING = "PENDING",
-}
+import { login, register } from "@/services/auth-service";
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -61,7 +36,6 @@ export default function RegisterForm() {
   const [errors, setError] = useState<string | string[] | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
   const [isLoading, setLoading] = useState(false);
-  const { setUser } = useAuth();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -74,26 +48,7 @@ export default function RegisterForm() {
     },
   });
 
-  const onSubmit = (data: RegisterFormData) => {
-    setLoading(true);
-    authService
-      .register(data)
-      .then((res) => {
-        setSuccess(
-          "Successful! A verification link has been sent to your email"
-        );
-        setUser(res.data);
-      })
-      .catch((err) => {
-        if (err instanceof AxiosError) {
-          toast.error("Failed to submit the form. Please try again.");
-          setError(err.response?.data.message);
-        }
-      })
-      .finally(() => setLoading(false));
-    setError(undefined);
-    setSuccess(undefined);
-  };
+  const onSubmit = (data: RegisterFormData) => {};
 
   return (
     <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">

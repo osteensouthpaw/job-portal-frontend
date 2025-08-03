@@ -1,34 +1,46 @@
 import { LoginFormData } from "@/app/auth/login/LoginForm";
 import apiClient from "./api-client";
-import {
-  RegisterFormData,
-  UserResponse,
-} from "@/app/auth/register/RegisterForm";
+import { RegisterFormData } from "@/app/auth/register/RegisterForm";
 
-class AuthService {
-  async login(data: LoginFormData) {
-    return apiClient.post<UserResponse>(`/auth/login`, data);
-  }
-
-  async logout() {
-    return apiClient.post("/auth/logout");
-  }
-
-  async register(data: RegisterFormData) {
-    return apiClient.post<UserResponse>("/auth/register", data);
-  }
-
-  async getSession(cookieHeader?: string) {
-    try {
-      const res = await apiClient.get<UserResponse>("/auth/me", {
-        headers: { Cookie: cookieHeader },
-      });
-      return res.data;
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  }
+export interface UserResponse {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl: string;
+  gender: Gender;
+  userType: UserType;
 }
 
-export default new AuthService();
+export interface AuthResponse {
+  token: string;
+  userResponse: UserResponse;
+}
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+}
+
+export enum UserType {
+  ADMIN = "ADMIN",
+  JOB_SEEKER = "JOB_SEEKER",
+  RECRUITER = "RECRUITER",
+  PENDING = "PENDING",
+}
+
+export async function login(data: LoginFormData) {
+  return apiClient.post<AuthResponse>(`/auth/login`, data);
+}
+
+export async function logout() {
+  return apiClient.post("/auth/logout");
+}
+
+export async function register(data: RegisterFormData) {
+  return apiClient.post<UserResponse>("/auth/register", data);
+}
+
+export async function getSession() {
+  return await apiClient.get<AuthResponse>("/auth/me");
+}
