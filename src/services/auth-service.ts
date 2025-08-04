@@ -30,7 +30,9 @@ export enum UserType {
 }
 
 export async function login(data: LoginFormData) {
-  return apiClient.post<AuthResponse>(`/auth/login`, data);
+  return apiClient
+    .post<AuthResponse>(`/auth/login`, data)
+    .then((res) => res.data);
 }
 
 export async function logout() {
@@ -43,4 +45,8 @@ export async function register(data: RegisterFormData) {
 
 export async function getSession() {
   return await apiClient.get<AuthResponse>("/auth/me");
+}
+
+export async function refreshToken() {
+  return await apiClient.post<AuthResponse>("/auth/refresh");
 }

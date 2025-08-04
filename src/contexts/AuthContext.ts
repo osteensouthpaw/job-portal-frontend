@@ -1,11 +1,12 @@
 import { LoginFormData } from "@/app/auth/login/LoginForm";
-import { UserResponse } from "@/app/auth/register/RegisterForm";
+import { AuthResponse, UserResponse } from "@/services/auth-service";
 import React, { Dispatch, SetStateAction } from "react";
 
 interface AuthContextType {
   user: UserResponse | null;
   setUser: Dispatch<SetStateAction<UserResponse | null>>;
-  login: (data: LoginFormData) => void;
+  setToken: Dispatch<SetStateAction<string | undefined>>;
+  login: (data: LoginFormData) => Promise<AuthResponse>;
   logout: () => void;
 }
 

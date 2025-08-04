@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useAuth } from "@/app/AuthProvider";
-import { UserType } from "@/app/auth/register/RegisterForm";
 import {
   ArrowLeft,
   Flag,
@@ -26,6 +25,7 @@ import {
   UserRoundCog,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { UserType } from "@/services/auth-service";
 
 export default function DashboardSidebar() {
   const { user } = useAuth();

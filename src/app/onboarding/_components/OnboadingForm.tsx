@@ -5,7 +5,7 @@ import Logo from "@/public/logo.png";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import { UserType } from "../../auth/register/RegisterForm";
+import { UserType } from "@/services/auth-service";
 import JobSeekerForm from "./JobSeekerForm";
 import RecruiterForm from "./RecruiterForm";
 import UserTypeSelection from "./UserTypeSelection";

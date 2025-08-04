@@ -1,5 +1,6 @@
 "use client";
 import AuthContext from "@/contexts/AuthContext";
+import apiClient from "@/services/api-client";
 import {
   AuthResponse,
   UserResponse,
@@ -14,14 +15,12 @@ import {
   useState,
 } from "react";
 import { LoginFormData } from "./auth/login/LoginForm";
-import { AxiosError } from "axios";
-import { toast } from "sonner";
-import apiClient from "@/services/api-client";
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [token, setToken] = useState<string | undefined>(undefined);
   const [isInitialized, setIsInitialized] = useState(false);
+  console.log({ user, token });
 
   useEffect(() => {
     if (!isInitialized) {
@@ -33,7 +32,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         .catch((err) => console.log("No session found"))
         .finally(() => setIsInitialized(true));
     }
-  }, [isInitialized]);
+  }, []);
 
   //request interceptor
   useLayoutEffect(() => {
@@ -41,7 +40,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       token
         ? (config.headers.Authorization = `Bearer ${token}`)
         : delete config.headers.Authorization;
-
       return config;
     });
 
@@ -54,14 +52,21 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       (response) => response,
       async (error) => {
         const previousRequest = error?.config;
-        if (error?.response?.status === 401 && !previousRequest._retry) {
+        const isAuthRefreshCall =
+          previousRequest?.url?.includes("/auth/refresh");
+        if (
+          error?.response?.status === 401 &&
+          !previousRequest._retry &&
+          !isAuthRefreshCall
+        ) {
           previousRequest._retry = true;
           try {
-            const newAccessToken = await apiClient
+            const authResponse = await apiClient
               .post<AuthResponse>("auth/refresh")
-              .then((res) => res.data.token);
-            setToken(newAccessToken);
-            previousRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+              .then((res) => res.data);
+            setToken(authResponse.token);
+            setUser(authResponse.userResponse);
+            previousRequest.headers.Authorization = `Bearer ${authResponse.token}`;
             return apiClient(previousRequest);
           } catch (error) {
             return Promise.reject(error);
@@ -76,18 +81,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const login = async (data: LoginFormData) => {
-    await userLogin(data)
-      .then(({ data }) => {
-        setUser(data.userResponse);
-        setToken(data.token);
-      })
-      .catch((err) => {
-        const errorMessage =
-          err instanceof AxiosError
-            ? err.response?.data?.message || err.message
-            : "Login failed";
-        toast.error(errorMessage);
-      });
+    return await userLogin(data);
   };
 
   const logout = async () => {
@@ -96,7 +90,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, setToken, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

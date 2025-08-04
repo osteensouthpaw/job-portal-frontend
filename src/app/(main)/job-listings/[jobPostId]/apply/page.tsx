@@ -5,12 +5,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import authService from "@/services/auth-service";
+import { findApplicationByUser } from "@/services/application-service";
 import { findJobSeekerProfile } from "@/services/profile-service";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import JobApplicationForm from "../components/JobApplicationForm";
-import { findApplicationByUser } from "@/services/application-service";
 
 interface Props {
   params: Promise<{ jobPostId: string }>;
@@ -18,17 +16,13 @@ interface Props {
 
 const JobApplicationPage = async ({ params }: Props) => {
   const { jobPostId } = await params;
-  const cookieHeader = (await cookies()).toString();
-  const user = await authService.getSession(cookieHeader);
-  if (!user) return redirect("/auth/login");
-  const jobSeekerProfile = await findJobSeekerProfile(user.id, cookieHeader)
+  const jobSeekerProfile = await findJobSeekerProfile(user.id)
     .then((res) => res.data)
     .catch((err) => console.log(err));
 
   const jobApplication = await findApplicationByUser(
     parseInt(jobPostId),
-    user.id,
-    cookieHeader
+    user.id
   )
     .then((res) => res.data)
     .catch((err) => console.log(err));

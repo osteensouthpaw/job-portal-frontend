@@ -5,7 +5,6 @@ import { AxiosError } from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { useAuth } from "@/app/AuthProvider";
 import ErrorMessage from "@/components/general/ErrorMessage";
 import { Button } from "@/components/ui/button";
@@ -26,13 +25,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/schemas/validationSchemas";
-import authService from "@/services/auth-service";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 export type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | undefined>();
+  const { login, setToken, setUser } = useAuth();
+  const router = useRouter();
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -40,21 +41,27 @@ export const LoginForm = () => {
       password: "",
     },
   });
-  const { setUser } = useAuth();
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = (data: LoginFormData) => {
     setIsPending(true);
     setError(undefined);
-    authService
-      .login(data)
+    login(data)
       .then((res) => {
-        setUser(res.data);
-        window.location.href = "/job-listings";
+        setIsPending(false);
+        console.log({ res });
+        setToken(res.token);
+        setUser(res.userResponse);
+        router.push("/job-listings");
       })
       .catch((err) => {
-        if (err instanceof AxiosError) setError(err.response?.data.message);
+        const errorMessage =
+          err instanceof AxiosError
+            ? err.response?.data?.message || err.message
+            : "Login failed";
+        setError(errorMessage);
+        setIsPending(false);
       })
-      .finally(() => setIsPending(false));
+      .finally(() => setIsPending(true));
   };
 
   return (

@@ -27,8 +27,9 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { registerSchema } from "@/schemas/validationSchemas";
+import { register } from "@/services/auth-service";
+import { AxiosError } from "axios";
 import { useState } from "react";
-import { login, register } from "@/services/auth-service";
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -48,7 +49,23 @@ export default function RegisterForm() {
     },
   });
 
-  const onSubmit = (data: RegisterFormData) => {};
+  const onSubmit = async (data: RegisterFormData) => {
+    setLoading(true);
+    await register(data)
+      .then(() => {
+        setLoading(false);
+        setSuccess(
+          "Successful. Kindly verify your account to complete registration"
+        );
+      })
+      .catch((err) => {
+        if (err instanceof AxiosError) {
+          setError(err.message);
+          setLoading(false);
+        }
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
     <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">

@@ -1,7 +1,6 @@
-import jobPostService from "@/services/jobPost-service";
-import React from "react";
-import JobPostCard from "./JobPostCard";
 import Pagination from "@/components/general/Pagination";
+import jobPostService from "@/services/jobPost-service";
+import JobPostCard from "./JobPostCard";
 
 interface Props {
   searchParams: Promise<Record<string, string>>;

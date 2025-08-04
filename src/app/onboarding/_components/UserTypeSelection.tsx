@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { UserType } from "@/services/auth-service";
 import { Building2, UserRound } from "lucide-react";
-import { UserType } from "../../auth/register/RegisterForm";
 
 interface Props {
   onSelect: (type: UserType) => void;

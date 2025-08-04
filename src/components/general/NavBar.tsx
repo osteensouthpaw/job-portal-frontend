@@ -1,5 +1,4 @@
 "use client";
-import { UserResponse, UserType } from "@/app/auth/register/RegisterForm";
 import { useAuth } from "@/app/AuthProvider";
 import {
   DropdownMenu,
@@ -18,9 +17,11 @@ import { Button } from "../ui/button";
 import { Container } from "../ui/container";
 import SearchInput from "../ui/search-input";
 import { ModeToggle } from "./ModeToggle";
+import { UserType, UserResponse } from "@/services/auth-service";
 
 const NavBar = () => {
   const { user } = useAuth();
+  console.log({ user });
 
   return (
     <nav className="bg-white dark:bg-black">

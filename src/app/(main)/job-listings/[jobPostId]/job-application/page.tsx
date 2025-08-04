@@ -11,7 +11,6 @@ import {
   ApplicationStatus,
   findApplicationByUser,
 } from "@/services/application-service";
-import authService from "@/services/auth-service";
 import { findJobSeekerProfile } from "@/services/profile-service";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -27,23 +26,16 @@ interface Props {
 
 const JobApplicationDetailPage = async ({ params }: Props) => {
   const { jobPostId } = await params;
-  const cookieHeader = (await cookies()).toString();
-  const user = await authService.getSession(cookieHeader);
-  if (!user) return notFound();
   const jobApplication = await findApplicationByUser(
     parseInt(jobPostId),
-    user.id,
-    cookieHeader
+    user.id
   )
     .then((res) => res.data)
     .catch((err) => console.log(err));
 
   if (!jobApplication) return notFound();
 
-  const profile = await findJobSeekerProfile(
-    jobApplication.appliedUser.id,
-    cookieHeader
-  )
+  const profile = await findJobSeekerProfile(jobApplication.appliedUser.id)
     .then((res) => res.data)
     .catch((err) => {
       console.log(err);
