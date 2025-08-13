@@ -1,5 +1,4 @@
 import { findJobSeekerProfile } from "@/services/profile-service";
-import { cookies } from "next/headers";
 import UserProfile from "../../../profile/_components/UserProfile";
 
 interface Props {
@@ -7,16 +6,8 @@ interface Props {
 }
 
 const UserProfilePage = async ({ params }: Props) => {
-  const { userId } = await params;
-  const cookieHeader = (await cookies()).toString();
-  const jobSeekerProfile = await findJobSeekerProfile(
-    parseInt(userId),
-    cookieHeader
-  )
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
-
-  return <UserProfile jobSeekerProfile={jobSeekerProfile!} />;
+  const userId = (await params).userId;
+  return <UserProfile userId={parseInt(userId)} />;
 };
 
 export default UserProfilePage;

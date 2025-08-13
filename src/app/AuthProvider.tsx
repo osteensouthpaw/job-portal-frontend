@@ -20,7 +20,6 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [token, setToken] = useState<string | undefined>(undefined);
   const [isInitialized, setIsInitialized] = useState(false);
-  console.log({ user, token });
 
   useEffect(() => {
     if (!isInitialized) {

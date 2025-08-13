@@ -10,9 +10,8 @@ import { cookies } from "next/headers";
 import LikedPostCard from "../../_components/LikedPostCard";
 
 const UserFavouritesPage = async () => {
-  const cookieString = (await cookies()).toString();
   const jobPosts = await jobPostService
-    .getLikedJobPosts(cookieString)
+    .getLikedJobPosts()
     .then((res) => res.data)
     .catch((err) => console.log(err));
 

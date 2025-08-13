@@ -228,7 +228,6 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
                       field.onChange(res[0].serverData.fileUrl);
                       setUploadComplete(true);
                       setFileName(res[0].name);
-                      console.log({ res });
                       toast.success("Upload Successful");
                     }}
                     onUploadError={(error: Error) => {

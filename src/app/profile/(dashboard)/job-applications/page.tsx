@@ -1,21 +1,31 @@
+"use client";
 import { jobApplicationColumns } from "@/app/(main)/job-listings/[jobPostId]/components/Columns";
 import Table from "@/components/general/Table";
 import { userJobApplications } from "@/services/application-service";
-import { cookies } from "next/headers";
+import { useQuery } from "@tanstack/react-query";
 
-const UserJobRegistrationPage = async () => {
-  const cookieHeader = (await cookies()).toString();
-  const jobPosts = await userJobApplications(cookieHeader);
+const UserJobApplicationsPage = () => {
+  const {
+    data: jobApplications,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user-job-applications"],
+    queryFn: userJobApplications,
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading job applications.</p>;
 
   return (
     <Table
       searchField={"jobTitle"}
       columns={jobApplicationColumns}
-      content={jobPosts.content}
+      content={jobApplications!.content}
       description="Manage your job applications here. You can view, edit, or delete your applications."
       title="My Job Applications"
     />
   );
 };
 
-export default UserJobRegistrationPage;
+export default UserJobApplicationsPage;

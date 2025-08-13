@@ -1,7 +1,7 @@
 import { PageResponse } from "@/components/general/Pagination";
 import apiClient from "./api-client";
-import { UserResponse } from "@/app/auth/register/RegisterForm";
 import { JobPostResponse } from "./jobPost-service";
+import { UserResponse } from "./auth-service";
 
 export enum ApplicationStatus {
   APPLIED = "APPLIED",
@@ -25,11 +25,9 @@ export interface JobApplicationRequest {
 }
 
 // Get all job applications for the current logged in user (job seeker)
-export async function userJobApplications(cookieHeader?: string) {
+export async function userJobApplications() {
   return apiClient
-    .get<PageResponse<JobApplicationResponse>>(`/job-applications`, {
-      headers: { Cookie: cookieHeader },
-    })
+    .get<PageResponse<JobApplicationResponse>>(`/job-applications`)
     .then((res) => res.data);
 }
 
@@ -47,12 +45,10 @@ export async function createJobApplication({
 
 export async function findApplicationByUser(
   jobPostId: number,
-  applicantId: number,
-  cookieHeader?: string
+  applicantId: number
 ) {
   return apiClient.get<JobApplicationResponse>(
-    `/job-applications/${jobPostId}/applicants/${applicantId}`,
-    { headers: { Cookie: cookieHeader } }
+    `/job-applications/${jobPostId}/applicants/${applicantId}`
   );
 }
 

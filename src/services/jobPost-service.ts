@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import apiClient from "./api-client";
-import { UserResponse } from "@/app/auth/register/RegisterForm";
 import { PageResponse } from "@/components/general/Pagination";
+import { UserResponse } from "./auth-service";
 
 export interface OrganizationResponse {
   id: number;

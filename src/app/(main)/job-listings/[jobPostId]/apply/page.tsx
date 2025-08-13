@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -7,25 +8,32 @@ import {
 } from "@/components/ui/card";
 import { findApplicationByUser } from "@/services/application-service";
 import { findJobSeekerProfile } from "@/services/profile-service";
-import { redirect } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import JobApplicationForm from "../components/JobApplicationForm";
+import { useAuth } from "@/app/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
 
-interface Props {
-  params: Promise<{ jobPostId: string }>;
-}
+const JobApplicationPage = () => {
+  const params = useParams();
+  const jobPostId = parseInt(params.jobPostId as string);
+  const { user } = useAuth();
 
-const JobApplicationPage = async ({ params }: Props) => {
-  const { jobPostId } = await params;
-  const jobSeekerProfile = await findJobSeekerProfile(user.id)
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
+  if (!user) return redirect("/auth/login");
 
-  const jobApplication = await findApplicationByUser(
-    parseInt(jobPostId),
-    user.id
-  )
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
+  const { data: jobSeekerProfile } = useQuery({
+    queryKey: ["job-seeker-profile", user.id],
+    queryFn: () => findJobSeekerProfile(user.id).then((res) => res.data),
+  });
+
+  const { data: jobApplication } = useQuery({
+    queryKey: ["job-application", jobPostId],
+    queryFn: () =>
+      findApplicationByUser(jobPostId, user.id).then((res) => res.data),
+  });
+
+  if (!jobSeekerProfile) {
+    return redirect("/onboarding");
+  }
 
   if (jobApplication)
     return redirect(`/job-listings/${jobPostId}/job-application`);
@@ -39,7 +47,7 @@ const JobApplicationPage = async ({ params }: Props) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <JobApplicationForm jobSeekerProfile={jobSeekerProfile!} />
+        <JobApplicationForm jobSeekerProfile={jobSeekerProfile} />
       </CardContent>
     </Card>
   );

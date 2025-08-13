@@ -1,9 +1,29 @@
-import authService from "@/services/auth-service";
-import { cookies } from "next/headers";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import jwt from "jsonwebtoken";
 
 const f = createUploadthing();
+
+function getUserIdFromRequest(req: Request): string {
+  const cookieHeader = req.headers.get("cookie");
+  if (!cookieHeader) throw new UploadThingError("Unauthorized");
+
+  const cookies = Object.fromEntries(
+    cookieHeader.split(";").map((c) => {
+      const [key, ...v] = c.trim().split("=");
+      return [key, v.join("=")];
+    })
+  );
+  const token = cookies["refreshToken"];
+  if (!token) throw new UploadThingError("Unauthorized");
+
+  const payload = jwt.decode(token);
+  if (!payload || typeof payload !== "object" || !("userId" in payload)) {
+    throw new UploadThingError("Unauthorized");
+  }
+
+  return (payload as any).userId;
+}
 
 export const ourFileRouter = {
   imageUploader: f({
@@ -13,12 +33,9 @@ export const ourFileRouter = {
     },
   })
     .middleware(async ({ req }) => {
-      const cookieString = req.cookies.toString();
-      const user = await authService.getSession(cookieString);
-
-      if (!user) throw new UploadThingError("Unauthorized");
-
-      return { userId: user.id };
+      const userId = getUserIdFromRequest(req);
+      // You can return any metadata you want to use later
+      return { userId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("file url", file.ufsUrl);
@@ -33,12 +50,9 @@ export const ourFileRouter = {
       maxFileSize: "128KB",
     },
   })
-    .middleware(async () => {
-      const cookieString = (await cookies()).toString();
-      const user = await authService.getSession(cookieString);
-      if (!user) throw new UploadThingError("Unauthorized");
-
-      return { userId: user.id };
+    .middleware(async ({ req }) => {
+      const userId = getUserIdFromRequest(req);
+      return { userId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("file url", file.ufsUrl);

@@ -1,5 +1,5 @@
-import { UserResponse } from "@/app/auth/register/RegisterForm";
 import apiClient from "./api-client";
+import { UserResponse } from "./auth-service";
 import { JobType, ExperienceLevel } from "./jobPost-service";
 
 export enum EducationLevel {

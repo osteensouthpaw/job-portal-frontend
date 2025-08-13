@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -8,14 +9,22 @@ import {
 import { findJobSeekerProfile } from "@/services/profile-service";
 import Link from "next/link";
 import UserProfile from "../../../profile/_components/UserProfile";
+import { useAuth } from "@/app/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
 
-const UserProfilePage = async () => {
-  const jobSeekerProfile = await findJobSeekerProfile(user.id)
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
+const UserProfilePage = () => {
+  const { user } = useAuth();
+
+  if (!user) return redirect("/auth/login");
+
+  const { data: jobSeekerProfile } = useQuery({
+    queryKey: ["job-seeker-profile", user.id],
+    queryFn: () => findJobSeekerProfile(user.id).then((res) => res.data),
+  });
 
   return jobSeekerProfile ? (
-    <UserProfile jobSeekerProfile={jobSeekerProfile} />
+    <UserProfile userId={user.id} />
   ) : (
     <Card>
       <CardHeader>
