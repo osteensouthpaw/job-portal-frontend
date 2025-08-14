@@ -57,8 +57,28 @@ export interface JobSeekerProfileResponse {
   educations: EducationResponse[];
 }
 
-export async function findJobSeekerProfile(id: number, cookieHeader?: string) {
-  return await apiClient.get<JobSeekerProfileResponse>(`job-seekers/${id}`, {
-    headers: { Cookie: cookieHeader },
-  });
+export interface JobSeekerProfileRequest {
+  currentAnnualSalary: number;
+  bio: string;
+  profession: string;
+  personalWebsiteUrl: string;
+  linkedInUrl: string;
+  gitHubUrl: string;
+  twitterUrl: string;
+  dateOfBirth: string;
+  phone: string;
+  experienceLevel: ExperienceLevel;
+}
+
+export async function findJobSeekerProfile(id: number) {
+  return await apiClient.get<JobSeekerProfileResponse>(`job-seekers/${id}`);
+}
+
+export async function updateJobSeekerProfile(
+  profileData: JobSeekerProfileRequest
+) {
+  return await apiClient.patch<JobSeekerProfileResponse>(
+    `job-seekers/me`,
+    profileData
+  );
 }
