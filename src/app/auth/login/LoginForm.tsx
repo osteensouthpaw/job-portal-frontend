@@ -61,7 +61,7 @@ export const LoginForm = () => {
         setError(errorMessage);
         setIsPending(false);
       })
-      .finally(() => setIsPending(true));
+      .finally(() => setIsPending(false));
   };
 
   return (
