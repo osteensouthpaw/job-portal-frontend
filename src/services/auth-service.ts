@@ -44,9 +44,9 @@ export async function register(data: RegisterFormData) {
 }
 
 export async function getSession() {
-  return await apiClient.get<AuthResponse>("/auth/me");
+  return apiClient.get<AuthResponse>("/auth/me");
 }
 
 export async function refreshToken() {
-  return await apiClient.post<AuthResponse>("/auth/refresh");
+  return apiClient.post<AuthResponse>("/auth/refresh");
 }

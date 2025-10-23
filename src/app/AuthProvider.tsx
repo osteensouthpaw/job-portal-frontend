@@ -5,42 +5,61 @@ import {
   AuthResponse,
   UserResponse,
   getSession,
+  refreshToken,
   login as userLogin,
+  logout as userLogout,
 } from "@/services/auth-service";
+import { AxiosError } from "axios";
 import {
   PropsWithChildren,
   useContext,
-  useEffect,
   useLayoutEffect,
   useState,
 } from "react";
 import { LoginFormData } from "./auth/login/LoginForm";
+
+interface ApiError {
+  message: string;
+  httpStatus: number;
+  timestamp: Date;
+}
 
 const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [token, setToken] = useState<string | undefined>(undefined);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isInitialized) {
       getSession()
         .then(({ data }) => {
           setUser(data.userResponse);
           setToken(data.token);
         })
-        .catch((err) => console.log("No session found"))
+        .catch((err) => {
+          refreshToken().then(({ data }) => {
+            setUser(data.userResponse);
+            setToken(data.token);
+          });
+        })
         .finally(() => setIsInitialized(true));
     }
   }, []);
 
   //request interceptor
   useLayoutEffect(() => {
-    const requestInterceptor = apiClient.interceptors.request.use((config) => {
-      token
-        ? (config.headers.Authorization = `Bearer ${token}`)
-        : delete config.headers.Authorization;
-      return config;
-    });
+    const requestInterceptor = apiClient.interceptors.request.use(
+      (config) => {
+        const isAuthCall = config.url?.includes("auth/refresh");
+        config.headers.Authorization = isAuthCall
+          ? delete config.headers.Authorization
+          : token
+          ? `Bearer ${token}`
+          : config.headers.Authorization;
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
     return () => apiClient.interceptors.request.eject(requestInterceptor);
   }, [token]);
@@ -49,16 +68,13 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   useLayoutEffect(() => {
     const responseInterceptor = apiClient.interceptors.response.use(
       (response) => response,
-      async (error) => {
-        const previousRequest = error?.config;
-        const isAuthRefreshCall =
-          previousRequest?.url?.includes("/auth/refresh");
+      async (error: AxiosError<ApiError>) => {
+        const previousRequest = error?.config!;
+
         if (
-          error?.response?.status === 401 &&
-          !previousRequest._retry &&
-          !isAuthRefreshCall
+          error.response?.status === 401 &&
+          error.response?.data.message.includes("Invalid bearer token")
         ) {
-          previousRequest._retry = true;
           try {
             const authResponse = await apiClient
               .post<AuthResponse>("auth/refresh")
@@ -66,12 +82,12 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
             setToken(authResponse.token);
             setUser(authResponse.userResponse);
             previousRequest.headers.Authorization = `Bearer ${authResponse.token}`;
-            return apiClient(previousRequest);
-          } catch (error) {
-            return Promise.reject(error);
+            return await apiClient(previousRequest);
+          } catch (err) {
+            return Promise.reject(err);
           }
         }
-
+        logout();
         return Promise.reject(error);
       }
     );
@@ -86,6 +102,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const logout = async () => {
     setUser(null);
     setToken(undefined);
+    userLogout();
   };
 
   return (
