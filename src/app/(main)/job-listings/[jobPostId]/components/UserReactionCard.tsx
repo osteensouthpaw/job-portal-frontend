@@ -27,41 +27,26 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DefinitionItem from "./DefinitionItem";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import { useJobApplication } from "@/hooks/useApplications";
 
 interface Props {
   jobPost: JobPostResponse;
 }
 
 const UserReactionCard = ({ jobPost }: Props) => {
-  const [jobSeekerProfile, setJobSeekerProfile] =
-    useState<JobSeekerProfileResponse>();
-  const [jobApplication, setJobApplication] =
-    useState<JobApplicationResponse | null>();
   const [isLiked, setLike] = useState<boolean>();
   const { user } = useAuth();
   const [isOpen, setOpen] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (user) {
-      findJobSeekerProfile(user.id)
-        .then((res) => setJobSeekerProfile(res.data))
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [user]);
+  if (!user) {
+    router.push("auth/login");
+    return;
+  }
 
-  useEffect(() => {
-    if (user) {
-      findApplicationByUser(jobPost.id, user.id)
-        .then((res) => setJobApplication(res.data))
-        .catch((err) => {
-          console.log(err);
-          return null;
-        });
-    }
-  }, [user, jobPost]);
+  const { data: jobSeekerProfile } = useJobSeekerProfile(user.id);
+  const { data: jobApplication } = useJobApplication(jobPost.id, user.id);
 
   useEffect(() => {
     if (user) {

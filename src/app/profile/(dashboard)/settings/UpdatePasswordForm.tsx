@@ -17,19 +17,9 @@ import { useState } from "react";
 import { updatePassword } from "@/services/user-service";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { changePasswordSchema } from "@/schemas/validationSchemas";
 
-export const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(6, "Current password is required"),
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 const ChangePasswordForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

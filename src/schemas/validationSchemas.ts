@@ -124,3 +124,20 @@ export const jobApplicationSchema = z.object({
     .string({ message: "Cover letter is required" })
     .max(1000, "Cover letter must not exceed 1000 characters"),
 });
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(6, "Current password is required"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export const profileSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  bio: z.string().max(160).optional(),
+});

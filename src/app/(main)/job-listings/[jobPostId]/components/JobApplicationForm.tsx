@@ -12,11 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateJobApplication } from "@/hooks/useApplications";
 import { jobApplicationSchema } from "@/schemas/validationSchemas";
-import {
-  createJobApplication,
-  JobApplicationRequest,
-} from "@/services/application-service";
+import { JobApplicationRequest } from "@/services/application-service";
 import { JobSeekerProfileResponse } from "@/services/profile-service";
 import { UploadDropzone } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,11 +34,9 @@ interface Props {
 export default function JobApplicationForm({ jobSeekerProfile }: Props) {
   const [isUploadComplete, setUploadComplete] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [isLoading, setLoading] = useState(false);
   const router = useRouter();
   const params = useParams();
   const jobPostId = parseInt(params.jobPostId!.toString());
-
   const form = useForm<JobApplicationFormData>({
     resolver: zodResolver(jobApplicationSchema),
     defaultValues: {
@@ -54,6 +50,8 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
       coverLetter: "",
     },
   });
+  const { mutate, isPending, isError, isSuccess, error } =
+    useCreateJobApplication();
 
   function onSubmit(values: JobApplicationFormData) {
     const applicationRequest: JobApplicationRequest = {
@@ -61,18 +59,15 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
       resumeUrl: values.resumeUrl,
       coverLetter: values.coverLetter,
     };
-    setLoading(true);
-    createJobApplication(applicationRequest)
-      .then((res) => {
-        res.data;
-        toast.success("application successful!");
-        router.back();
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(`Something went wrong ${err}`);
-      })
-      .finally(() => setLoading(false));
+    mutate(applicationRequest);
+    if (isSuccess) {
+      toast.success("application successful!");
+      router.back();
+    }
+    if (isError) {
+      console.log(error.cause);
+      toast.error(`Something went wrong: ${error.message}`);
+    }
   }
 
   return (
@@ -264,7 +259,7 @@ export default function JobApplicationForm({ jobSeekerProfile }: Props) {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={!isUploadComplete || isLoading}>
+        <Button type="submit" disabled={!isUploadComplete || isPending}>
           Apply
         </Button>
       </form>

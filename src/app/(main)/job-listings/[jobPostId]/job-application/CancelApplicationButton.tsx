@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteApplication } from "@/services/application-service";
+import { useDeleteJobApplication } from "@/hooks/useApplications";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,17 +17,20 @@ import { toast } from "sonner";
 const CancelApplicationButton = ({ jobPostId }: { jobPostId: number }) => {
   const [isOpen, setOpen] = useState(false);
   const router = useRouter();
+  const { mutate, isError, isSuccess, error } = useDeleteJobApplication();
 
   const cancelApplication = (jobPostId: number) => {
-    deleteApplication(jobPostId)
-      .then(() => {
-        toast.success("Successful");
-        router.push(`/job-listings/${jobPostId}`);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(`Could not delete application. An error occured: ${err}`);
-      });
+    mutate(jobPostId);
+    if (isSuccess) {
+      toast.success("Successful");
+      router.push(`/job-listings/${jobPostId}`);
+    }
+    if (isError) {
+      console.log(error.cause);
+      toast.error(
+        `Could not delete application. An error occured: ${error.message}`
+      );
+    }
   };
 
   return (

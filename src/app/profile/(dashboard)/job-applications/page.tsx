@@ -1,18 +1,10 @@
 "use client";
 import { jobApplicationColumns } from "@/app/(main)/job-listings/[jobPostId]/components/Columns";
 import Table from "@/components/general/Table";
-import { userJobApplications } from "@/services/application-service";
-import { useQuery } from "@tanstack/react-query";
+import { useJobApplications } from "@/hooks/useApplications";
 
 const UserJobApplicationsPage = () => {
-  const {
-    data: jobApplications,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["user-job-applications"],
-    queryFn: userJobApplications,
-  });
+  const { data: jobApplications, isLoading, error } = useJobApplications();
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading job applications.</p>;

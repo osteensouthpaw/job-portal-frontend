@@ -73,10 +73,9 @@ class JobPostService {
     return apiClient.get<PageResponse<JobPostResponse>>("/");
   }
 
-  async getLikedJobPosts(cookieHeader?: string) {
+  async getLikedJobPosts() {
     return apiClient.get<PageResponse<JobPostResponse>>(
-      "/job-posts/liked-posts",
-      { headers: { Cookie: cookieHeader } }
+      "/job-posts/liked-posts"
     );
   }
 

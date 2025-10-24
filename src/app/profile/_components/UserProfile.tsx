@@ -7,6 +7,9 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import { notFound } from "next/navigation";
+import { toast } from "sonner";
 import Education from "./Education";
 import ProfileHeader from "./ProfileHeader";
 import Resume from "./Resume";
@@ -14,18 +17,10 @@ import SocialLinks from "./SocialLinks";
 import UserBio from "./UserBio";
 import UserSkills from "./UserSkills";
 import WorkExperience from "./WorkExperience";
-import { findJobSeekerProfile } from "@/services/profile-service";
-import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { notFound } from "next/navigation";
 
 const UserProfile = ({ userId }: { userId: number }) => {
   const { user } = useAuth();
-  if (!user) return null;
-  const { data: jobSeekerProfile, error } = useQuery({
-    queryKey: ["job-seeker-profile", user.id],
-    queryFn: () => findJobSeekerProfile(user.id).then((res) => res.data),
-  });
+  const { data: jobSeekerProfile, error } = useJobSeekerProfile(userId);
   const isProfileOwner = !!(user && user.id === userId);
 
   if (!jobSeekerProfile) return notFound();

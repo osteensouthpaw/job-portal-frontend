@@ -8,13 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ApplicationStatus,
-  findApplicationByUser,
-} from "@/services/application-service";
-import { findJobSeekerProfile } from "@/services/profile-service";
+import { useJobApplication } from "@/hooks/useApplications";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import { ApplicationStatus } from "@/services/application-service";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { useQuery } from "@tanstack/react-query";
 import { notFound, redirect } from "next/navigation";
 import CancelApplicationButton from "./CancelApplicationButton";
 import Experience from "./Experience";
@@ -26,18 +23,12 @@ const JobApplicationCard = ({ jobPostId }: { jobPostId: string }) => {
 
   if (!user) redirect("/login");
 
-  const { data: jobApplication } = useQuery({
-    queryKey: ["job-application", jobPostId],
-    queryFn: () =>
-      findApplicationByUser(parseInt(jobPostId), user.id).then(
-        (res) => res.data
-      ),
-  });
+  const { data: jobApplication } = useJobApplication(
+    parseInt(jobPostId),
+    user.id
+  );
 
-  const { data: profile } = useQuery({
-    queryKey: ["job-seeker-profile", user.id],
-    queryFn: () => findJobSeekerProfile(user.id).then((res) => res.data),
-  });
+  const { data: profile } = useJobSeekerProfile(user.id);
 
   if (!jobApplication || !profile) return notFound();
 

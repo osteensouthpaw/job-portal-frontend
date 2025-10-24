@@ -1,4 +1,3 @@
-import { findJobSeekerProfile } from "@/services/profile-service";
 import UserProfile from "../../../profile/_components/UserProfile";
 
 interface Props {

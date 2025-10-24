@@ -52,11 +52,6 @@ export async function findApplicationByUser(
   );
 }
 
-export async function deleteApplication(
-  jobPostId: number,
-  cookieHeader?: string
-) {
-  return apiClient.delete(`/job-applications/${jobPostId}`, {
-    headers: { Cookie: cookieHeader },
-  });
+export async function deleteApplication(jobPostId: number) {
+  return apiClient.delete<void>(`/job-applications/${jobPostId}`);
 }

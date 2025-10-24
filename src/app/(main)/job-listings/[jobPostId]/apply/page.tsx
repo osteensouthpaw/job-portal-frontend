@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/app/AuthProvider";
 import {
   Card,
   CardContent,
@@ -6,12 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { findApplicationByUser } from "@/services/application-service";
-import { findJobSeekerProfile } from "@/services/profile-service";
+import { useJobApplication } from "@/hooks/useApplications";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
 import { redirect, useParams } from "next/navigation";
 import JobApplicationForm from "../components/JobApplicationForm";
-import { useAuth } from "@/app/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
 
 const JobApplicationPage = () => {
   const params = useParams();
@@ -19,17 +18,8 @@ const JobApplicationPage = () => {
   const { user } = useAuth();
 
   if (!user) return redirect("/auth/login");
-
-  const { data: jobSeekerProfile } = useQuery({
-    queryKey: ["job-seeker-profile", user.id],
-    queryFn: () => findJobSeekerProfile(user.id).then((res) => res.data),
-  });
-
-  const { data: jobApplication } = useQuery({
-    queryKey: ["job-application", jobPostId],
-    queryFn: () =>
-      findApplicationByUser(jobPostId, user.id).then((res) => res.data),
-  });
+  const { data: jobSeekerProfile } = useJobSeekerProfile(user.id);
+  const { data: jobApplication } = useJobApplication(jobPostId, user.id);
 
   if (!jobSeekerProfile) {
     return redirect("/onboarding");
