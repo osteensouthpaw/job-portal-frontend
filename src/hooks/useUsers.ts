@@ -1,3 +1,4 @@
+import { UserResponse } from "@/services/auth-service";
 import { getUserConnectedAccounts, updateUser } from "@/services/user-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -13,8 +14,9 @@ export const useUpdateUser = () => {
   });
 };
 
-export const useUserConnectedAccounts = () =>
+export const useUserConnectedAccounts = (user: UserResponse | null) =>
   useQuery({
     queryKey: ["accounts"],
     queryFn: () => getUserConnectedAccounts().then((res) => res.data),
+    enabled: !!user,
   });

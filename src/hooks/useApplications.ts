@@ -7,11 +7,12 @@ import {
 } from "@/services/application-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useJobApplication = (jobPostId: number, userId: number) =>
+export const useJobApplication = (jobPostId: number, userId?: number) =>
   useQuery({
     queryKey: ["applications", jobPostId],
     queryFn: () =>
-      findApplicationByUser(jobPostId, userId).then((res) => res.data),
+      findApplicationByUser(jobPostId, userId!).then((res) => res.data),
+    enabled: !!userId,
   });
 
 export const useJobApplications = () =>

@@ -22,8 +22,7 @@ const providerMeta: Record<
 
 const LinkedAccounts = () => {
   const { user } = useAuth();
-  if (!user) return;
-  const { data: accounts } = useUserConnectedAccounts();
+  const { data: accounts } = useUserConnectedAccounts(user);
 
   return (
     <Card className="shadow-none border-none bg-transparent">

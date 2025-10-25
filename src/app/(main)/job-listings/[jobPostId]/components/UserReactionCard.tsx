@@ -22,8 +22,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DefinitionItem from "./DefinitionItem";
-import { JobApplicationResponse } from "@/services/application-service";
-import { JobSeekerProfileResponse } from "@/services/profile-service";
 
 interface Props {
   jobPost: JobPostResponse;
@@ -35,15 +33,9 @@ const UserReactionCard = ({ jobPost }: Props) => {
   const { user } = useAuth();
   const { mutate } = useToggleLike();
 
-  let jobSeekerProfile: JobSeekerProfileResponse | undefined;
-  let jobApplication: JobApplicationResponse | undefined;
-  let isLiked: boolean | undefined;
-
-  if (user) {
-    jobSeekerProfile = useJobSeekerProfile(user.id).data;
-    jobApplication = useJobApplication(jobPost.id, user.id).data;
-    isLiked = useIsLikedJobPost(jobPost.id).data;
-  }
+  const { data: jobSeekerProfile } = useJobSeekerProfile(user?.id);
+  const { data: jobApplication } = useJobApplication(jobPost.id, user?.id);
+  const { data: isLiked } = useIsLikedJobPost(jobPost.id);
 
   const difference = Math.abs(
     differenceInDays(new Date(), jobPost.applicationDeadline)
