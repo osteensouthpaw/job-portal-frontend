@@ -13,11 +13,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useUpdateUser } from "@/hooks/useUsers";
 import { profileSchema } from "@/schemas/validationSchemas";
-import { updateUser } from "@/services/user-service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -25,10 +23,7 @@ import { z } from "zod";
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 const UpdateNameForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
   const { user, setUser } = useAuth();
-
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -36,6 +31,8 @@ const UpdateNameForm = () => {
       lastName: user?.lastName,
     },
   });
+  const { mutate, data, isSuccess, isError, isPending, error } =
+    useUpdateUser();
 
   if (!user) {
     return (
@@ -45,26 +42,20 @@ const UpdateNameForm = () => {
     );
   }
 
-  async function onSubmit(values: ProfileFormData) {
-    setIsSubmitting(true);
-    updateUser({
+  function onSubmit(values: ProfileFormData) {
+    mutate({
       firstName: values.firstName,
       lastName: values.lastName,
       imageUrl: user!.imageUrl,
-    })
-      .then((res) => {
-        setUser(res.data);
-        toast.success("Profile updated successfully!");
-        setSuccess(true);
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err instanceof AxiosError) {
-          setSuccess(false);
-          toast.error(`"An error occured":${err.response?.data.message}`);
-        }
-      })
-      .finally(() => setIsSubmitting(false));
+    });
+    if (isSuccess) {
+      setUser(data);
+      toast.success("Profile updated successfully!");
+    }
+    if (isError) {
+      console.log(error.cause);
+      toast.error(`"An error occured":${error.message}`);
+    }
   }
 
   const firstName = form.watch("firstName");
@@ -119,10 +110,10 @@ const UpdateNameForm = () => {
               )}
             />
 
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Saving..." : "Save Changes"}
             </Button>
-            {success && (
+            {isSuccess && (
               <div className="text-green-600 text-sm mt-2">
                 Profile updated successfully!
               </div>

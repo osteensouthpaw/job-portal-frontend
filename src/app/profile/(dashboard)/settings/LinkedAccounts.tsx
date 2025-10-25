@@ -1,12 +1,8 @@
 "use client";
 import { useAuth } from "@/app/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  getUserConnectedAccounts,
-  UserConnectedAccount,
-} from "@/services/user-service";
+import { useUserConnectedAccounts } from "@/hooks/useUsers";
 import { Github, Mail } from "lucide-react";
-import { useEffect, useState } from "react";
 
 const providerMeta: Record<
   string,
@@ -25,24 +21,19 @@ const providerMeta: Record<
 };
 
 const LinkedAccounts = () => {
-  const [accounts, setAccounts] = useState<UserConnectedAccount[]>([]);
   const { user } = useAuth();
-
-  useEffect(() => {
-    getUserConnectedAccounts()
-      .then((res) => setAccounts(res.data))
-      .catch((err) => console.log(err));
-  }, [user]);
+  if (!user) return;
+  const { data: accounts } = useUserConnectedAccounts();
 
   return (
     <Card className="shadow-none border-none bg-transparent">
       <CardContent className="p-0 space-y-4">
-        {accounts.length === 0 ? (
+        {accounts?.length === 0 ? (
           <div className="text-muted-foreground text-sm text-center py-6">
             No social accounts connected.
           </div>
         ) : (
-          accounts.map((account) => {
+          accounts?.map((account) => {
             const provider = providerMeta[account.providerName.toLowerCase()];
             return (
               <div

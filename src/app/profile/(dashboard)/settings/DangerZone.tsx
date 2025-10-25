@@ -17,11 +17,11 @@ import { toast } from "sonner";
 const DangerZone = () => {
   const [isOpen, setOpen] = useState(false);
   const router = useRouter();
-  const { setUser } = useAuth();
+  const { logout } = useAuth();
   const handleDeleteAccount = () =>
     deleteUserAccount()
       .then(() => {
-        setUser(null);
+        logout();
         router.replace("/job-listings");
         toast.success("Account successfully deleted");
       })
@@ -37,8 +37,8 @@ const DangerZone = () => {
           <DialogHeader className="space-y-4">
             <DialogTitle>Delete Account</DialogTitle>
             <DialogDescription>
-              The following action will permanently delete your account. This action is
-              irreversible. Proceed with caution
+              The following action will permanently delete your account. This
+              action is irreversible. Proceed with caution
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-col gap-2 md:flex-row">

@@ -12,60 +12,42 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  findApplicationByUser,
-  JobApplicationResponse,
-} from "@/services/application-service";
-import jobPostService, { JobPostResponse } from "@/services/jobPost-service";
-import {
-  findJobSeekerProfile,
-  JobSeekerProfileResponse,
-} from "@/services/profile-service";
+import { useJobApplication } from "@/hooks/useApplications";
+import { useIsLikedJobPost, useToggleLike } from "@/hooks/useJobPosts";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import { JobPostResponse } from "@/services/jobPost-service";
 import { differenceInDays } from "date-fns";
 import { Calendar, Clock, Edit, Heart, House, Share } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DefinitionItem from "./DefinitionItem";
-import { useJobSeekerProfile } from "@/hooks/useProfiles";
-import { useJobApplication } from "@/hooks/useApplications";
+import { JobApplicationResponse } from "@/services/application-service";
+import { JobSeekerProfileResponse } from "@/services/profile-service";
 
 interface Props {
   jobPost: JobPostResponse;
 }
 
 const UserReactionCard = ({ jobPost }: Props) => {
-  const [isLiked, setLike] = useState<boolean>();
-  const { user } = useAuth();
   const [isOpen, setOpen] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
+  const { mutate } = useToggleLike();
 
-  if (!user) {
-    router.push("auth/login");
-    return;
+  let jobSeekerProfile: JobSeekerProfileResponse | undefined;
+  let jobApplication: JobApplicationResponse | undefined;
+  let isLiked: boolean | undefined;
+
+  if (user) {
+    jobSeekerProfile = useJobSeekerProfile(user.id).data;
+    jobApplication = useJobApplication(jobPost.id, user.id).data;
+    isLiked = useIsLikedJobPost(jobPost.id).data;
   }
-
-  const { data: jobSeekerProfile } = useJobSeekerProfile(user.id);
-  const { data: jobApplication } = useJobApplication(jobPost.id, user.id);
-
-  useEffect(() => {
-    if (user) {
-      jobPostService
-        .isLiked(jobPost.id)
-        .then((res) => {
-          setLike(res.data);
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [user, jobPost]);
 
   const difference = Math.abs(
     differenceInDays(new Date(), jobPost.applicationDeadline)
   ).toString();
-
-  const toggleLike = (id: number) => {
-    jobPostService.toggleLike(id).then((res) => setLike(res.data));
-  };
 
   const isElligible =
     jobSeekerProfile?.experienceLevel === jobPost.experienceLevel;
@@ -87,10 +69,7 @@ const UserReactionCard = ({ jobPost }: Props) => {
               )}
               <div className="flex justify-between">
                 <div className="flex">
-                  <Button
-                    variant="ghost"
-                    onClick={() => toggleLike(jobPost.id)}
-                  >
+                  <Button variant="ghost" onClick={() => mutate(jobPost.id)}>
                     <Heart
                       className={`${
                         isLiked && "cursor-pointer fill-red-600 text-red-500"

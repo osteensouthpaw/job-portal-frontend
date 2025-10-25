@@ -73,19 +73,19 @@ class JobPostService {
     return apiClient.get<PageResponse<JobPostResponse>>("/");
   }
 
-  async getLikedJobPosts() {
-    return apiClient.get<PageResponse<JobPostResponse>>(
-      "/job-posts/liked-posts"
-    );
-  }
+  getLikedJobPosts = async () => {
+    return apiClient
+      .get<PageResponse<JobPostResponse>>("/job-posts/liked-posts")
+      .then((res) => res.data);
+  };
 
-  async toggleLike(jobPostId: number) {
+  toggleLike = (jobPostId: number) => {
     return apiClient.post<boolean>(`/job-posts/${jobPostId}/like`);
-  }
+  };
 
-  async isLiked(jobPostId: number) {
+  isLiked = (jobPostId: number) => {
     return apiClient.get<boolean>(`/job-posts/${jobPostId}/is-liked`);
-  }
+  };
 }
 
 export default new JobPostService();

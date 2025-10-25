@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -5,15 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import jobPostService from "@/services/jobPost-service";
-import { cookies } from "next/headers";
+import { useLikedJobPosts } from "@/hooks/useJobPosts";
 import LikedPostCard from "../../_components/LikedPostCard";
 
-const UserFavouritesPage = async () => {
-  const jobPosts = await jobPostService
-    .getLikedJobPosts()
-    .then((res) => res.data)
-    .catch((err) => console.log(err));
+const UserFavouritesPage = () => {
+  const { data: jobPosts } = useLikedJobPosts();
 
   if (!jobPosts || jobPosts.content.length === 0) {
     return (

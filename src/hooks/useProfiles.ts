@@ -4,5 +4,5 @@ import { useQuery } from "@tanstack/react-query";
 export const useJobSeekerProfile = (userId: number) =>
   useQuery({
     queryKey: ["profiles", userId],
-    queryFn: () => findJobSeekerProfile(userId).then((res) => res.data),
+    queryFn: () => findJobSeekerProfile(userId),
   });

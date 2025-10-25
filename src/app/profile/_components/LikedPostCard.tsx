@@ -2,15 +2,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
-import jobPostService, { JobPostResponse } from "@/services/jobPost-service";
+import { useToggleLike } from "@/hooks/useJobPosts";
+import { JobPostResponse } from "@/services/jobPost-service";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 
 const LikedPostCard = ({ jobPost }: { jobPost: JobPostResponse }) => {
-  const toggleLike = (id: number) => {
-    jobPostService.toggleLike(id);
-  };
+  const { mutate } = useToggleLike();
 
   return (
     <Link href={`/job-listings/${jobPost.id}`}>
@@ -46,7 +45,7 @@ const LikedPostCard = ({ jobPost }: { jobPost: JobPostResponse }) => {
 
             <div className="md:ml-auto">
               <div className="flex items-center gap-2">
-                <Button variant="ghost" onClick={() => toggleLike(jobPost.id)}>
+                <Button variant="ghost" onClick={() => mutate(jobPost.id)}>
                   <Heart className="cursor-pointer fill-red-600 text-red-500" />
                 </Button>
               </div>

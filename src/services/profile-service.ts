@@ -71,7 +71,9 @@ export interface JobSeekerProfileRequest {
 }
 
 export async function findJobSeekerProfile(id: number) {
-  return await apiClient.get<JobSeekerProfileResponse>(`job-seekers/${id}`);
+  return apiClient
+    .get<JobSeekerProfileResponse>(`job-seekers/${id}`)
+    .then((res) => res.data);
 }
 
 export async function updateJobSeekerProfile(
