@@ -22,6 +22,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DefinitionItem from "./DefinitionItem";
+import { UserType } from "@/services/auth-service";
 
 interface Props {
   jobPost: JobPostResponse;
@@ -33,9 +34,10 @@ const UserReactionCard = ({ jobPost }: Props) => {
   const { user } = useAuth();
   const { mutate } = useToggleLike();
 
-  const { data: jobSeekerProfile } = useJobSeekerProfile(user?.id);
+  const isJobSeeker = user?.userType.includes(UserType.JOB_SEEKER);
+  const { data: jobSeekerProfile } = useJobSeekerProfile(user?.id, isJobSeeker);
   const { data: jobApplication } = useJobApplication(jobPost.id, user?.id);
-  const { data: isLiked } = useIsLikedJobPost(jobPost.id);
+  const { data: isLiked } = useIsLikedJobPost(jobPost.id, user?.id);
 
   const difference = Math.abs(
     differenceInDays(new Date(), jobPost.applicationDeadline)
@@ -78,11 +80,15 @@ const UserReactionCard = ({ jobPost }: Props) => {
               </div>
             </>
           )}
+
+          {/* if logged in user is owner of job post => show edit button */}
+
           {jobPost.recruiter.id === user?.id ? (
             <Button className="w-full md:w-max ml-auto lg:w-full">
               <Link href={`${jobPost.id}/edit`}>Edit</Link>
             </Button>
-          ) : jobApplication ? (
+          ) : //if is already applied, show application status
+          jobApplication ? (
             <Button
               className="bg-orange-600/90"
               onClick={() => router.push(`${jobPost.id}/job-application`)}
@@ -93,20 +99,22 @@ const UserReactionCard = ({ jobPost }: Props) => {
               </p>
             </Button>
           ) : (
-            <Button
-              variant={jobPost.isOpen ? "default" : "destructive"}
-              disabled={!jobPost.isOpen}
-              className="w-full md:w-max ml-auto lg:w-full"
-              onClick={() =>
-                !user
-                  ? router.push("/auth/login")
-                  : !isElligible
-                  ? setOpen(true)
-                  : router.push(`${jobPost.id}/apply`)
-              }
-            >
-              {jobPost.isOpen ? "Apply" : "Closed"}
-            </Button>
+            isJobSeeker && (
+              <Button
+                variant={jobPost.isOpen ? "default" : "destructive"}
+                disabled={!jobPost.isOpen}
+                className="w-full md:w-max ml-auto lg:w-full"
+                onClick={() =>
+                  !user
+                    ? router.push("/auth/login")
+                    : !isElligible
+                    ? setOpen(true)
+                    : router.push(`${jobPost.id}/apply`)
+                }
+              >
+                {jobPost.isOpen ? "Apply" : "Closed"}
+              </Button>
+            )
           )}
         </div>
         <hr />

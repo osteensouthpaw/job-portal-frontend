@@ -21,9 +21,7 @@ const JobApplicationPage = () => {
   const { data: jobSeekerProfile } = useJobSeekerProfile(user.id);
   const { data: jobApplication } = useJobApplication(jobPostId, user.id);
 
-  if (!jobSeekerProfile) {
-    return redirect("/onboarding");
-  }
+  if (!jobSeekerProfile) return redirect("/onboarding");
 
   if (jobApplication)
     return redirect(`/job-listings/${jobPostId}/job-application`);

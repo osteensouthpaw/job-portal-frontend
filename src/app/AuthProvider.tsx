@@ -36,11 +36,16 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
           setUser(data.userResponse);
           setToken(data.token);
         })
-        .catch((err) => {
-          refreshToken().then(({ data }) => {
-            setUser(data.userResponse);
-            setToken(data.token);
-          });
+        .catch(() => {
+          refreshToken()
+            .then(({ data }) => {
+              setUser(data.userResponse);
+              setToken(data.token);
+            })
+            .catch((error) => {
+              if (error instanceof AxiosError) console.log(error.message);
+              logout();
+            });
         })
         .finally(() => setIsInitialized(true));
     }
@@ -87,7 +92,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
             return Promise.reject(err);
           }
         }
-        logout();
+
         return Promise.reject(error);
       }
     );

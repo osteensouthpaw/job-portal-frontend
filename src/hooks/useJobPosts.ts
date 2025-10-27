@@ -1,16 +1,19 @@
 import jobPostService from "@/services/jobPost-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+//return all jobosts liked by this user
 export const useLikedJobPosts = () =>
   useQuery({
     queryKey: ["jobPosts", { isLiked: true }],
     queryFn: jobPostService.getLikedJobPosts,
   });
 
-export const useIsLikedJobPost = (jobPostId: number) =>
+//has user liked this jobposts
+export const useIsLikedJobPost = (jobPostId: number, userId?: number) =>
   useQuery({
     queryKey: ["jobPosts", { isLiked: true }, jobPostId],
     queryFn: () => jobPostService.isLiked(jobPostId).then((res) => res.data),
+    enabled: !!userId,
   });
 
 export const useToggleLike = () => {

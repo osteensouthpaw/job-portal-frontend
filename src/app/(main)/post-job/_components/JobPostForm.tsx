@@ -53,7 +53,7 @@ export default function JobPostForm({ jobPost }: Props) {
   const form = useForm<z.infer<typeof jobPostSchema>>({
     resolver: zodResolver(jobPostSchema),
     defaultValues: {
-      jobTitle: jobPost?.jobTitle,
+      jobTitle: jobPost?.jobTitle || "",
       jobType: jobPost?.jobType,
       location: [countryName, stateName],
       workMode: jobPost?.workMode,
