@@ -50,12 +50,22 @@ export enum ExperienceLevel {
   SENIOR = "SENIOR",
 }
 
+export interface JobPostRequest {
+  jobTitle: string;
+  jobDescription: string;
+  salary: number;
+  location: string;
+  jobType: JobType;
+  workMode: WorkMode;
+  experienceLevel: ExperienceLevel;
+  applicationDeadline: string;
+}
+
 class JobPostService {
   async jobPosts(filters?: Record<string, string>) {
     const params = new URLSearchParams(filters).toString();
-    const url = `/job-posts${params ? `?${params}` : ""}`;
     return apiClient
-      .get<PageResponse<JobPostResponse>>(url)
+      .get<PageResponse<JobPostResponse>>("/job-posts", { params: { params } })
       .then((res) => res.data);
   }
 
@@ -85,6 +95,10 @@ class JobPostService {
 
   isLiked = (jobPostId: number) => {
     return apiClient.get<boolean>(`/job-posts/${jobPostId}/is-liked`);
+  };
+
+  createJobPost = (jobPost: JobPostRequest) => {
+    return apiClient.post<JobPostResponse>("/job-posts", jobPost);
   };
 }
 

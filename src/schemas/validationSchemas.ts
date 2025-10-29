@@ -98,7 +98,7 @@ export const jobPostSchema = z.object({
     .date()
     .min(new Date(), { message: "Deadline must be at least tomorrow." }),
 
-  description: z
+  jobDescription: z
     .string()
     .min(20, { message: "Description must be at least 20 characters." })
     .max(5000, { message: "Description cannot exceed 5000 characters." }),

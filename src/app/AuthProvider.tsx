@@ -89,6 +89,11 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
             previousRequest.headers.Authorization = `Bearer ${authResponse.token}`;
             return await apiClient(previousRequest);
           } catch (err) {
+            if (err instanceof AxiosError)
+              if (
+                err.message.includes("Signed JWT rejected: Invalid signature")
+              )
+                logout();
             return Promise.reject(err);
           }
         }

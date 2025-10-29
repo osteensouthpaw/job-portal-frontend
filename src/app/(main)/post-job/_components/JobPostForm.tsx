@@ -24,9 +24,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { useCreateJobPost } from "@/hooks/useJobPosts";
 import { cn } from "@/lib/utils";
 import { jobPostSchema } from "@/schemas/validationSchemas";
-import { JobPostResponse } from "@/services/jobPost-service";
+import { JobPostRequest, JobPostResponse } from "@/services/jobPost-service";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -49,7 +50,6 @@ interface Props {
 export default function JobPostForm({ jobPost }: Props) {
   const [countryName, setCountryName] = useState<string>("");
   const [stateName] = useState<string>("");
-
   const form = useForm<z.infer<typeof jobPostSchema>>({
     resolver: zodResolver(jobPostSchema),
     defaultValues: {
@@ -62,24 +62,24 @@ export default function JobPostForm({ jobPost }: Props) {
       applicationDeadline: jobPost?.applicationDeadline
         ? new Date(jobPost.applicationDeadline)
         : new Date(),
-      description: jobPost?.description,
+      jobDescription: jobPost?.description,
     },
   });
+  const { mutate, error, isPending, isError, isSuccess } = useCreateJobPost();
 
   function onSubmit(values: z.infer<typeof jobPostSchema>) {
-    try {
-      const formattedData = {
-        ...values,
-        applicationDeadline: values.applicationDeadline
-          .toISOString()
-          .split("T")[0],
-        location: values.location[0],
-      };
-      console.log(formattedData);
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+    const formattedData: JobPostRequest = {
+      ...values,
+      applicationDeadline: values.applicationDeadline.toISOString(),
+      location: values.location[0],
+    };
+    mutate(formattedData);
+    console.log(formattedData);
+    if (isError) {
+      console.error("Form submission error", error.message);
+      toast.error(`Failed to submit the form: ${error.message}`);
     }
+    if (isSuccess) toast.success("Jobpost created successfuly");
   }
 
   return (
@@ -302,7 +302,7 @@ export default function JobPostForm({ jobPost }: Props) {
         {/* description */}
         <FormField
           control={form.control}
-          name="description"
+          name="jobDescription"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Job Description</FormLabel>
@@ -313,7 +313,9 @@ export default function JobPostForm({ jobPost }: Props) {
             </FormItem>
           )}
         />
-        <Button type="submit">{jobPost ? "Update" : "Submit"}</Button>
+        <Button disabled={isPending || !form.formState.isValid} type="submit">
+          {jobPost ? "Update" : "Submit"}
+        </Button>
       </form>
     </Form>
   );
