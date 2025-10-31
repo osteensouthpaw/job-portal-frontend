@@ -1,4 +1,7 @@
-import jobPostService, { JobPostRequest } from "@/services/jobPost-service";
+import jobPostService, {
+  JobPostRequest,
+  JobPostResponse,
+} from "@/services/jobPost-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 //return all jobosts liked by this user
@@ -36,4 +39,12 @@ export const useCreateJobPost = () =>
   useMutation({
     mutationFn: (jobPost: JobPostRequest) =>
       jobPostService.createJobPost(jobPost).then((res) => res.data),
+  });
+
+export const useEditJobPost = () =>
+  useMutation({
+    mutationFn: (data: { jobPost: JobPostRequest; jobPostId: number }) =>
+      jobPostService
+        .editJobPost(data.jobPost, data.jobPostId)
+        .then((res) => res.data),
   });

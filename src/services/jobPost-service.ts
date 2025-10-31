@@ -100,6 +100,10 @@ class JobPostService {
   createJobPost = (jobPost: JobPostRequest) => {
     return apiClient.post<JobPostResponse>("/job-posts", jobPost);
   };
+
+  editJobPost = (jobPost: JobPostRequest, jobPostId: number) => {
+    return apiClient.patch<JobPostResponse>(`job-posts/${jobPostId}`, jobPost);
+  };
 }
 
 export default new JobPostService();

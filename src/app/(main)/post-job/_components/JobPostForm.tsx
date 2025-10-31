@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useCreateJobPost } from "@/hooks/useJobPosts";
+import { useCreateJobPost, useEditJobPost } from "@/hooks/useJobPosts";
 import { cn } from "@/lib/utils";
 import { jobPostSchema } from "@/schemas/validationSchemas";
 import { JobPostRequest, JobPostResponse } from "@/services/jobPost-service";
@@ -42,6 +42,7 @@ import {
   workModes,
 } from "../../job-listings/components/JobFilter";
 import TipTapEditor from "./TipTapEditor";
+import { useRouter } from "next/navigation";
 
 interface Props {
   jobPost?: JobPostResponse;
@@ -50,6 +51,7 @@ interface Props {
 export default function JobPostForm({ jobPost }: Props) {
   const [countryName, setCountryName] = useState<string>("");
   const [stateName] = useState<string>("");
+  const router = useRouter();
   const form = useForm<z.infer<typeof jobPostSchema>>({
     resolver: zodResolver(jobPostSchema),
     defaultValues: {
@@ -65,7 +67,20 @@ export default function JobPostForm({ jobPost }: Props) {
       jobDescription: jobPost?.description,
     },
   });
-  const { mutate, error, isPending, isError, isSuccess } = useCreateJobPost();
+  const {
+    mutate: createJobPost,
+    error,
+    isPending,
+    isError,
+    isSuccess,
+  } = useCreateJobPost();
+  const {
+    mutate: editJobPost,
+    error: editError,
+    isPending: isPendingEdit,
+    isError: isEditError,
+    isSuccess: isSuccessEdit,
+  } = useEditJobPost();
 
   function onSubmit(values: z.infer<typeof jobPostSchema>) {
     const formattedData: JobPostRequest = {
@@ -73,13 +88,26 @@ export default function JobPostForm({ jobPost }: Props) {
       applicationDeadline: values.applicationDeadline.toISOString(),
       location: values.location[0],
     };
-    mutate(formattedData);
-    console.log(formattedData);
-    if (isError) {
-      console.error("Form submission error", error.message);
-      toast.error(`Failed to submit the form: ${error.message}`);
+
+    jobPost
+      ? editJobPost({ jobPost: formattedData, jobPostId: jobPost.id })
+      : createJobPost(formattedData);
+
+    if (isError || isEditError) {
+      console.error("Form submission error", error?.cause || editError?.cause);
+      toast.error(
+        `Failed to submit the form: ${error?.message || editError?.message}`
+      );
     }
-    if (isSuccess) toast.success("Jobpost created successfuly");
+
+    if (isSuccess || isSuccessEdit) {
+      toast.success(
+        `Job post ${
+          isSuccess ? "created" : isSuccessEdit ? "edited" : ""
+        } sucessfully`
+      );
+      router.back();
+    }
   }
 
   return (
@@ -313,7 +341,10 @@ export default function JobPostForm({ jobPost }: Props) {
             </FormItem>
           )}
         />
-        <Button disabled={isPending || !form.formState.isValid} type="submit">
+        <Button
+          disabled={isPending || isPendingEdit || !form.formState.isValid}
+          type="submit"
+        >
           {jobPost ? "Update" : "Submit"}
         </Button>
       </form>
