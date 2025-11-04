@@ -104,6 +104,10 @@ class JobPostService {
   editJobPost = (jobPost: JobPostRequest, jobPostId: number) => {
     return apiClient.patch<JobPostResponse>(`job-posts/${jobPostId}`, jobPost);
   };
+
+  deleteJobPost = (jobPostId: number) => {
+    return apiClient.delete<void>(`job-posts/${jobPostId}`);
+  };
 }
 
 export default new JobPostService();

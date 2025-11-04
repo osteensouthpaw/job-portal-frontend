@@ -13,16 +13,29 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useJobApplication } from "@/hooks/useApplications";
-import { useIsLikedJobPost, useToggleLike } from "@/hooks/useJobPosts";
+import {
+  useDeleteJobPost,
+  useIsLikedJobPost,
+  useToggleLike,
+} from "@/hooks/useJobPosts";
 import { useJobSeekerProfile } from "@/hooks/useProfiles";
 import { JobPostResponse } from "@/services/jobPost-service";
 import { differenceInDays } from "date-fns";
-import { Calendar, Clock, Edit, Heart, House, Share } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Edit,
+  Heart,
+  House,
+  Share,
+  Trash,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DefinitionItem from "./DefinitionItem";
 import { UserType } from "@/services/auth-service";
+import { toast } from "sonner";
 
 interface Props {
   jobPost: JobPostResponse;
@@ -30,6 +43,7 @@ interface Props {
 
 const UserReactionCard = ({ jobPost }: Props) => {
   const [isOpen, setOpen] = useState(false);
+  const [isDeleteOpen, setDeleteOpen] = useState(false);
   const router = useRouter();
   const { user } = useAuth();
   const { mutate } = useToggleLike();
@@ -45,6 +59,15 @@ const UserReactionCard = ({ jobPost }: Props) => {
 
   const isElligible =
     jobSeekerProfile?.experienceLevel === jobPost.experienceLevel;
+
+  const { mutate: deleteJobPost, isSuccess, isPending } = useDeleteJobPost();
+
+  const deletePost = (jobPostId: number) => {
+    deleteJobPost(jobPostId);
+    if (isSuccess) {
+      setDeleteOpen(false);
+    }
+  };
 
   return (
     <>
@@ -81,14 +104,44 @@ const UserReactionCard = ({ jobPost }: Props) => {
             </>
           )}
 
-          {/* if logged in user is owner of job post => show edit button */}
-
           {jobPost.recruiter.id === user?.id ? (
-            <Button className="w-full md:w-max ml-auto lg:w-full">
-              <Link href={`${jobPost.id}/edit`}>Edit</Link>
+            <div className="flex gap-2">
+              <Button
+                className="w-full md:w-max ml-auto lg:w-full"
+                onClick={() => router.push(`${jobPost.id}/edit`)}
+              >
+                Edit <Edit />
+              </Button>
+              <Button
+                variant="destructive"
+                className={`w-full md:w-max ml-auto lg:w-full`}
+                disabled={isPending}
+                onClick={() => setDeleteOpen(true)}
+              >
+                Delete <Trash />
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant={jobPost.isOpen ? "default" : "destructive"}
+              disabled={!jobPost.isOpen}
+              className={`w-full md:w-max ml-auto lg:w-full ${
+                user?.userType.includes(UserType.RECRUITER) && "hidden"
+              }`}
+              onClick={() =>
+                !user
+                  ? router.push("/auth/login")
+                  : !isElligible
+                  ? setOpen(true)
+                  : router.push(`${jobPost.id}/apply`)
+              }
+            >
+              {jobPost.isOpen ? "Apply" : "Closed"}
             </Button>
-          ) : //if is already applied, show application status
-          jobApplication ? (
+          )}
+
+          {/* //if is already applied, show application status */}
+          {jobApplication && (
             <Button
               className="bg-orange-600/90"
               onClick={() => router.push(`${jobPost.id}/job-application`)}
@@ -98,23 +151,6 @@ const UserReactionCard = ({ jobPost }: Props) => {
                 <Edit />
               </p>
             </Button>
-          ) : (
-            isJobSeeker && (
-              <Button
-                variant={jobPost.isOpen ? "default" : "destructive"}
-                disabled={!jobPost.isOpen}
-                className="w-full md:w-max ml-auto lg:w-full"
-                onClick={() =>
-                  !user
-                    ? router.push("/auth/login")
-                    : !isElligible
-                    ? setOpen(true)
-                    : router.push(`${jobPost.id}/apply`)
-                }
-              >
-                {jobPost.isOpen ? "Apply" : "Closed"}
-              </Button>
-            )
           )}
         </div>
         <hr />
@@ -159,6 +195,24 @@ const UserReactionCard = ({ jobPost }: Props) => {
             <Button onClick={() => router.push(`${jobPost.id}/apply`)}>
               Continue
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isDeleteOpen}>
+        <DialogContent>
+          <DialogHeader className="space-y-4">
+            <DialogTitle>Delete Application</DialogTitle>
+            <DialogDescription>
+              This action is irreversable. Continue anyway?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button onClick={() => setDeleteOpen(false)} variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button onClick={() => deletePost(jobPost.id)}>Continue</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
