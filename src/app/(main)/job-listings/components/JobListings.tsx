@@ -1,35 +1,29 @@
+"use client";
 import Pagination from "@/components/general/Pagination";
-import jobPostService from "@/services/jobPost-service";
+import { useJobPosts } from "@/hooks/useJobPosts";
+import { useSearchParams } from "next/navigation";
 import JobPostCard from "./JobPostCard";
 
-interface Props {
-  searchParams: Promise<Record<string, string>>;
-}
+const JobListings = () => {
+  const filters = useSearchParams();
+  const { data: jobPosts } = useJobPosts(filters.toString());
 
-const JobListings = async ({ searchParams }: Props) => {
-  const filters = await searchParams;
-  const {
-    content: jobPosts,
-    first,
-    last,
-    pageNumber,
-    totalElements,
-    pageSize,
-    totalPages,
-  } = await jobPostService.jobPosts(filters);
   return (
     <div className="grid gap-4">
-      {jobPosts.map((jobPost) => (
+      {jobPosts?.content.map((jobPost) => (
         <JobPostCard jobPost={jobPost} key={jobPost.id} />
       ))}
-      <Pagination
-        pageNumber={pageNumber}
-        first={first}
-        last={last}
-        totalElements={totalElements}
-        pageSize={pageSize}
-        totalPages={totalPages}
-      />
+
+      {jobPosts && (
+        <Pagination
+          pageNumber={jobPosts.pageNumber}
+          first={jobPosts.first}
+          last={jobPosts.last}
+          totalElements={jobPosts.totalElements}
+          pageSize={jobPosts.pageSize}
+          totalPages={jobPosts.totalPages}
+        />
+      )}
     </div>
   );
 };

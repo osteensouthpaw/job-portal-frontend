@@ -1,14 +1,17 @@
 "use client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientConfig,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { PropsWithChildren, useState } from "react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const QueryProvider = ({ children }: PropsWithChildren) => {
-  const options = {
+  const options: QueryClientConfig = {
     defaultOptions: {
       queries: {
-        retry: 3,
-        staleTime: 10 * 1000,
+        staleTime: 30 * 1000,
       },
     },
   };

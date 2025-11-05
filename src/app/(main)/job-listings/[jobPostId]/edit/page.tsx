@@ -1,16 +1,16 @@
+"use client";
 import JobPostForm from "@/app/(main)/post-job/_components/JobPostForm";
 import Testimonials from "@/app/(main)/post-job/_components/Testimonials";
 import { Card } from "@/components/ui/card";
-import jobPostService from "@/services/jobPost-service";
-import React from "react";
+import { useJobPost } from "@/hooks/useJobPosts";
+import { useParams } from "next/navigation";
 
-interface Props {
-  params: Promise<{ jobPostId: string }>;
-}
+const EditJobPostPage = () => {
+  const params = useParams();
+  const id = params.jobPostId as string;
+  const { data: jobPost, error } = useJobPost(parseInt(id));
 
-const EditJobPostPage = async ({ params }: Props) => {
-  const { jobPostId } = await params;
-  const jobPost = await jobPostService.getJobPostById(parseInt(jobPostId));
+  if (error) console.log(error);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

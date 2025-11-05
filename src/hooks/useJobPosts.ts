@@ -3,6 +3,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+export const useJobPosts = (params?: string) =>
+  useQuery({
+    queryKey: ["job-posts"],
+    queryFn: () => jobPostService.jobPosts(params),
+  });
+
+export const useJobPost = (jobPostId: number) =>
+  useQuery({
+    queryKey: ["job-listings", jobPostId],
+    queryFn: () =>
+      jobPostService.getJobPostById(jobPostId).then((res) => res.data),
+    staleTime: 60 * 60 * 10, //10mins
+  });
+
 //return all jobosts liked by this user
 export const useLikedJobPosts = () =>
   useQuery({

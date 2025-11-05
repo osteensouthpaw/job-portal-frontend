@@ -2,11 +2,7 @@ import { Suspense } from "react";
 import JobListings from "./components/JobListings";
 import JobListingsFilter from "./components/JobListingsFilter";
 
-interface Props {
-  searchParams: Promise<Record<string, string>>;
-}
-
-const HomePage = async ({ searchParams }: Props) => {
+const HomePage = () => {
   return (
     <div className="md:grid grid-cols-3 gap-8">
       <div
@@ -24,7 +20,7 @@ const HomePage = async ({ searchParams }: Props) => {
       </div>
 
       <div className="col-span-2 col-start-2 overflow-auto">
-        <JobListings searchParams={searchParams} />
+        <JobListings />
       </div>
     </div>
   );

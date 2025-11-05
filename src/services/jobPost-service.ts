@@ -62,22 +62,20 @@ export interface JobPostRequest {
 }
 
 class JobPostService {
-  async jobPosts(filters?: Record<string, string>) {
-    const params = new URLSearchParams(filters).toString();
+  async jobPosts(filters?: string) {
+    console.log;
     return apiClient
-      .get<PageResponse<JobPostResponse>>("/job-posts", { params: { params } })
+      .get<PageResponse<JobPostResponse>>("/job-posts", {
+        params: {
+          filters,
+        },
+      })
       .then((res) => res.data);
   }
 
-  async getJobPostById(jobPostId: number) {
-    return apiClient
-      .get<JobPostResponse>("/job-posts/" + jobPostId)
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err);
-        return notFound();
-      });
-  }
+  getJobPostById = (jobPostId: number) => {
+    return apiClient.get<JobPostResponse>("/job-posts/" + jobPostId);
+  };
 
   async getJobPostsByRecruiter() {
     return apiClient.get<PageResponse<JobPostResponse>>("/");

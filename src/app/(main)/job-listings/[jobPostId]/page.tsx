@@ -1,16 +1,19 @@
-import jobPostService from "@/services/jobPost-service";
-import JobDetailsCard from "./components/JobDetailsCard";
+"use client";
+import { useJobPost } from "@/hooks/useJobPosts";
 import JobDescriptionCard from "./components/JobDescriptionCard";
+import JobDetailsCard from "./components/JobDetailsCard";
 import JobPostHeader from "./components/JobPostHeader";
 import UserReactionCard from "./components/UserReactionCard";
+import { notFound, useParams } from "next/navigation";
 
-interface Props {
-  params: Promise<{ jobPostId: string }>;
-}
+const JobPostDetailPage = () => {
+  const params = useParams();
+  const id = params.jobPostId as string;
+  const { data: jobPost, error, isLoading } = useJobPost(parseInt(id));
 
-const JobPostDetailPage = async ({ params }: Props) => {
-  const { jobPostId } = await params;
-  const jobPost = await jobPostService.getJobPostById(parseInt(jobPostId));
+  if (isLoading) return <div>Loading</div>;
+  if (error) console.log(error);
+  if (!jobPost) return notFound();
 
   return (
     <div>
