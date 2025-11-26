@@ -40,7 +40,7 @@ export async function logout() {
 }
 
 export async function register(data: RegisterFormData) {
-  return apiClient.post<UserResponse>("/auth/register", data);
+  return apiClient.post<AuthResponse>("/auth/register", data);
 }
 
 export async function getSession() {

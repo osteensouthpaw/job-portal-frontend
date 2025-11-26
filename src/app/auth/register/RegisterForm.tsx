@@ -30,6 +30,8 @@ import { registerSchema } from "@/schemas/validationSchemas";
 import { register } from "@/services/auth-service";
 import { AxiosError } from "axios";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/AuthProvider";
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -37,6 +39,8 @@ export default function RegisterForm() {
   const [errors, setError] = useState<string | string[] | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
   const [isLoading, setLoading] = useState(false);
+  const router = useRouter();
+  const { setToken, setUser } = useAuth();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -52,15 +56,18 @@ export default function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     setLoading(true);
     await register(data)
-      .then(() => {
+      .then(({ data }) => {
         setLoading(false);
         setSuccess(
           "Successful. Kindly verify your account to complete registration"
         );
+        setUser(data.userResponse);
+        setToken(data.token);
+        router.push("/onboarding");
       })
       .catch((err) => {
         if (err instanceof AxiosError) {
-          setError(err.message);
+          setError(err.response?.data.message);
           setLoading(false);
         }
       })
@@ -68,8 +75,8 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">
-      <Card className="mx-auto max-w-sm">
+    <div>
+      <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>
