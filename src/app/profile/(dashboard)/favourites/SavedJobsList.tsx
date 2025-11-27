@@ -1,9 +1,9 @@
+import JobPostCard from "@/app/(main)/job-listings/components/JobPostCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { JobPostResponse } from "@/services/jobPost-service";
 import { Bookmark, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import JobCard from "./JobCard";
 
 interface Props {
   savedJobs?: JobPostResponse[];
@@ -32,7 +32,7 @@ const SavedJobsList = ({ savedJobs }: Props) => {
           </CardContent>
         </Card>
       ) : (
-        savedJobs.map((job) => <JobCard key={job.id} jobPost={job} />)
+        savedJobs.map((job) => <JobPostCard key={job.id} jobPost={job} />)
       )}
     </div>
   );
