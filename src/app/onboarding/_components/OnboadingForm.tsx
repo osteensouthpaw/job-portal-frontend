@@ -1,12 +1,9 @@
 "use client";
 import { useAuth } from "@/app/AuthProvider";
-import { Card, CardContent } from "@/components/ui/card";
-import Logo from "@/public/logo.png";
-import Image from "next/image";
+import { UserType } from "@/services/auth-service";
 import { redirect } from "next/navigation";
 import { useState } from "react";
-import { UserType } from "@/services/auth-service";
-import JobSeekerForm from "./JobSeekerForm";
+import { JobSeekerOnboarding, OnboardingData } from "./JobSeekerOnboarding";
 import RecruiterForm from "./RecruiterForm";
 import UserTypeSelection from "./UserTypeSelection";
 
@@ -23,6 +20,10 @@ const OnboadingForm = () => {
     setUserType(userType);
   };
 
+  const onComplete = (data: OnboardingData) => {
+    console.log({ data });
+  };
+
   const renderStep = () => {
     if (step === 1)
       return <UserTypeSelection onSelect={handleUserTypeSelection} />;
@@ -30,22 +31,14 @@ const OnboadingForm = () => {
       return userType === UserType.RECRUITER ? (
         <RecruiterForm />
       ) : (
-        <JobSeekerForm />
+        <JobSeekerOnboarding onComplete={(data) => onComplete(data)} />
       );
     else return null;
   };
 
   return (
     <>
-      <div className="flex items-center gap-3 mb-10">
-        <Image src={Logo} alt="JobMega Logo" width={50} height={50} />
-        <span className="text-4xl font-bold">
-          Job<span className="text-primary">Mega</span>
-        </span>
-      </div>
-      <Card className="w-full max-w-lg">
-        <CardContent className="p-6">{renderStep()}</CardContent>
-      </Card>
+      <div className="w-full">{renderStep()}</div>
     </>
   );
 };
