@@ -1,3 +1,4 @@
+import { UserType } from "@/services/auth-service";
 import { ExperienceLevel, JobType, WorkMode } from "@/services/jobPost-service";
 import * as z from "zod";
 
@@ -10,6 +11,8 @@ export const loginSchema = z.object({
 
 export const registerSchema = z
   .object({
+    role: z.nativeEnum(UserType, { message: "Usertype is required" }),
+    agreeToTerms: z.boolean(),
     name: z
       .string()
       .min(2, { message: "Name must be at least 2 characters long" }),

@@ -16,9 +16,9 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import { LoginFormData } from "./auth/login/LoginForm";
+import { LoginFormData } from "./auth/login/page";
 
-interface ApiError {
+export interface ApiError {
   message: string;
   httpStatus: number;
   timestamp: Date;
