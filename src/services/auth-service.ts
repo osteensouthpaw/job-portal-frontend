@@ -1,6 +1,6 @@
-import { LoginFormData } from "@/app/auth/login/LoginForm";
+import { LoginFormData } from "@/app/auth/login/page";
 import apiClient from "./api-client";
-import { RegisterFormData } from "@/app/auth/register/RegisterForm";
+import { SignupFormData } from "@/app/auth/register/page";
 
 export interface UserResponse {
   id: number;
@@ -15,6 +15,13 @@ export interface UserResponse {
 export interface AuthResponse {
   token: string;
   userResponse: UserResponse;
+}
+
+export interface UpdateUserPasswordRequest {
+  passwordToken: string;
+  oldPassword?: string;
+  password: string;
+  confirmPassword: string;
 }
 
 export enum Gender {
@@ -39,7 +46,7 @@ export async function logout() {
   return apiClient.post("/auth/logout");
 }
 
-export async function register(data: RegisterFormData) {
+export async function register(data: SignupFormData) {
   return apiClient.post<AuthResponse>("/auth/register", data);
 }
 
@@ -49,4 +56,14 @@ export async function getSession() {
 
 export async function refreshToken() {
   return apiClient.post<AuthResponse>("/auth/refresh");
+}
+
+export async function forgotPassword(email: string) {
+  return apiClient.post<void>("/auth/forgot-password", { email });
+}
+
+export async function resetPassword(
+  updatePasswordRequest: UpdateUserPasswordRequest
+) {
+  return apiClient.patch<void>("/auth/reset-password", updatePasswordRequest);
 }
