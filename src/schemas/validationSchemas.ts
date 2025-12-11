@@ -11,7 +11,7 @@ export const loginSchema = z.object({
 
 export const registerSchema = z
   .object({
-    role: z.nativeEnum(UserType, { message: "Usertype is required" }),
+    userType: z.nativeEnum(UserType, { message: "Usertype is required" }),
     agreeToTerms: z.boolean(),
     name: z
       .string()
