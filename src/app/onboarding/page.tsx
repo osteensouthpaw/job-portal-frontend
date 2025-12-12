@@ -1,12 +1,35 @@
-import React from "react";
-import OnboadingForm from "./_components/OnboadingForm";
+"use client";
+import { useAuth } from "@/app/AuthProvider";
+import { UserType } from "@/services/auth-service";
+import { useRouter } from "next/navigation";
+import RecruiterForm from "./RecruiterForm";
+import JobSeekerOnboarding from "./JobSeekerOnboarding";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
 
-const OnboadingPage = () => {
+const UserOnboading = () => {
+  const { user } = useAuth();
+  const router = useRouter();
+  const { data: profile } = useJobSeekerProfile();
+
+  if (profile) {
+    router.push("/job-listings");
+    return;
+  }
+
+  if (user === null) {
+    router.push("/auth/login");
+    return;
+  }
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <OnboadingForm />
+    <div className="w-full">
+      {user.userType === UserType.RECRUITER ? (
+        <RecruiterForm />
+      ) : (
+        <JobSeekerOnboarding onComplete={() => router.push("/job-listings")} />
+      )}
     </div>
   );
 };
 
-export default OnboadingPage;
+export default UserOnboading;
