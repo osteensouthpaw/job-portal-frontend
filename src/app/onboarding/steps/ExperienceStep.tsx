@@ -1,5 +1,4 @@
 "use client";
-import { useAuth } from "@/app/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,12 +14,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAddExperience, useRemoveExperience } from "@/hooks/useExperiences";
 import { JobType } from "@/services/jobPost-service";
 import {
-  createExperience,
-  deleteExperience,
   ExperienceRequest,
   ExperienceResponse,
 } from "@/services/profile-service";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertCircle, ChevronRight, Plus, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -62,13 +58,20 @@ export default function ExperienceStep({
   const startDate = watch("startDate");
   const endDate = watch("endDate");
 
-  const {
-    mutate: addExperience,
-    isPending: isAdding,
-    isSuccess,
-    data: newExp,
-  } = useAddExperience();
-  const { mutate: removeExp, isPending: isRemoving } = useRemoveExperience();
+  const { mutate: addExperience, isPending: isAdding } = useAddExperience(
+    (newExp) => {
+      setExperiences([...experiences, newExp]);
+      reset();
+    }
+  );
+
+  const onRemove = (expId: number) =>
+    setExperiences((prevExp) =>
+      prevExp.filter((experience) => experience.id !== expId)
+    );
+
+  const { mutate: removeExp, isPending: isRemoving } =
+    useRemoveExperience(onRemove);
 
   const onSubmit = (data: ExperienceRequest) => {
     // Date validation
@@ -89,11 +92,6 @@ export default function ExperienceStep({
 
     addExperience(data);
   };
-
-  if (isSuccess) {
-    setExperiences([...experiences, newExp]);
-    reset();
-  }
 
   const renderError = (error?: any) => {
     if (!error) return null;
@@ -299,6 +297,7 @@ export default function ExperienceStep({
           <Textarea
             id="description"
             {...register("description", {
+              required: "description is required",
               maxLength: {
                 value: 1000,
                 message: "Description must be less than 1000 characters",

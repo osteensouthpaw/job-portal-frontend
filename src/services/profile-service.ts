@@ -243,7 +243,7 @@ export interface CertificationRequest {
  */
 export async function createCertification(request: CertificationRequest) {
   return apiClient
-    .post<CertificationResponse>("api/v1/job-seeker/certifications", request)
+    .post<CertificationResponse>("job-seeker/certifications", request)
     .then((res) => res.data);
 }
 
@@ -252,23 +252,18 @@ export async function updateCertification(
   request: CertificationRequest
 ) {
   return apiClient
-    .patch<CertificationResponse>(
-      `api/v1/job-seeker/certifications/${id}`,
-      request
-    )
+    .patch<CertificationResponse>(`job-seeker/certifications/${id}`, request)
     .then((res) => res.data);
 }
 
 export async function deleteCertification(id: number) {
   return apiClient
-    .delete<void>(`api/v1/job-seeker/certifications/${id}`)
+    .delete<void>(`job-seeker/certifications/${id}`)
     .then((res) => res.data);
 }
 
 export async function fetchCertifications(jobSeekerId: number) {
   return apiClient
-    .get<CertificationResponse[]>(
-      `api/v1/job-seeker/certifications/${jobSeekerId}`
-    )
+    .get<CertificationResponse[]>(`job-seeker/certifications/${jobSeekerId}`)
     .then((res) => res.data);
 }

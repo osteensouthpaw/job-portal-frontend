@@ -1,21 +1,15 @@
 "use client";
-import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Plus, X, Sparkles, ChevronRight, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
-import {
-  createSkill,
-  fetchSkills,
-  deleteSkill,
-  SkillRequest,
-} from "@/services/profile-service";
-import { useState } from "react";
 import { useAuth } from "@/app/AuthProvider";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useAddSkill, useRemoveSkill } from "@/hooks/useSkillsets";
+import { SkillRequest, SkillSetResponse } from "@/services/profile-service";
+import { AlertCircle, ChevronRight, Plus, Sparkles, X } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface SkillsStepProps {
   onNext: () => void;
@@ -23,8 +17,18 @@ interface SkillsStepProps {
 }
 
 export default function SkillsStep({ onNext, onSkip }: SkillsStepProps) {
-  const { user } = useAuth();
-  const [skills, setSkills] = useState<any[]>([]);
+  const [skills, setSkills] = useState<SkillSetResponse[]>([]);
+
+  const { mutate: addSkill, isPending: isAdding } = useAddSkill((newSkill) => {
+    setSkills([...skills, newSkill]);
+    reset();
+  });
+  const { mutate: removeSkillMutate, isPending: isRemoving } = useRemoveSkill(
+    (skillId) =>
+      setSkills((skills) =>
+        skills.filter((skillset) => skillset.id !== skillId)
+      )
+  );
 
   const {
     register,
@@ -36,34 +40,6 @@ export default function SkillsStep({ onNext, onSkip }: SkillsStepProps) {
     defaultValues: {
       skill: "",
       description: "",
-    },
-  });
-
-  const { data: fetchedSkills = [] } = useQuery({
-    queryKey: ["skills", user?.id],
-    queryFn: () => (user?.id ? fetchSkills(user.id) : Promise.resolve([])),
-    enabled: !!user?.id,
-  });
-
-  const { mutate: addSkill, isPending: isAdding } = useMutation({
-    mutationFn: (data: SkillRequest) => createSkill(data),
-    onSuccess: (newSkill) => {
-      toast.success("Skill added!");
-      setSkills([...skills, newSkill]);
-      reset();
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to add skill");
-    },
-  });
-
-  const { mutate: removeSkillMutate, isPending: isRemoving } = useMutation({
-    mutationFn: (id: number) => deleteSkill(id),
-    onSuccess: () => {
-      toast.success("Skill removed");
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to remove skill");
     },
   });
 
@@ -80,8 +56,6 @@ export default function SkillsStep({ onNext, onSkip }: SkillsStepProps) {
       </p>
     );
   };
-
-  const allSkills = [...fetchedSkills, ...skills];
 
   return (
     <div className="space-y-6">
@@ -100,11 +74,11 @@ export default function SkillsStep({ onNext, onSkip }: SkillsStepProps) {
       </div>
 
       {/* Added Skills List */}
-      {allSkills.length > 0 && (
+      {skills.length > 0 && (
         <div className="space-y-3">
-          <Label>Added Skills ({allSkills.length})</Label>
+          <Label>Added Skills ({skills.length})</Label>
           <div className="flex flex-wrap gap-2">
-            {allSkills.map((skill) => (
+            {skills.map((skill) => (
               <Badge
                 key={skill.id}
                 className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 pr-1"

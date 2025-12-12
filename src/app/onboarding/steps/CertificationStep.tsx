@@ -1,19 +1,19 @@
 "use client";
-import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, X, Sparkles, CheckCircle2, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  createCertification,
-  fetchCertifications,
-  deleteCertification,
+  useAddCertification,
+  useRemoveCertification,
+} from "@/hooks/useCertifications";
+import {
   CertificationRequest,
+  CertificationResponse,
 } from "@/services/profile-service";
+import { AlertCircle, CheckCircle2, Plus, Sparkles, X } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@/app/AuthProvider";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface CertificationStepProps {
   onNext: () => void;
@@ -24,8 +24,21 @@ export default function CertificationStep({
   onNext,
   onSkip,
 }: CertificationStepProps) {
-  const { user } = useAuth();
-  const [certifications, setCertifications] = useState<any[]>([]);
+  const [certifications, setCertifications] = useState<CertificationResponse[]>(
+    []
+  );
+
+  const { mutate: addCertification, isPending: isAdding } = useAddCertification(
+    (newCert) => {
+      setCertifications([...certifications, newCert]);
+      reset();
+    }
+  );
+
+  const { mutate: removeCert, isPending: isRemoving } = useRemoveCertification(
+    (certId) =>
+      setCertifications((certs) => certs.filter((cert) => cert.id !== certId))
+  );
 
   const {
     register,
@@ -42,46 +55,12 @@ export default function CertificationStep({
     },
   });
 
-  const { data: fetchedCertifications = [] } = useQuery({
-    queryKey: ["certifications", user?.id],
-    queryFn: () =>
-      user?.id ? fetchCertifications(user.id) : Promise.resolve([]),
-    enabled: !!user?.id,
-  });
-
-  const { mutate: addCertification, isPending: isAdding } = useMutation({
-    mutationFn: (data: CertificationRequest) => createCertification(data),
-    onSuccess: (newCert) => {
-      toast.success("Certification added!");
-      setCertifications([...certifications, newCert]);
-      reset();
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to add certification"
-      );
-    },
-  });
-
-  const { mutate: removeCert, isPending: isRemoving } = useMutation({
-    mutationFn: (id: number) => deleteCertification(id),
-    onSuccess: () => {
-      toast.success("Certification removed");
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to remove certification"
-      );
-    },
-  });
-
   const onSubmit = (data: CertificationRequest) => {
     // Future date validation
     if (data.date && new Date(data.date) > new Date()) {
       toast.error("Certification date cannot be in the future");
       return;
     }
-
     addCertification(data);
   };
 
@@ -94,8 +73,6 @@ export default function CertificationStep({
       </p>
     );
   };
-
-  const allCertifications = [...fetchedCertifications, ...certifications];
 
   return (
     <div className="space-y-6">
@@ -114,10 +91,10 @@ export default function CertificationStep({
       </div>
 
       {/* Added Certifications List */}
-      {allCertifications.length > 0 && (
+      {certifications.length > 0 && (
         <div className="space-y-3">
-          <Label>Added Certifications ({allCertifications.length})</Label>
-          {allCertifications.map((cert) => (
+          <Label>Added Certifications ({certifications.length})</Label>
+          {certifications.map((cert) => (
             <div
               key={cert.id}
               className="flex items-start justify-between p-3 bg-muted/50 rounded-lg"

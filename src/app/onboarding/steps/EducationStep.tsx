@@ -1,8 +1,7 @@
 "use client";
-import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -10,18 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Plus, X, Sparkles, ChevronRight, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
+import { useAddEducation, useRemoveEducation } from "@/hooks/useEducation";
 import {
-  createEducation,
-  fetchEducations,
-  deleteEducation,
-  EducationRequest,
   EducationLevel,
+  EducationRequest,
+  EducationResponse,
 } from "@/services/profile-service";
+import { AlertCircle, ChevronRight, Plus, Sparkles, X } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@/app/AuthProvider";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface EducationStepProps {
   onNext: () => void;
@@ -29,8 +26,22 @@ interface EducationStepProps {
 }
 
 export default function EducationStep({ onNext, onSkip }: EducationStepProps) {
-  const { user } = useAuth();
-  const [educations, setEducations] = useState<any[]>([]);
+  const [educations, setEducations] = useState<EducationResponse[]>([]);
+
+  const { mutate: addEducation, isPending: isAdding } = useAddEducation(
+    (newEducation) => {
+      setEducations([...educations, newEducation]);
+      reset();
+    }
+  );
+
+  const onRemove = (educationId: number) =>
+    setEducations((educations) =>
+      educations.filter((education) => education.id !== educationId)
+    );
+
+  const { mutate: removeEdu, isPending: isRemoving } =
+    useRemoveEducation(onRemove);
 
   const {
     register,
@@ -53,36 +64,6 @@ export default function EducationStep({ onNext, onSkip }: EducationStepProps) {
   });
 
   const startDate = watch("startDate");
-
-  const { data: fetchedEducations = [] } = useQuery({
-    queryKey: ["educations", user?.id],
-    queryFn: () => (user?.id ? fetchEducations(user.id) : Promise.resolve([])),
-    enabled: !!user?.id,
-  });
-
-  const { mutate: addEducation, isPending: isAdding } = useMutation({
-    mutationFn: (data: EducationRequest) => createEducation(data),
-    onSuccess: (newEdu) => {
-      toast.success("Education added!");
-      setEducations([...educations, newEdu]);
-      reset();
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to add education");
-    },
-  });
-
-  const { mutate: removeEdu, isPending: isRemoving } = useMutation({
-    mutationFn: (id: number) => deleteEducation(id),
-    onSuccess: () => {
-      toast.success("Education removed");
-    },
-    onError: (error: any) => {
-      toast.error(
-        error?.response?.data?.message || "Failed to remove education"
-      );
-    },
-  });
 
   const onSubmit = (data: EducationRequest) => {
     // Date validation
@@ -117,8 +98,6 @@ export default function EducationStep({ onNext, onSkip }: EducationStepProps) {
     );
   };
 
-  const allEducations = [...fetchedEducations, ...educations];
-
   return (
     <div className="space-y-6">
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
@@ -136,10 +115,10 @@ export default function EducationStep({ onNext, onSkip }: EducationStepProps) {
       </div>
 
       {/* Added Education List */}
-      {allEducations.length > 0 && (
+      {educations.length > 0 && (
         <div className="space-y-3">
-          <Label>Added Education ({allEducations.length})</Label>
-          {allEducations.map((edu) => (
+          <Label>Added Education ({educations.length})</Label>
+          {educations.map((edu) => (
             <div
               key={edu.id}
               className="flex items-start justify-between p-3 bg-muted/50 rounded-lg"

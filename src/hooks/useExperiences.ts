@@ -1,11 +1,11 @@
-import { UserResponse } from "@/services/auth-service";
 import {
-  fetchExperiences,
-  ExperienceRequest,
   createExperience,
   deleteExperience,
+  ExperienceRequest,
+  ExperienceResponse,
+  fetchExperiences,
 } from "@/services/profile-service";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useExperiences = (id?: number) =>
@@ -15,22 +15,24 @@ export const useExperiences = (id?: number) =>
     enabled: !!id,
   });
 
-export const useAddExperience = () =>
+export const useAddExperience = (onAdd?: (data: ExperienceResponse) => void) =>
   useMutation({
     mutationFn: (data: ExperienceRequest) => createExperience(data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Experience added!");
+      onAdd?.(data);
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Failed to add experience");
     },
   });
 
-export const useRemoveExperience = () =>
+export const useRemoveExperience = (onRemove?: (expId: number) => void) =>
   useMutation({
     mutationFn: (id: number) => deleteExperience(id),
-    onSuccess: () => {
+    onSuccess: (data, expId) => {
       toast.success("Experience removed");
+      onRemove?.(expId);
     },
     onError: (error: any) => {
       toast.error(
