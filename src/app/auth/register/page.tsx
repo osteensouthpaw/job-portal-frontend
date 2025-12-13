@@ -31,7 +31,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import ErrorMessage from "./ErrorMessage";
+import ErrorMessage from "../ErrorMessage";
 import { ApiError, useAuth } from "@/app/AuthProvider";
 import { AxiosError } from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,7 +49,7 @@ export default function SignupPage() {
   const form = useForm<SignupFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: UserType.JOB_SEEKER,
+      userType: UserType.JOB_SEEKER,
       name: "",
       email: "",
       phone: "",
@@ -117,7 +117,7 @@ export default function SignupPage() {
                 <Label className="mb-3 block">I am a *</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Controller
-                    name="role"
+                    name="userType"
                     control={form.control}
                     render={({ field }) => (
                       <>
@@ -214,10 +214,6 @@ export default function SignupPage() {
                     placeholder="John Doe"
                     {...form.register("name", {
                       required: "Full name is required",
-                      // minLength: {
-                      //   value: 2,
-                      //   message: "Name must be at least 2 characters",
-                      // },
                     })}
                     className="mt-1"
                     disabled={isLoading}
