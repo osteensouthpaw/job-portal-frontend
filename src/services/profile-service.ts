@@ -70,29 +70,6 @@ export interface JobSeekerProfileRequest {
   experienceLevel: ExperienceLevel;
 }
 
-export async function findJobSeekerProfile(id: number) {
-  return apiClient
-    .get<JobSeekerProfileResponse>(`job-seekers/${id}`)
-    .then((res) => res.data);
-}
-
-export async function updateJobSeekerProfile(
-  profileData: JobSeekerProfileRequest
-) {
-  return await apiClient.patch<JobSeekerProfileResponse>(
-    `job-seekers/me`,
-    profileData
-  );
-}
-
-export async function createJobSeeerProfile(
-  profileData: JobSeekerProfileRequest
-) {
-  return apiClient.post<JobSeekerProfileResponse>("job-seekers", profileData);
-}
-
-// ---------- Added: Education / Experience / Skills CRUD (client -> backend controllers) ----------
-
 export interface EducationRequest {
   educationLevel: EducationLevel;
   location: string;
@@ -120,96 +97,133 @@ export interface SkillRequest {
   description?: string;
 }
 
-/**
- * Education endpoints
- * Backend controller: POST /api/v1/job-seeker/education
- *                 GET  /api/v1/job-seeker/education/{jobSeekerId}  -> List<EducationResponse>
- *                 PATCH/DELETE /api/v1/job-seeker/education/{id}
- */
-export async function createEducation(request: EducationRequest) {
+export async function findJobSeekerProfile(id: number) {
   return apiClient
-    .post<EducationResponse>("job-seeker/education", request)
+    .get<JobSeekerProfileResponse>(`job-seekers/${id}`)
     .then((res) => res.data);
 }
 
-export async function updateEducation(id: number, request: EducationRequest) {
+export async function updateJobSeekerProfile(
+  profileData: JobSeekerProfileRequest
+) {
+  return await apiClient.patch<JobSeekerProfileResponse>(
+    `job-seekers/me`,
+    profileData
+  );
+}
+
+export async function createJobSeeerProfile(
+  profileData: JobSeekerProfileRequest
+) {
+  return apiClient.post<JobSeekerProfileResponse>("job-seekers", profileData);
+}
+
+// ---------- Added: Education / Experience / Skills CRUD (client -> backend controllers) ----------
+
+export async function createEducation(
+  jobSeekerId: number,
+  request: EducationRequest
+) {
   return apiClient
-    .patch<EducationResponse>(`job-seeker/education/${id}`, request)
+    .post<EducationResponse>(`job-seekers/${jobSeekerId}/education`, request)
     .then((res) => res.data);
 }
 
-export async function deleteEducation(id: number) {
+export async function updateEducation(
+  jobSeekerId: number,
+  id: number,
+  request: EducationRequest
+) {
   return apiClient
-    .delete<void>(`job-seeker/education/${id}`)
+    .patch<EducationResponse>(
+      `job-seekers/${jobSeekerId}/education/${id}`,
+      request
+    )
     .then((res) => res.data);
 }
 
-/**
- * Retrieve education list for a job seeker (controller signature uses a path variable id)
- * Example: GET /api/v1/job-seeker/education/{jobSeekerId}
- */
+export async function deleteEducation(jobSeekerId: number, id: number) {
+  return apiClient
+    .delete<void>(`job-seekers/${jobSeekerId}/education/${id}`)
+    .then((res) => res.data);
+}
+
 export async function fetchEducations(jobSeekerId: number) {
   return apiClient
-    .get<EducationResponse[]>(`job-seeker/education/${jobSeekerId}`)
+    .get<EducationResponse[]>(`job-seekers/${jobSeekerId}/education`)
     .then((res) => res.data);
 }
 
 /**
  * Experience endpoints
- * Backend controller: POST /api/v1/job-seeker/experiences
- *                 GET  /api/v1/job-seeker/experiences/{jobSeekerId}  -> List<ExperienceResponse>
- *                 PATCH/DELETE /api/v1/job-seeker/experiences/{id}
+ * Backend controller: POST /api/v1/job-seekers/experiences
+ *                 GET  /api/v1/job-seekers/experiences/{jobSeekerId}  -> List<ExperienceResponse>
+ *                 PATCH/DELETE /api/v1/job-seekers/experiences/{id}
  */
-export async function createExperience(request: ExperienceRequest) {
+export async function createExperience(
+  request: ExperienceRequest,
+  jobSeekerId: number
+) {
   return apiClient
-    .post<ExperienceResponse>("job-seeker/experiences", request)
+    .post<ExperienceResponse>(`job-seekers/${jobSeekerId}/experiences`, request)
     .then((res) => res.data);
 }
 
-export async function updateExperience(id: number, request: ExperienceRequest) {
+export async function updateExperience(
+  id: number,
+  jobSeekerId: number,
+  request: ExperienceRequest
+) {
   return apiClient
-    .patch<ExperienceResponse>(`job-seeker/experiences/${id}`, request)
+    .patch<ExperienceResponse>(
+      `job-seekers/${jobSeekerId}/experiences/${id}`,
+      request
+    )
     .then((res) => res.data);
 }
 
-export async function deleteExperience(id: number) {
+export async function deleteExperience(id: number, jobSeekerId: number) {
   return apiClient
-    .delete<void>(`job-seeker/experiences/${id}`)
+    .delete<void>(`job-seekers/${jobSeekerId}/experiences/${id}`)
     .then((res) => res.data);
 }
 
 export async function fetchExperiences(jobSeekerId: number) {
   return apiClient
-    .get<ExperienceResponse[]>(`job-seeker/experiences/${jobSeekerId}`)
+    .get<ExperienceResponse[]>(`job-seekers/${jobSeekerId}/experiences`)
     .then((res) => res.data);
 }
 
 /**
  * Skills (skillset) endpoints
- * Assumption: controller exposes similar paths under api/v1/job-seeker/skills
+ * Assumption: controller exposes similar paths under api/v1/job-seekers/skills
  * If backend path differs adjust accordingly.
  */
-export async function createSkill(request: SkillRequest) {
+export async function createSkill(request: SkillRequest, jobSeekerId: number) {
   return apiClient
-    .post<SkillSetResponse>("job-seeker/skills", request)
+    .post<SkillSetResponse>(`job-seekers/${jobSeekerId}/skills`, request)
     .then((res) => res.data);
 }
 
-export async function updateSkill(id: number, request: SkillRequest) {
+export async function updateSkill(
+  id: number,
+  jobSeekerId: number,
+  request: SkillRequest
+) {
   return apiClient
-    .patch<SkillSetResponse>(`job-seeker/skills/${id}`, request)
+    .patch<SkillSetResponse>(`job-seekers/${jobSeekerId}/skills/${id}`, request)
     .then((res) => res.data);
 }
 
-export async function deleteSkill(id: number) {
+export async function deleteSkill(id: number, jobSeekerId: number) {
   return apiClient
-    .delete<void>(`job-seeker/skills/${id}`)
+    .delete<void>(`job-seekers/${jobSeekerId}/skills/${id}`)
     .then((res) => res.data);
 }
 
 export async function fetchSkills(jobSeekerId: number) {
   return apiClient
-    .get<SkillSetResponse[]>(`job-seeker/skills/${jobSeekerId}`)
+    .get<SkillSetResponse[]>(`job-seekers/${jobSeekerId}/skills`)
     .then((res) => res.data);
 }
 
@@ -233,37 +247,39 @@ export interface CertificationRequest {
   certificateUrl?: string;
 }
 
-/**
- * Certifications endpoints
- * Assumed backend paths:
- *  POST   /api/v1/job-seeker/certifications
- *  GET    /api/v1/job-seeker/certifications/{jobSeekerId}
- *  PATCH  /api/v1/job-seeker/certifications/{id}
- *  DELETE /api/v1/job-seeker/certifications/{id}
- */
-export async function createCertification(request: CertificationRequest) {
+export async function createCertification(
+  request: CertificationRequest,
+  jobSeekerId: number
+) {
   return apiClient
-    .post<CertificationResponse>("job-seeker/certifications", request)
+    .post<CertificationResponse>(
+      `job-seekers/${jobSeekerId}/certifications`,
+      request
+    )
     .then((res) => res.data);
 }
 
 export async function updateCertification(
   id: number,
+  jobSeekerId: number,
   request: CertificationRequest
 ) {
   return apiClient
-    .patch<CertificationResponse>(`job-seeker/certifications/${id}`, request)
+    .patch<CertificationResponse>(
+      `job-seekers/${jobSeekerId}/certifications/${id}`,
+      request
+    )
     .then((res) => res.data);
 }
 
-export async function deleteCertification(id: number) {
+export async function deleteCertification(id: number, jobSeekerId: number) {
   return apiClient
-    .delete<void>(`job-seeker/certifications/${id}`)
+    .delete<void>(`job-seekers/${jobSeekerId}/certifications/${id}`)
     .then((res) => res.data);
 }
 
 export async function fetchCertifications(jobSeekerId: number) {
   return apiClient
-    .get<CertificationResponse[]>(`job-seeker/certifications/${jobSeekerId}`)
+    .get<CertificationResponse[]>(`job-seekers/${jobSeekerId}/certifications`)
     .then((res) => res.data);
 }

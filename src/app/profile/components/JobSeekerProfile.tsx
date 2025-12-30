@@ -3,38 +3,21 @@
 import {
   CertificationRequest,
   CertificationResponse,
-  createCertification,
-  createEducation,
-  createExperience,
-  createSkill,
-  deleteCertification,
-  deleteEducation,
-  deleteExperience,
-  deleteSkill,
   EducationLevel,
   EducationRequest,
   EducationResponse,
   ExperienceRequest,
   ExperienceResponse,
-  fetchCertifications,
-  fetchEducations,
-  fetchExperiences,
-  fetchSkills,
   JobSeekerProfileRequest,
   SkillRequest,
   SkillSetResponse,
-  updateCertification,
-  updateEducation,
-  updateExperience,
   updateJobSeekerProfile,
-  updateSkill,
 } from "@/services/profile-service";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { useAuth } from "@/app/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,7 +34,32 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  useAddCertification,
+  useFetchCertification,
+  useRemoveCertification,
+  useUpdateCertification,
+} from "@/hooks/useCertifications";
+import {
+  useAddEducation,
+  useEducation,
+  useRemoveEducation,
+  useUpdateEducation,
+} from "@/hooks/useEducation";
+import {
+  useAddExperience,
+  useExperiences,
+  useRemoveExperience,
+  useUpdateExperience,
+} from "@/hooks/useExperiences";
 import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import {
+  useAddSkill,
+  useFetchSkills,
+  useRemoveSkill,
+  useUpdateSkill,
+} from "@/hooks/useSkillsets";
+import { UserResponse } from "@/services/auth-service";
 import { ExperienceLevel, JobType } from "@/services/jobPost-service";
 import {
   Award,
@@ -70,22 +78,18 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import "react-day-picker/dist/style.css";
 import { CertificationDialog } from "./dialogs/CertificationDialog";
 import { EducationDialog } from "./dialogs/EducationDialog";
 import { ExperienceDialog } from "./dialogs/ExperienceDialog";
 import { SkillDialog } from "./dialogs/SkillDialog";
 
-export const ProfilePage = () => {
+interface Props {
+  user: UserResponse;
+}
+
+export const ProfilePage = ({ user }: Props) => {
   const queryClient = useQueryClient();
-  const router = useRouter();
-  const { user } = useAuth();
-  // Profile Query
-  if (!user) {
-    router.push("/auth/login");
-    return null;
-  }
 
   const {
     data: profile,
@@ -94,40 +98,23 @@ export const ProfilePage = () => {
   } = useJobSeekerProfile(user.id);
 
   // Experience Query
-  const { data: experiences = [], isLoading: expLoading } = useQuery<
-    ExperienceResponse[]
-  >({
-    queryKey: ["experiences", user.id],
-    queryFn: () => fetchExperiences(user.id),
-    enabled: !!profile,
-  });
+  const { data: experiences = [], isLoading: expLoading } = useExperiences(
+    user.id
+  );
 
   // Education Query
-  const { data: educations = [], isLoading: eduLoading } = useQuery<
-    EducationResponse[]
-  >({
-    queryKey: ["educations", user.id],
-    queryFn: () => fetchEducations(user.id),
-    enabled: !!profile,
-  });
+  const { data: educations = [], isLoading: eduLoading } = useEducation(
+    user.id
+  );
 
   // Skills Query
-  const { data: skills = [], isLoading: skillsLoading } = useQuery<
-    SkillSetResponse[]
-  >({
-    queryKey: ["skills", user.id],
-    queryFn: () => fetchSkills(user.id),
-    enabled: !!profile,
-  });
+  const { data: skills = [], isLoading: skillsLoading } = useFetchSkills(
+    user.id
+  );
 
   // Certifications Query
-  const { data: certifications = [], isLoading: certsLoading } = useQuery<
-    CertificationResponse[]
-  >({
-    queryKey: ["certifications", user.id],
-    queryFn: () => fetchCertifications(user.id),
-    enabled: !!profile,
-  });
+  const { data: certifications = [], isLoading: certsLoading } =
+    useFetchCertification(user.id);
 
   // Profile Edit Form
   const [isEditing, setIsEditing] = useState(false);
@@ -301,111 +288,68 @@ export const ProfilePage = () => {
   });
 
   // --- Experience Handlers ---
-  const expMutation = useMutation({
-    mutationFn: (data: ExperienceRequest) =>
-      editingExp
-        ? updateExperience(editingExp.id, data)
-        : createExperience(data),
-    onSuccess: () => {
-      toast.success(
-        editingExp
-          ? "Experience updated successfully!"
-          : "Experience added successfully!"
-      );
-      setExpDialogOpen(false);
-      setEditingExp(null);
-      queryClient.invalidateQueries({ queryKey: ["experiences", user.id] });
-    },
-    onError: () => toast.error("Failed to save experience"),
-  });
+  const onMutateExperience = () => {
+    setExpDialogOpen(false);
+    setEditingExp(null);
+    queryClient.invalidateQueries({ queryKey: ["experiences", user.id] });
+  };
 
-  const expDeleteMutation = useMutation({
-    mutationFn: (id: number) => deleteExperience(id),
-    onSuccess: () => {
-      toast.success("Experience removed");
-      queryClient.invalidateQueries({ queryKey: ["experiences", user.id] });
-    },
-    onError: () => toast.error("Failed to delete experience"),
+  const expMutation = editingExp
+    ? useUpdateExperience(user.id, editingExp.id, onMutateExperience)
+    : useAddExperience(user.id, onMutateExperience);
+
+  const expDeleteMutation = useRemoveExperience(user.id, () => {
+    toast.success("Experience removed");
+    queryClient.invalidateQueries({ queryKey: ["experiences", user.id] });
   });
 
   // --- Education Handlers ---
-  const eduMutation = useMutation({
-    mutationFn: (data: EducationRequest) =>
-      editingEdu ? updateEducation(editingEdu.id, data) : createEducation(data),
-    onSuccess: () => {
-      toast.success(
-        editingEdu
-          ? "Education updated successfully!"
-          : "Education added successfully!"
-      );
-      setEduDialogOpen(false);
-      setEditingEdu(null);
-      queryClient.invalidateQueries({ queryKey: ["educations", user.id] });
-    },
-    onError: () => toast.error("Failed to save education"),
-  });
+  const onMutateEducation = () => {
+    setEduDialogOpen(false);
+    setEditingEdu(null);
+    queryClient.invalidateQueries({ queryKey: ["educations", user.id] });
+  };
 
-  const eduDeleteMutation = useMutation({
-    mutationFn: (id: number) => deleteEducation(id),
-    onSuccess: () => {
-      toast.success("Education removed");
-      queryClient.invalidateQueries({ queryKey: ["educations", user.id] });
-    },
-    onError: () => toast.error("Failed to delete education"),
+  const eduMutation = editingEdu
+    ? useUpdateEducation(user.id, editingEdu.id, onMutateEducation)
+    : useAddEducation(user.id, onMutateEducation);
+
+  const eduDeleteMutation = useRemoveEducation(user.id, () => {
+    toast.success("Education removed");
+    queryClient.invalidateQueries({ queryKey: ["educations", user.id] });
   });
 
   // --- Skill Handlers ---
-  const skillMutation = useMutation({
-    mutationFn: (data: SkillRequest) =>
-      editingSkill ? updateSkill(editingSkill.id, data) : createSkill(data),
-    onSuccess: () => {
-      toast.success(
-        editingSkill
-          ? "Skill updated successfully!"
-          : "Skill added successfully!"
-      );
-      setSkillDialogOpen(false);
-      setEditingSkill(null);
-      queryClient.invalidateQueries({ queryKey: ["skills", user.id] });
-    },
-    onError: () => toast.error("Failed to save skill"),
-  });
+  const onMutateSkill = () => () => {
+    toast.success("Skill added successfully");
+    setSkillDialogOpen(false);
+    setEditingSkill(null);
+    queryClient.invalidateQueries({ queryKey: ["skills", user.id] });
+  };
 
-  const skillDeleteMutation = useMutation({
-    mutationFn: (id: number) => deleteSkill(id),
-    onSuccess: () => {
-      toast.success("Skill removed");
-      queryClient.invalidateQueries({ queryKey: ["skills", user.id] });
-    },
-    onError: () => toast.error("Failed to delete skill"),
+  const skillMutation = editingSkill
+    ? useUpdateSkill(editingSkill.id, user.id, onMutateSkill)
+    : useAddSkill(user.id, onMutateSkill);
+
+  const skillDeleteMutation = useRemoveSkill(user.id, () => {
+    toast.success("Skill removed");
+    queryClient.invalidateQueries({ queryKey: ["skills", user.id] });
   });
 
   // --- Certification Handlers ---
-  const certMutation = useMutation({
-    mutationFn: (data: CertificationRequest) =>
-      editingCert
-        ? updateCertification(editingCert.id, data)
-        : createCertification(data),
-    onSuccess: () => {
-      toast.success(
-        editingCert
-          ? "Certification updated successfully!"
-          : "Certification added successfully!"
-      );
-      setCertDialogOpen(false);
-      setEditingCert(null);
-      queryClient.invalidateQueries({ queryKey: ["certifications", user.id] });
-    },
-    onError: () => toast.error("Failed to save certification"),
-  });
+  const onMutateCertification = () => {
+    setCertDialogOpen(false);
+    setEditingCert(null);
+    queryClient.invalidateQueries({ queryKey: ["certifications", user.id] });
+  };
 
-  const certDeleteMutation = useMutation({
-    mutationFn: (id: number) => deleteCertification(id),
-    onSuccess: () => {
-      toast.success("Certification removed");
-      queryClient.invalidateQueries({ queryKey: ["certifications", user.id] });
-    },
-    onError: () => toast.error("Failed to delete certification"),
+  const certMutation = editingCert
+    ? useUpdateCertification(editingCert.id, user.id, onMutateCertification)
+    : useAddCertification(user.id, onMutateCertification);
+
+  const certDeleteMutation = useRemoveCertification(user.id, () => {
+    toast.success("Certification removed");
+    queryClient.invalidateQueries({ queryKey: ["certifications", user.id] });
   });
 
   // --- UI Handlers ---

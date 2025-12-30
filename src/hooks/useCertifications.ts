@@ -4,6 +4,7 @@ import {
   createCertification,
   deleteCertification,
   CertificationResponse,
+  updateCertification,
 } from "@/services/profile-service";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -16,10 +17,12 @@ export const useFetchCertification = (id?: number) =>
   });
 
 export const useAddCertification = (
+  jobSeekerId: number,
   onAdd?: (newCert: CertificationResponse) => void
 ) =>
   useMutation({
-    mutationFn: (data: CertificationRequest) => createCertification(data),
+    mutationFn: (data: CertificationRequest) =>
+      createCertification(data, jobSeekerId),
     onSuccess: (newCert) => {
       toast.success("Certification added!");
       onAdd?.(newCert);
@@ -31,9 +34,12 @@ export const useAddCertification = (
     },
   });
 
-export const useRemoveCertification = (onRemove: (certId: number) => void) =>
+export const useRemoveCertification = (
+  jobSeekerId: number,
+  onRemove: (certId: number) => void
+) =>
   useMutation({
-    mutationFn: (id: number) => deleteCertification(id),
+    mutationFn: (id: number) => deleteCertification(id, jobSeekerId),
     onSuccess: (data, certId) => {
       toast.success("Certification removed");
       onRemove?.(certId);
@@ -43,4 +49,20 @@ export const useRemoveCertification = (onRemove: (certId: number) => void) =>
         error?.response?.data?.message || "Failed to remove certification"
       );
     },
+  });
+
+export const useUpdateCertification = (
+  certificateId: number,
+  jobSeekerId: number,
+  onUpdate: () => void
+) =>
+  useMutation({
+    mutationFn: (request: CertificationRequest) =>
+      updateCertification(certificateId, jobSeekerId, request),
+    onSuccess: () => {
+      toast.success("Certificate edited successfully");
+      onUpdate();
+    },
+    onError: (error) =>
+      toast.error(error.message || "Failed to update certificate"),
   });

@@ -4,6 +4,7 @@ import {
   createSkill,
   deleteSkill,
   SkillSetResponse,
+  updateSkill,
 } from "@/services/profile-service";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -15,26 +16,44 @@ export const useFetchSkills = (id?: number) =>
     enabled: !!id,
   });
 
-export const useAddSkill = (onAdd: (newSkill: SkillSetResponse) => void) =>
+export const useAddSkill = (
+  jobSeekerId: number,
+  onAdd?: (newSkill: SkillSetResponse) => void
+) =>
   useMutation({
-    mutationFn: (data: SkillRequest) => createSkill(data),
+    mutationFn: (data: SkillRequest) => createSkill(data, jobSeekerId),
     onSuccess: (newSkill) => {
       toast.success("Skill added!");
       onAdd?.(newSkill);
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to add skill");
+    onError: (error) => {
+      toast.error(error.message || "Failed to add skill");
     },
   });
 
-export const useRemoveSkill = (onRemove?: (skillId: number) => void) =>
+export const useRemoveSkill = (
+  jobSeekerId: number,
+  onRemove?: (skillId: number) => void
+) =>
   useMutation({
-    mutationFn: (id: number) => deleteSkill(id),
+    mutationFn: (id: number) => deleteSkill(id, jobSeekerId),
     onSuccess: (data, skillId) => {
       toast.success("Skill removed");
       onRemove?.(skillId);
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to remove skill");
+    onError: (error) => {
+      toast.error(error.message || "Failed to remove skill");
     },
+  });
+
+export const useUpdateSkill = (
+  skillId: number,
+  jobSeekerId: number,
+  onUpdate?: () => void
+) =>
+  useMutation({
+    mutationFn: (request: SkillRequest) =>
+      updateSkill(skillId, jobSeekerId, request),
+    onSuccess: () => onUpdate?.(),
+    onError: (error) => toast.error(error.message || "Failed to save skill"),
   });
