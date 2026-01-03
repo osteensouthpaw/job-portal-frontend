@@ -6,6 +6,7 @@ import {
   userJobApplications,
 } from "@/services/application-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useJobApplication = (jobPostId: number, userId?: number) =>
   useQuery({
@@ -21,13 +22,12 @@ export const useJobApplications = () =>
     queryFn: userJobApplications,
   });
 
-export const useCreateJobApplication = () => {
-  const queryClient = useQueryClient();
+export const useCreateJobApplication = (onSuccess: () => void) => {
   return useMutation({
     mutationFn: (jobApplication: JobApplicationRequest) =>
       createJobApplication(jobApplication).then((res) => res.data),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["applications"] }),
+    onSuccess: () => onSuccess,
+    onError: (error) => toast.error(error.message),
   });
 };
 
