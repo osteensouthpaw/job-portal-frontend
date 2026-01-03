@@ -5,13 +5,13 @@ import { toast } from "sonner";
 
 export const useJobPosts = (params?: string) =>
   useQuery({
-    queryKey: ["job-posts"],
+    queryKey: ["jobPost"],
     queryFn: () => jobPostService.jobPosts(params),
   });
 
 export const useJobPost = (jobPostId: number) =>
   useQuery({
-    queryKey: ["job-listings", jobPostId],
+    queryKey: ["jobPost", jobPostId],
     queryFn: () =>
       jobPostService.getJobPostById(jobPostId).then((res) => res.data),
     staleTime: 60 * 60 * 10, //10mins
