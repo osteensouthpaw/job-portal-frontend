@@ -116,7 +116,9 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, setToken, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser, setToken, token, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
