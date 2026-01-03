@@ -5,24 +5,13 @@ import jwt from "jsonwebtoken";
 const f = createUploadthing();
 
 function getUserIdFromRequest(req: Request): string {
-  const cookieHeader = req.headers.get("cookie");
-  if (!cookieHeader) throw new UploadThingError("Unauthorized");
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader) throw new UploadThingError("Unauthorized");
+  const token = authHeader?.split(" ")[1];
+  const decodedToken = jwt.decode(token) as jwt.JwtPayload | null;
+  if (!decodedToken) throw new UploadThingError("Invalid token");
 
-  const cookies = Object.fromEntries(
-    cookieHeader.split(";").map((c) => {
-      const [key, ...v] = c.trim().split("=");
-      return [key, v.join("=")];
-    })
-  );
-  const token = cookies["refreshToken"];
-  if (!token) throw new UploadThingError("Unauthorized");
-
-  const payload = jwt.decode(token);
-  if (!payload || typeof payload !== "object" || !("userId" in payload)) {
-    throw new UploadThingError("Unauthorized");
-  }
-
-  return (payload as any).userId;
+  return decodedToken.userId;
 }
 
 export const ourFileRouter = {
