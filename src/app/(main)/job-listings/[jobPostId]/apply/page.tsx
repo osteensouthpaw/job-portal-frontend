@@ -7,26 +7,15 @@ import PersonalInfoSection, {
 } from "@/app/(main)/job-listings/[jobPostId]/apply/sections/PersonalInfoSection";
 import ProfessionalDetailsSection from "@/app/(main)/job-listings/[jobPostId]/apply/sections/ProfessionalDetailsSection";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useCreateJobApplication } from "@/hooks/useApplications";
 import { useJobPost } from "@/hooks/useJobPosts";
-import {
-  AlertCircle,
-  ArrowLeft,
-  Briefcase,
-  Building2,
-  CheckCircle2,
-  Clock,
-  DollarSign,
-  MapPin,
-  Users,
-} from "lucide-react";
-import { notFound, useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import ApplicationSuccessCard from "./ApplicationSuccessCard";
 import { useQueryClient } from "@tanstack/react-query";
+import { AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { notFound, useParams, useRouter } from "next/navigation";
+import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import JobPostCard from "../../components/JobPostCard";
+import ApplicationSuccessCard from "./ApplicationSuccessCard";
 
 function getErrorMessages(errors: any) {
   return Object.entries(errors).map(([field, error]) => {
@@ -122,45 +111,7 @@ export default function JobApplicationPage() {
           </div>
         </div>
 
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-shrink-0">
-                <div className="h-16 w-16 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                  <Building2 className="h-8 w-8 text-green-600 dark:text-green-400" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-foreground mb-1">{jobPost.jobTitle}</h3>
-                <p className="text-muted-foreground mb-3">
-                  {jobPost.organization.companyName}
-                </p>
-                <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    {jobPost.location}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Briefcase className="h-4 w-4" />
-                    {jobPost.jobType}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <DollarSign className="h-4 w-4" />
-                    {jobPost.salary}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {jobPost.experienceLevel}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    Posted {jobPost.createdAt}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <JobPostCard jobPost={jobPost} />
 
         <FormProvider {...methods}>
           <form
