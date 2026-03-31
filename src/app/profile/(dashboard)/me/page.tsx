@@ -9,7 +9,7 @@ const UserProfilePage = () => {
 
   if (!user) {
     router.push("/auth/login");
-    return;
+    return null;
   }
 
   return <ProfilePage user={user} />;
