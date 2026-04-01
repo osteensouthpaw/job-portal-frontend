@@ -103,6 +103,9 @@ const UserReactionCard = ({ jobPost }: Props) => {
               </div>
             </>
           )}
+          {/* if is recruiter don't show apply button otherwise 
+          if recruiter is the owner show edit and delete buttons, 
+          if user is jobseeker check if applied and show status or else show apply button */}
 
           {jobPost.recruiter.id === user?.id ? (
             <div className="flex gap-2">
@@ -121,6 +124,16 @@ const UserReactionCard = ({ jobPost }: Props) => {
                 Delete <Trash />
               </Button>
             </div>
+          ) : jobApplication ? (
+            <Button
+              className="bg-orange-600/90 hover:bg-orange-500"
+              onClick={() => router.push(`${jobPost.id}/job-application`)}
+            >
+              <p className="capitalize text-base flex items-center gap-2">
+                {jobApplication.applicationStatus.toLocaleLowerCase()}
+                <Edit />
+              </p>
+            </Button>
           ) : (
             <Button
               variant={jobPost.isOpen ? "default" : "destructive"}
@@ -137,19 +150,6 @@ const UserReactionCard = ({ jobPost }: Props) => {
               }
             >
               {jobPost.isOpen ? "Apply" : "Closed"}
-            </Button>
-          )}
-
-          {/* //if is already applied, show application status */}
-          {jobApplication && (
-            <Button
-              className="bg-orange-600/90"
-              onClick={() => router.push(`${jobPost.id}/job-application`)}
-            >
-              <p className="capitalize text-base flex items-center gap-2">
-                {jobApplication.applicationStatus.toLocaleLowerCase()}
-                <Edit />
-              </p>
             </Button>
           )}
         </div>
