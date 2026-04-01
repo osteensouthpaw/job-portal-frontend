@@ -16,6 +16,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import JobPostCard from "../../components/JobPostCard";
 import ApplicationSuccessCard from "./ApplicationSuccessCard";
+import { useAuth } from "@/app/AuthProvider";
+import { useEffect } from "react";
 
 function getErrorMessages(errors: any) {
   return Object.entries(errors).map(([field, error]) => {
@@ -35,7 +37,16 @@ export default function JobApplicationPage() {
   const params = useParams();
   const jobPostId = params.jobPostId as string;
   const router = useRouter();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth/login");
+    }
+  }, [user, router]);
+
+  if (!user) return null;
 
   const methods = useForm<ApplicationFormData>({
     defaultValues: {
@@ -60,6 +71,20 @@ export default function JobApplicationPage() {
     },
     mode: "onChange",
   });
+
+  function getErrorMessages(errors: any) {
+    return Object.entries(errors).map(([field, error]) => {
+      if (
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof error.message === "string"
+      ) {
+        return `${field}: ${error.message}`;
+      }
+      return `${field}: Invalid value`;
+    });
+  }
 
   const { data: jobPost, isLoading } = useJobPost(Number(jobPostId));
 
