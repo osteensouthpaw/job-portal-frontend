@@ -3,9 +3,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export const useJobPosts = (params?: string) =>
+export const useJobPosts = (params?: Record<string, any>) =>
   useQuery({
-    queryKey: ["jobPost"],
+    queryKey: ["jobPosts", params],
     queryFn: () => jobPostService.jobPosts(params),
   });
 

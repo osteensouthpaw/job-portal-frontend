@@ -62,14 +62,10 @@ export interface JobPostRequest {
 }
 
 class JobPostService {
-  async jobPosts(filters?: string) {
+  async jobPosts(filters?: Record<string, any>) {
     console.log;
     return apiClient
-      .get<PageResponse<JobPostResponse>>("/job-posts", {
-        params: {
-          filters,
-        },
-      })
+      .get<PageResponse<JobPostResponse>>("/job-posts", { params: filters })
       .then((res) => res.data);
   }
 
