@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToggleLike } from "@/hooks/useJobPosts";
 import { JobPostResponse } from "@/services/jobPost-service";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { formatRelativeTime } from "@/utils/formatRelativeTime";
 import {
   Bookmark,
   BookmarkCheck,
@@ -78,26 +79,6 @@ const JobPostCard = ({ jobPost }: Props) => {
               {jobPost.description}
             </p>
 
-            {/* Match Score */}
-            {/* {job.matchScore && (
-                      <div className="mb-3">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-muted-foreground">
-                            Match Score
-                          </span>
-                          <span className="text-sm text-green-600 dark:text-green-400">
-                            {job.matchScore}%
-                          </span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-green-600 dark:bg-green-500 transition-all"
-                            style={{ width: `${job.matchScore}%` }}
-                          />
-                        </div>
-                      </div>
-                    )} */}
-
             {/* Job Meta */}
             <div className="flex flex-wrap gap-3 mb-3 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
@@ -110,7 +91,7 @@ const JobPostCard = ({ jobPost }: Props) => {
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                Posted {new Date(jobPost.createdAt).toDateString()}
+                Posted {formatRelativeTime(new Date(jobPost.createdAt))}
               </span>
               <span className="flex items-center gap-1">
                 <Briefcase className="h-4 w-4" />
