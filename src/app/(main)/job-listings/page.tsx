@@ -1,5 +1,6 @@
 "use client";
 
+import Pagination from "@/components/general/Pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,8 +23,6 @@ import {
 } from "@/services/jobPost-service";
 import {
   Briefcase,
-  ChevronLeft,
-  ChevronRight,
   Clock,
   DollarSign,
   Search,
@@ -39,7 +38,7 @@ interface Filters {
   workMode: string[];
   experience: string[];
   datePosted: string;
-  salaryMin: string;
+  minSalary: string;
 }
 
 export default function JobBrowsePage() {
@@ -56,16 +55,18 @@ export default function JobBrowsePage() {
     workMode: [],
     experience: [],
     datePosted: "all",
-    salaryMin: "",
+    minSalary: "",
   });
 
   // Build params for API
   const apiParams = {
-    jobType: filters.jobType.length ? filters.jobType : undefined,
-    workMode: filters.workMode.length ? filters.workMode : undefined,
-    experienceLevel: filters.experience.length ? filters.experience : undefined,
+    jobType: filters.jobType.length ? filters.jobType[0] : undefined,
+    workMode: filters.workMode.length ? filters.workMode[0] : undefined,
+    experienceLevel: filters.experience.length
+      ? filters.experience[0]
+      : undefined,
     datePosted: filters.datePosted !== "all" ? filters.datePosted : undefined,
-    salaryMin: filters.salaryMin || undefined,
+    salaryMin: filters.minSalary || undefined,
     search: searchQuery || undefined,
     sortBy,
     page: currentPage - 1,
@@ -73,25 +74,7 @@ export default function JobBrowsePage() {
   };
 
   // Fetch jobs from backend
-
-  const { data, isLoading, error } = useJobPosts(undefined);
-
-  // Helper function to format time ago
-  const formatTimeAgo = (date: string) => {
-    const d = new Date(date);
-    const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
-    if (seconds < 60) return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days} day${days !== 1 ? "s" : ""} ago`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 4) return `${weeks} week${weeks !== 1 ? "s" : ""} ago`;
-    const months = Math.floor(days / 30);
-    return `${months} month${months !== 1 ? "s" : ""} ago`;
-  };
+  const { data, isLoading, error } = useJobPosts(apiParams);
 
   // Reset to page 1 when filters change
   const handleFilterChange = (newFilters: Partial<Filters>) => {
@@ -113,7 +96,7 @@ export default function JobBrowsePage() {
       workMode: [],
       experience: [],
       datePosted: "all",
-      salaryMin: "",
+      minSalary: "",
     });
     setSearchQuery("");
     setCurrentPage(1);
@@ -124,10 +107,11 @@ export default function JobBrowsePage() {
     filters.workMode.length +
     filters.experience.length +
     (filters.datePosted !== "all" ? 1 : 0) +
-    (filters.salaryMin ? 1 : 0);
+    (filters.minSalary ? 1 : 0);
 
   const jobs = data?.content ?? [];
   const totalPages = data?.totalPages ?? 1;
+  const pageNumber = data?.pageNumber ?? 1;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -327,7 +311,7 @@ export default function JobBrowsePage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Time</SelectItem>
+                        <SelectItem value="undefined">All Time</SelectItem>
                         <SelectItem value="minute">Last Minute</SelectItem>
                         <SelectItem value="hour">Last Hour</SelectItem>
                         <SelectItem value="day">Last 24 Hours</SelectItem>
@@ -353,9 +337,9 @@ export default function JobBrowsePage() {
                         id="salary-min"
                         type="number"
                         placeholder="e.g., 50000"
-                        value={filters.salaryMin}
+                        value={filters.minSalary}
                         onChange={(e) =>
-                          handleFilterChange({ salaryMin: e.target.value })
+                          handleFilterChange({ minSalary: e.target.value })
                         }
                         className="pl-10"
                       />
@@ -491,72 +475,18 @@ export default function JobBrowsePage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(1, prev - 1))
-                  }
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
-                </Button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => {
-                      // Show first, last, current, and pages around current
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={
-                              currentPage === page ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setCurrentPage(page)}
-                            className={
-                              currentPage === page
-                                ? "bg-green-600 hover:bg-green-700 text-white"
-                                : ""
-                            }
-                          >
-                            {page}
-                          </Button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                          <span key={page} className="px-2">
-                            ...
-                          </span>
-                        );
-                      }
-                      return null;
-                    }
-                  )}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
+              <Pagination
+                pageNumber={pageNumber}
+                pageSize={data?.pageSize || 1}
+                totalPages={data?.totalPages || 1}
+                onPrevious={() =>
+                  setCurrentPage((prev) => Math.max(1, prev - 1))
+                }
+                onNext={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                onCurrent={(page) => setCurrentPage(page)}
+              />
             )}
           </main>
         </div>
