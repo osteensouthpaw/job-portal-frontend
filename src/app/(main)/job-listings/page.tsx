@@ -58,6 +58,32 @@ export default function JobBrowsePage() {
     minSalary: "",
   });
 
+  function getDatePostedValue(option: string): string | undefined {
+    const now = new Date();
+    let date: Date | undefined;
+    switch (option) {
+      case "minute":
+        date = new Date(now.getTime() - 60 * 1000);
+        break;
+      case "hour":
+        date = new Date(now.getTime() - 60 * 60 * 1000);
+        break;
+      case "day":
+        date = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      case "week":
+        date = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "month":
+        date = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      default:
+        return undefined;
+    }
+    // Format as 'YYYY-MM-DDTHH:mm:ss.SSS' (no Z) for spring boot backend compatibility(LocalDateTime)
+    return date.toISOString().split(".")[0]; // Remove milliseconds and Z
+  }
+
   // Build params for API
   const apiParams = {
     jobType: filters.jobType.length ? filters.jobType[0] : undefined,
@@ -65,8 +91,11 @@ export default function JobBrowsePage() {
     experienceLevel: filters.experience.length
       ? filters.experience[0]
       : undefined,
-    datePosted: filters.datePosted !== "all" ? filters.datePosted : undefined,
-    salaryMin: filters.minSalary || undefined,
+    datePosted:
+      filters.datePosted !== "all"
+        ? getDatePostedValue(filters.datePosted)
+        : undefined,
+    minSalary: filters.minSalary || undefined,
     search: searchQuery || undefined,
     sortBy,
     page: currentPage - 1,
@@ -311,7 +340,7 @@ export default function JobBrowsePage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="undefined">All Time</SelectItem>
+                        <SelectItem value="all">All Time</SelectItem>
                         <SelectItem value="minute">Last Minute</SelectItem>
                         <SelectItem value="hour">Last Hour</SelectItem>
                         <SelectItem value="day">Last 24 Hours</SelectItem>
