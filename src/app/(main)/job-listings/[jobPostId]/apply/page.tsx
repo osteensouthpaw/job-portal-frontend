@@ -7,31 +7,20 @@ import PersonalInfoSection, {
 } from "@/app/(main)/job-listings/[jobPostId]/apply/sections/PersonalInfoSection";
 import ProfessionalDetailsSection from "@/app/(main)/job-listings/[jobPostId]/apply/sections/ProfessionalDetailsSection";
 import { Button } from "@/components/ui/button";
-import { useCreateJobApplication } from "@/hooks/useApplications";
+import {
+  useCreateJobApplication,
+  useJobApplication,
+} from "@/hooks/useApplications";
 import { useJobPost } from "@/hooks/useJobPosts";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { notFound, useParams, useRouter } from "next/navigation";
+import { notFound, redirect, useParams, useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import JobPostCard from "../../components/JobPostCard";
 import ApplicationSuccessCard from "./ApplicationSuccessCard";
 import { useAuth } from "@/app/AuthProvider";
 import { useEffect } from "react";
-
-function getErrorMessages(errors: any) {
-  return Object.entries(errors).map(([field, error]) => {
-    if (
-      error &&
-      typeof error === "object" &&
-      "message" in error &&
-      typeof error.message === "string"
-    ) {
-      return `${field}: ${error.message}`;
-    }
-    return `${field}: Invalid value`;
-  });
-}
 
 export default function JobApplicationPage() {
   const params = useParams();
@@ -47,6 +36,11 @@ export default function JobApplicationPage() {
   }, [user, router]);
 
   if (!user) return null;
+
+  const { data: jobApplication, isPending } = useJobApplication(
+    Number(jobPostId),
+    user.id
+  );
 
   const methods = useForm<ApplicationFormData>({
     defaultValues: {
@@ -88,11 +82,14 @@ export default function JobApplicationPage() {
 
   const { data: jobPost, isLoading } = useJobPost(Number(jobPostId));
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return "Loading...";
   }
 
   if (!jobPost) return notFound();
+
+  if (jobApplication)
+    return redirect(`/job-listings/${jobPostId}/job-application`);
 
   const {
     mutate: createJobApplication,
