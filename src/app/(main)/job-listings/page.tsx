@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import JobPostCard from "./components/JobPostCard";
+import { useAuth } from "@/app/AuthProvider";
 
 interface Filters {
   jobType: string[];
@@ -42,6 +43,7 @@ interface Filters {
 }
 
 export default function JobBrowsePage() {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(true);
   const [sortBy, setSortBy] = useState<"newest" | "relevant" | "salary">(
@@ -480,7 +482,7 @@ export default function JobBrowsePage() {
                 </Card>
               ) : jobs.length > 0 ? (
                 jobs.map((job: JobPostResponse) => (
-                  <JobPostCard key={job.id} jobPost={job} />
+                  <JobPostCard user={user} key={job.id} jobPost={job} />
                 ))
               ) : (
                 <Card className="border-gray-200 dark:border-gray-800">

@@ -1,4 +1,5 @@
 import JobPostCard from "@/app/(main)/job-listings/components/JobPostCard";
+import { useAuth } from "@/app/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { JobPostResponse } from "@/services/jobPost-service";
@@ -11,6 +12,7 @@ interface Props {
 
 const SavedJobsList = ({ savedJobs }: Props) => {
   const router = useRouter();
+  const { user } = useAuth();
 
   return (
     <div className="space-y-4">
@@ -32,7 +34,9 @@ const SavedJobsList = ({ savedJobs }: Props) => {
           </CardContent>
         </Card>
       ) : (
-        savedJobs.map((job) => <JobPostCard key={job.id} jobPost={job} />)
+        savedJobs.map((job) => (
+          <JobPostCard user={user} key={job.id} jobPost={job} />
+        ))
       )}
     </div>
   );

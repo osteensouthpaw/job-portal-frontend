@@ -7,7 +7,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useToggleLike } from "@/hooks/useJobPosts";
+import { useIsLikedJobPost, useToggleLike } from "@/hooks/useJobPosts";
+import { UserResponse } from "@/services/auth-service";
 import { JobPostResponse } from "@/services/jobPost-service";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
@@ -24,10 +25,12 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   jobPost: JobPostResponse;
+  user?: UserResponse | null;
 }
 
-const JobPostCard = ({ jobPost }: Props) => {
-  const { mutate, data: isSaved } = useToggleLike();
+const JobPostCard = ({ jobPost, user }: Props) => {
+  const { mutate } = useToggleLike();
+  const { data: isSaved } = useIsLikedJobPost(jobPost.id, user?.id);
   const router = useRouter();
   const jobType = jobTypes.find((job) =>
     job.key.includes(jobPost.jobType)
@@ -61,18 +64,20 @@ const JobPostCard = ({ jobPost }: Props) => {
                   {jobPost.organization.companyName}
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-green-600 dark:text-green-400 self-start"
-                onClick={() => mutate(jobPost.id)}
-              >
-                {!!isSaved ? (
-                  <BookmarkCheck className="h-5 w-5 fill-current" />
-                ) : (
-                  <Bookmark className="h-5 w-5" />
-                )}
-              </Button>
+              {user && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-green-600 dark:text-green-400 self-start"
+                  onClick={() => mutate(jobPost.id)}
+                >
+                  {isSaved ? (
+                    <BookmarkCheck className="h-5 w-5 fill-current" />
+                  ) : (
+                    <Bookmark className="h-5 w-5" />
+                  )}
+                </Button>
+              )}
             </div>
 
             <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
@@ -119,10 +124,11 @@ const JobPostCard = ({ jobPost }: Props) => {
             {/* Actions */}
             <div className="flex flex-wrap gap-2">
               <Button
+                disabled={!jobPost.isOpen}
                 onClick={() => router.push(`/job-listings/${jobPost.id}/apply`)}
                 className="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white"
               >
-                Apply Now
+                {jobPost.isOpen ? "Apply Now" : "Closed"}
               </Button>
               <Button
                 onClick={() => router.push(`/job-listings/${jobPost.id}`)}
