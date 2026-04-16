@@ -1,14 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { JobPostResponse } from "@/services/jobPost-service";
-import {
-  Building2,
-  MapPin,
-  Briefcase,
-  DollarSign,
-  Users,
-  Clock,
-} from "lucide-react";
-import React from "react";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { formatRelativeTime } from "@/utils/formatRelativeTime";
+import { Briefcase, Building2, Clock, MapPin, Users } from "lucide-react";
 
 const JobPostDisplayCard = ({ jobPost }: { jobPost: JobPostResponse }) => {
   return (
@@ -32,11 +26,10 @@ const JobPostDisplayCard = ({ jobPost }: { jobPost: JobPostResponse }) => {
               </span>
               <span className="flex items-center gap-1">
                 <Briefcase className="h-4 w-4" />
-                {jobPost.jobType}
+                {jobPost.jobType.toWellFormed()}
               </span>
               <span className="flex items-center gap-1">
-                <DollarSign className="h-4 w-4" />
-                {jobPost.salary}
+                {formatCurrency(jobPost.salary)}
               </span>
               <span className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
@@ -44,7 +37,7 @@ const JobPostDisplayCard = ({ jobPost }: { jobPost: JobPostResponse }) => {
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                Posted {jobPost.createdAt}
+                Posted {formatRelativeTime(new Date(jobPost.createdAt))} ago
               </span>
             </div>
           </div>

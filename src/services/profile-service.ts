@@ -50,7 +50,7 @@ export interface JobSeekerProfileResponse {
   gitHubUrl: string;
   twitterUrl: string;
   dateOfBirth: string;
-  phone: string; // ISO date string
+  phone: string;
   experienceLevel: ExperienceLevel;
   experiences: ExperienceResponse[];
   skills: SkillSetResponse[];

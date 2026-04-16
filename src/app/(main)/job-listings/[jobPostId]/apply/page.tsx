@@ -6,6 +6,7 @@ import PersonalInfoSection, {
   ApplicationFormData,
 } from "@/app/(main)/job-listings/[jobPostId]/apply/sections/PersonalInfoSection";
 import ProfessionalDetailsSection from "@/app/(main)/job-listings/[jobPostId]/apply/sections/ProfessionalDetailsSection";
+import { useAuth } from "@/app/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
   useCreateJobApplication,
@@ -15,12 +16,11 @@ import { useJobPost } from "@/hooks/useJobPosts";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { notFound, redirect, useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import JobPostCard from "../../components/JobPostCard";
 import ApplicationSuccessCard from "./ApplicationSuccessCard";
-import { useAuth } from "@/app/AuthProvider";
-import { useEffect } from "react";
+import JobPostDisplayCard from "./JobPostDisplayCard";
 
 export default function JobApplicationPage() {
   const params = useParams();
@@ -133,7 +133,7 @@ export default function JobApplicationPage() {
           </div>
         </div>
 
-        <JobPostCard jobPost={jobPost} />
+        <JobPostDisplayCard jobPost={jobPost} />
 
         <FormProvider {...methods}>
           <form
@@ -157,7 +157,7 @@ export default function JobApplicationPage() {
 
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !methods.formState.isValid}
                 className="bg-green-600 hover:bg-green-700 text-white gap-2"
               >
                 {isSubmitting ? (

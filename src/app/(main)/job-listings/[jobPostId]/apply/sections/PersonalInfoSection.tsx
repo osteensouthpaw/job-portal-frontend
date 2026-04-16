@@ -1,7 +1,10 @@
+import { useAuth } from "@/app/AuthProvider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Globe, Linkedin, Github } from "lucide-react";
-import { FieldErrors, useFormContext, UseFormRegister } from "react-hook-form";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import { AlertTriangle, Github, Globe, Linkedin, Loader2 } from "lucide-react";
+import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 
 export interface ApplicationFormData {
   fullName: string;
@@ -27,8 +30,42 @@ export interface ApplicationFormData {
 const PersonalInfoSection = () => {
   const {
     register,
+    setValue,
     formState: { errors },
   } = useFormContext<ApplicationFormData>();
+
+  const { user } = useAuth();
+  const { data: profile, isLoading, error } = useJobSeekerProfile(user!.id);
+
+  useEffect(() => {
+    if (profile) {
+      if (user) setValue("fullName", user.firstName + " " + user.lastName);
+      if (user?.email) setValue("email", user.email);
+      if (profile.phone) setValue("phone", profile.phone);
+      if (profile.personalWebsiteUrl)
+        setValue("portfolio", profile.personalWebsiteUrl);
+      if (profile.linkedInUrl) setValue("linkedin", profile.linkedInUrl);
+      if (profile.gitHubUrl) setValue("github", profile.gitHubUrl);
+    }
+  }, [profile, setValue, user]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 py-8 justify-center text-muted-foreground">
+        <Loader2 className="animate-spin w-5 h-5" />
+        Loading profile...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center gap-2 py-8 justify-center text-destructive">
+        <AlertTriangle className="w-5 h-5" />
+        Failed to load profile information.
+      </div>
+    );
+  }
 
   return (
     <div>
