@@ -6,7 +6,6 @@ interface Props {
   statusCounts: {
     all: number;
     pending: number;
-    interview: number;
     accepted: number;
     rejected: number;
   };
@@ -26,9 +25,7 @@ const ApplicationTimeline: React.FC<Props> = ({ statusCounts }) => {
               <span className="text-foreground">
                 {statusCounts.all > 0
                   ? Math.round(
-                      ((statusCounts.interview +
-                        statusCounts.accepted +
-                        statusCounts.rejected) /
+                      ((statusCounts.accepted + statusCounts.rejected) /
                         statusCounts.all) *
                         100
                     )
@@ -39,9 +36,7 @@ const ApplicationTimeline: React.FC<Props> = ({ statusCounts }) => {
             <Progress
               value={
                 statusCounts.all > 0
-                  ? ((statusCounts.interview +
-                      statusCounts.accepted +
-                      statusCounts.rejected) /
+                  ? ((statusCounts.accepted + statusCounts.rejected) /
                       statusCounts.all) *
                     100
                   : 0
@@ -49,30 +44,19 @@ const ApplicationTimeline: React.FC<Props> = ({ statusCounts }) => {
               className="h-2"
             />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2">
             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
               <p className="text-green-600 dark:text-green-400 text-sm mb-1">
                 Success Rate
               </p>
               <p className="text-green-700 dark:text-green-300">
                 {statusCounts.all > 0
-                  ? Math.round(
-                      ((statusCounts.accepted + statusCounts.interview) /
-                        statusCounts.all) *
-                        100
-                    )
+                  ? Math.round((statusCounts.accepted / statusCounts.all) * 100)
                   : 0}
                 %
               </p>
             </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-              <p className="text-blue-600 dark:text-blue-400 text-sm mb-1">
-                Interviews
-              </p>
-              <p className="text-blue-700 dark:text-blue-300">
-                {statusCounts.interview}
-              </p>
-            </div>
+
             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">
                 Pending

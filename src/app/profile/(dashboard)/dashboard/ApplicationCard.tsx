@@ -4,7 +4,9 @@ import {
   ApplicationStatus,
   JobApplicationResponse,
 } from "@/services/application-service";
+import { formatRelativeTime } from "@/utils/formatRelativeTime";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
+import { formatDate } from "date-fns";
 import { Building2, Calendar } from "lucide-react";
 
 interface ApplicationCardProps {
@@ -58,7 +60,7 @@ export function ApplicationCard({
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                {appliedDate}
+                Applied {formatRelativeTime(new Date(appliedDate))}
               </span>
             </div>
           </div>

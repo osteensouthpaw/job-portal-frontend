@@ -36,12 +36,6 @@ const statusConfig = {
     className: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400",
     icon: Clock,
   },
-  interview: {
-    label: "Interview",
-    className:
-      "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
-    icon: AlertCircle,
-  },
   rejected: {
     label: "Rejected",
     className: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
@@ -55,7 +49,6 @@ const statusConfig = {
   },
 };
 
-// Map backend status to UI statusConfig keys
 function mapStatus(status: ApplicationStatus): keyof typeof statusConfig {
   switch (status) {
     case ApplicationStatus.APPLIED:
@@ -114,7 +107,6 @@ const MyApplicationsPage = () => {
     return {
       all: uiApplications.length,
       pending: uiApplications.filter((a) => a.status === "pending").length,
-      interview: uiApplications.filter((a) => a.status === "interview").length,
       accepted: uiApplications.filter((a) => a.status === "accepted").length,
       rejected: uiApplications.filter((a) => a.status === "rejected").length,
     };
@@ -155,7 +147,6 @@ const MyApplicationsPage = () => {
           <SelectContent>
             <SelectItem value="all">All Applications</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="interview">Interview</SelectItem>
             <SelectItem value="accepted">Accepted</SelectItem>
             <SelectItem value="rejected">Rejected</SelectItem>
           </SelectContent>

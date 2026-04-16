@@ -6,7 +6,6 @@ interface Props {
   statusCounts: {
     all: number;
     pending: number;
-    interview: number;
     accepted: number;
     rejected: number;
   };
@@ -24,7 +23,7 @@ const ApplicationsStats: React.FC<Props> = ({
   statusConfig,
 }) => {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <Card
         className={`cursor-pointer transition-all hover:shadow-md ${
           statusFilter === "all"
