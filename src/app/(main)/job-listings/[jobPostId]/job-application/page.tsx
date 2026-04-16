@@ -38,6 +38,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { WithdrawConfirmModal } from "./WithdrawConfirmationModal";
 
 export default function JobApplicationDetailPage() {
   const router = useRouter();
@@ -50,7 +51,6 @@ export default function JobApplicationDetailPage() {
     return null;
   }
 
-  // Fetch application and job post
   const {
     data: application,
     isLoading: appLoading,
@@ -78,18 +78,18 @@ export default function JobApplicationDetailPage() {
       icon: React.ElementType;
     }
   > = {
-    [ApplicationStatus.APPLIED]: {
+    APPLIED: {
       label: "Applied",
       className:
         "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400",
       icon: Clock,
     },
-    [ApplicationStatus.REJECTED]: {
+    REJECTED: {
       label: "Rejected",
       className: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
       icon: XCircle,
     },
-    [ApplicationStatus.ACCEPTED]: {
+    ACCEPTED: {
       label: "Accepted",
       className:
         "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
@@ -224,46 +224,14 @@ export default function JobApplicationDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Withdraw Confirmation */}
-      {showWithdrawConfirm && (
-        <Card className="border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="text-red-900 dark:text-red-200 mb-2">
-                  Withdraw Application?
-                </h3>
-                <p className="text-red-700 dark:text-red-300 text-sm mb-4">
-                  Are you sure you want to withdraw your application for{" "}
-                  {jobPost.jobTitle} at {jobPost.organization.companyName}? This
-                  action cannot be undone.
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleWithdraw}
-                    disabled={deleteApplication.isPending}
-                  >
-                    {deleteApplication.isPending
-                      ? "Withdrawing..."
-                      : "Yes, Withdraw"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowWithdrawConfirm(false)}
-                    disabled={deleteApplication.isPending}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <WithdrawConfirmModal
+        open={showWithdrawConfirm}
+        onConfirm={handleWithdraw}
+        onCancel={() => setShowWithdrawConfirm(false)}
+        loading={deleteApplication.isPending}
+        jobTitle={jobPost.jobTitle}
+        companyName={jobPost.organization.companyName}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Job Details */}

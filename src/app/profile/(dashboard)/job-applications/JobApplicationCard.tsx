@@ -2,15 +2,35 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 import { Calendar, DollarSign, Eye, MapPin, Trash2 } from "lucide-react";
-
+import { WithdrawConfirmModal } from "@/app/(main)/job-listings/[jobPostId]/job-application/WithdrawConfirmationModal";
+import { useDeleteJobApplication } from "@/hooks/useApplications";
+import { useState } from "react";
+import { toast } from "sonner";
 interface Props {
   app: any;
   config: any;
 }
 
 const JobApplicationCard = ({ app, config }: Props) => {
+  const router = useRouter();
   const StatusIcon = config.icon;
+
+  const deleteApplication = useDeleteJobApplication();
+
+  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
+
+  const handleWithdraw = async () => {
+    try {
+      await deleteApplication.mutateAsync(app.id);
+      toast.success("Application withdrawn");
+      setShowWithdrawConfirm(false);
+    } catch (e) {
+      toast.error("Failed to withdraw application");
+    }
+  };
+
   return (
     <Card key={app.id} className="hover:shadow-md transition-shadow">
       <CardContent className="p-4 sm:p-6">
@@ -62,31 +82,21 @@ const JobApplicationCard = ({ app, config }: Props) => {
               </Badge>
             </div>
 
-            {/* Interview Date if applicable */}
-            {app.status === "interview" && app.interviewDate && (
-              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mb-4">
-                <p className="text-purple-900 dark:text-purple-300 text-sm">
-                  <strong>Upcoming Interview:</strong> {app.interviewDate}
-                </p>
-              </div>
-            )}
-
             {/* Actions */}
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button
+                onClick={() =>
+                  router.push(`/job-listings/${app.id}/job-application`)
+                }
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
                 <Eye className="h-4 w-4" />
                 View Details
               </Button>
-              {app.status === "interview" && (
-                <Button
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white gap-2"
-                >
-                  <Calendar className="h-4 w-4" />
-                  Add to Calendar
-                </Button>
-              )}
               <Button
+                onClick={() => setShowWithdrawConfirm(true)}
                 variant="ghost"
                 size="sm"
                 className="gap-2 text-destructive"
@@ -95,6 +105,15 @@ const JobApplicationCard = ({ app, config }: Props) => {
                 Withdraw
               </Button>
             </div>
+
+            <WithdrawConfirmModal
+              open={showWithdrawConfirm}
+              onConfirm={handleWithdraw}
+              onCancel={() => setShowWithdrawConfirm(false)}
+              loading={deleteApplication.isPending}
+              jobTitle={app.title}
+              companyName={app.company}
+            />
           </div>
         </div>
       </CardContent>
