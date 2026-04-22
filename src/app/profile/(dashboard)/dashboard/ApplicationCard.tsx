@@ -64,7 +64,7 @@ export function ApplicationCard({
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />
-                  Applied {formatRelativeTime(new Date(appliedDate))}
+                  {formatRelativeTime(new Date(appliedDate))} ago
                 </span>
               </div>
             </div>

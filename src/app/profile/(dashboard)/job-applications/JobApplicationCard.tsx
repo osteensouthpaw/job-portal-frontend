@@ -8,6 +8,7 @@ import { WithdrawConfirmModal } from "@/app/(main)/job-listings/[jobPostId]/job-
 import { useDeleteJobApplication } from "@/hooks/useApplications";
 import { useState } from "react";
 import { toast } from "sonner";
+import { formatRelativeTime } from "@/utils/formatRelativeTime";
 interface Props {
   app: any;
   config: any;
@@ -72,7 +73,7 @@ const JobApplicationCard = ({ app, config }: Props) => {
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                Applied: {app.appliedDate}
+                Applied on: {new Date(app.appliedDate).toDateString()}
               </span>
               <Badge
                 variant="secondary"
