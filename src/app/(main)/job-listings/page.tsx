@@ -181,13 +181,13 @@ export default function JobBrowsePage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">
+                <SelectItem value="createdAt">
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     Newest
                   </div>
                 </SelectItem>
-                <SelectItem value="relevant">
+                <SelectItem value="createdAt">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
                     Most Relevant
