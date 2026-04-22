@@ -1,25 +1,48 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useJobApplications } from "@/hooks/useApplications";
 import {
-  AreaChart,
   Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { day: "Mon", applications: 3, views: 12 },
-  { day: "Tue", applications: 5, views: 18 },
-  { day: "Wed", applications: 2, views: 15 },
-  { day: "Thu", applications: 4, views: 22 },
-  { day: "Fri", applications: 6, views: 28 },
-  { day: "Sat", applications: 1, views: 8 },
-  { day: "Sun", applications: 3, views: 10 },
-];
-
 export function JobSearchActivityChart() {
+  const { data: applications, isLoading, error } = useJobApplications();
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const activityData = days.map((day) => ({
+    day,
+    applications: 0,
+  }));
+
+  if (applications) {
+    applications.content.forEach((app) => {
+      const appDate = new Date(app.appliedDate);
+      const dayName = days[appDate.getDay()];
+      const dayData = activityData.find((d) => d.day === dayName);
+      if (dayData) {
+        dayData.applications += 1;
+      }
+    });
+  }
+
+  if (isLoading)
+    return (
+      <Card>
+        <CardContent>Loading...</CardContent>
+      </Card>
+    );
+
+  if (error)
+    return (
+      <Card>
+        <CardContent>Error loading activity.</CardContent>
+      </Card>
+    );
+
   return (
     <Card>
       <CardHeader>
@@ -27,7 +50,7 @@ export function JobSearchActivityChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
-          <AreaChart data={data}>
+          <AreaChart data={activityData}>
             <defs>
               <linearGradient
                 id="colorApplications"
@@ -54,7 +77,11 @@ export function JobSearchActivityChart() {
               stroke="currentColor"
               className="text-muted-foreground"
             />
-            <YAxis stroke="currentColor" className="text-muted-foreground" />
+            <YAxis
+              allowDecimals={false}
+              stroke="currentColor"
+              className="text-muted-foreground"
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: "hsl(var(--card))",

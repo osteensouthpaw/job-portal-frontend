@@ -6,8 +6,8 @@ import {
 } from "@/services/application-service";
 import { formatRelativeTime } from "@/utils/formatRelativeTime";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
-import { formatDate } from "date-fns";
 import { Building2, Calendar } from "lucide-react";
+import Link from "next/link";
 
 interface ApplicationCardProps {
   application: JobApplicationResponse;
@@ -37,35 +37,40 @@ export function ApplicationCard({
 }: ApplicationCardProps) {
   const config = statusMap[applicationStatus];
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <Avatar className="h-10 w-10 rounded-lg">
-            {/* <AvatarImage src={logo} /> */}
-            <AvatarFallback className="rounded-lg bg-muted">
-              {appliedPost.jobTitle.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-1">
-              <h4 className="text-foreground truncate">
-                {appliedPost.jobTitle}
-              </h4>
-              <Badge className={config.className}>{config.label}</Badge>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Building2 className="h-3.5 w-3.5" />
-                {appliedPost.organization.companyName}
-              </span>
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3.5 w-3.5" />
-                Applied {formatRelativeTime(new Date(appliedDate))}
-              </span>
+    <Link
+      href={`/job-listings/${appliedPost.id}/job-application`}
+      className="block"
+    >
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <Avatar className="h-10 w-10 rounded-lg">
+              {/* <AvatarImage src={logo} /> */}
+              <AvatarFallback className="rounded-lg bg-muted">
+                {appliedPost.jobTitle.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-1">
+                <h4 className="text-foreground truncate">
+                  {appliedPost.jobTitle}
+                </h4>
+                <Badge className={config.className}>{config.label}</Badge>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Building2 className="h-3.5 w-3.5" />
+                  {appliedPost.organization.companyName}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  Applied {formatRelativeTime(new Date(appliedDate))}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

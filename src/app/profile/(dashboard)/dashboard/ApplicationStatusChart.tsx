@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   PieChart,
@@ -7,16 +9,54 @@ import {
   Legend,
   Tooltip,
 } from "recharts";
+import { useJobApplications } from "@/hooks/useApplications";
+import { ApplicationStatus } from "@/services/application-service";
 
-const data = [
-  { name: "Pending", value: 8, color: "#6b7280" },
-  { name: "Under Review", value: 6, color: "#3b82f6" },
-  { name: "Interview", value: 5, color: "#8b5cf6" },
-  { name: "Accepted", value: 3, color: "#22c55e" },
-  { name: "Rejected", value: 2, color: "#ef4444" },
-];
+// Define the statuses and their colors/names
+const STATUS_CONFIG: Record<
+  ApplicationStatus,
+  { name: string; color: string }
+> = {
+  APPLIED: { name: "Pending", color: "#6b7280" },
+  ACCEPTED: { name: "Accepted", color: "#22c55e" },
+  REJECTED: { name: "Rejected", color: "#ef4444" },
+};
 
 export function ApplicationStatusChart() {
+  const { data, isLoading, isError } = useJobApplications();
+
+  // Count applications by status
+  const statusCounts: Record<string, number> = {};
+  if (data?.totalElements) {
+    for (const app of data.content) {
+      const status = app.applicationStatus?.toUpperCase?.() || "PENDING";
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
+    }
+  }
+
+  // Prepare chart data
+  const chartData = Object.entries(STATUS_CONFIG).map(([status, config]) => ({
+    name: config.name,
+    value: statusCounts[status] || 0,
+    color: config.color,
+  }));
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent>Loading...</CardContent>
+      </Card>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <CardContent>Error loading application statistics.</CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -26,7 +66,7 @@ export function ApplicationStatusChart() {
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>
             <Pie
-              data={data}
+              data={chartData}
               cx="50%"
               cy="50%"
               labelLine={false}
@@ -34,7 +74,7 @@ export function ApplicationStatusChart() {
               fill="#8884d8"
               dataKey="value"
             >
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
@@ -50,7 +90,7 @@ export function ApplicationStatusChart() {
           </PieChart>
         </ResponsiveContainer>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-          {data.map((item, index) => (
+          {chartData.map((item, index) => (
             <div key={index} className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
                 <div
