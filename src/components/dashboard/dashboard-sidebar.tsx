@@ -53,11 +53,6 @@ export default function DashboardSidebar() {
       icon: Flag,
     },
     {
-      title: "Recently Viewed",
-      url: "/profile/recently-viewed",
-      icon: History,
-    },
-    {
       title: "Settings",
       url: "/profile/settings",
       icon: Settings,
