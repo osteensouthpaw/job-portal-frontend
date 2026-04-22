@@ -104,7 +104,10 @@ export default function DashboardSidebar() {
             {user && user.userType !== UserType.PENDING && (
               <SidebarMenu className="space-y-2">
                 {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem
+                    key={item.title}
+                    className={pathname === item.url ? "bg-secondary" : ""}
+                  >
                     <SidebarMenuButton
                       asChild
                       isActive={pathname === item.url}
