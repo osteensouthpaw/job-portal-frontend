@@ -15,20 +15,22 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useAuth } from "@/app/AuthProvider";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import { UserType } from "@/services/auth-service";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import {
   ArrowLeft,
   Flag,
-  History,
   LayoutDashboard,
   Search,
   Settings,
   UserRoundCog,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { UserType } from "@/services/auth-service";
 
 export default function DashboardSidebar() {
   const { user } = useAuth();
+  const { data: profile, isLoading, isError } = useJobSeekerProfile(user?.id);
   const pathname = usePathname();
 
   const items = [
@@ -59,6 +61,10 @@ export default function DashboardSidebar() {
     },
   ];
 
+  if (!profile || isLoading) {
+    return null;
+  }
+
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
@@ -77,6 +83,22 @@ export default function DashboardSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+          <div className="p-5 border-y border-primary my-4">
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full p-2">
+                  JD
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-foreground truncate">{`${user?.firstName.toUpperCase()} ${user?.lastName.toUpperCase()}`}</p>
+                <p className="text-muted-foreground text-sm">
+                  {profile.profession}
+                </p>
+              </div>
+            </div>
+          </div>
 
           <SidebarGroupContent>
             {user && user.userType !== UserType.PENDING && (
