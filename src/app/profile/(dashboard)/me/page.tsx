@@ -297,9 +297,15 @@ const ProfilePage = () => {
     queryClient.invalidateQueries({ queryKey: ["experiences", user.id] });
   };
 
+  const addExperienceMutation = useAddExperience(user.id, onMutateExperience);
+  const updateExperienceMutation = useUpdateExperience(
+    user.id,
+    editingExp?.id,
+    onMutateExperience
+  );
   const expMutation = editingExp
-    ? useUpdateExperience(user.id, editingExp.id, onMutateExperience)
-    : useAddExperience(user.id, onMutateExperience);
+    ? updateExperienceMutation
+    : addExperienceMutation;
 
   const expDeleteMutation = useRemoveExperience(user.id, () => {
     toast.success("Experience removed");
@@ -313,9 +319,15 @@ const ProfilePage = () => {
     queryClient.invalidateQueries({ queryKey: ["educations", user.id] });
   };
 
+  const addEducationMutation = useAddEducation(user.id, onMutateEducation);
+  const updateEducationMutation = useUpdateEducation(
+    user.id,
+    editingEdu?.id,
+    onMutateEducation
+  );
   const eduMutation = editingEdu
-    ? useUpdateEducation(user.id, editingEdu.id, onMutateEducation)
-    : useAddEducation(user.id, onMutateEducation);
+    ? updateEducationMutation
+    : addEducationMutation;
 
   const eduDeleteMutation = useRemoveEducation(user.id, () => {
     toast.success("Education removed");
@@ -330,9 +342,13 @@ const ProfilePage = () => {
     queryClient.invalidateQueries({ queryKey: ["skills", user.id] });
   };
 
-  const skillMutation = editingSkill
-    ? useUpdateSkill(editingSkill.id, user.id, onMutateSkill)
-    : useAddSkill(user.id, onMutateSkill);
+  const addSkillMutation = useAddSkill(user.id, onMutateSkill);
+  const updateSkillMutation = useUpdateSkill(
+    editingSkill?.id,
+    user.id,
+    onMutateSkill
+  );
+  const skillMutation = editingSkill ? updateSkillMutation : addSkillMutation;
 
   const skillDeleteMutation = useRemoveSkill(user.id, () => {
     toast.success("Skill removed");
@@ -346,9 +362,18 @@ const ProfilePage = () => {
     queryClient.invalidateQueries({ queryKey: ["certifications", user.id] });
   };
 
+  const addCertificationMutation = useAddCertification(
+    user.id,
+    onMutateCertification
+  );
+  const updateCertificationMutation = useUpdateCertification(
+    editingCert?.id,
+    user.id,
+    onMutateCertification
+  );
   const certMutation = editingCert
-    ? useUpdateCertification(editingCert.id, user.id, onMutateCertification)
-    : useAddCertification(user.id, onMutateCertification);
+    ? updateCertificationMutation
+    : addCertificationMutation;
 
   const certDeleteMutation = useRemoveCertification(user.id, () => {
     toast.success("Certification removed");

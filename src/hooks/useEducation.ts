@@ -17,11 +17,16 @@ export const useEducation = (id?: number) =>
   });
 
 export const useAddEducation = (
-  jobSeekerId: number,
+  jobSeekerId?: number,
   onAdd?: (education: EducationResponse) => void
 ) =>
   useMutation({
-    mutationFn: (data: EducationRequest) => createEducation(jobSeekerId, data),
+    mutationFn: (data: EducationRequest) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return createEducation(jobSeekerId, data);
+    },
     onSuccess: (newEducation) => {
       toast.success("Education added successfully!");
       onAdd?.(newEducation);
@@ -32,11 +37,16 @@ export const useAddEducation = (
   });
 
 export const useRemoveEducation = (
-  jobSeekerId: number,
+  jobSeekerId?: number,
   onRemove?: (educationId: number) => void
 ) =>
   useMutation({
-    mutationFn: (id: number) => deleteEducation(jobSeekerId, id),
+    mutationFn: (id: number) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return deleteEducation(jobSeekerId, id);
+    },
     onSuccess: (data, educationId) => {
       toast.success("Education removed");
       onRemove?.(educationId);
@@ -49,16 +59,21 @@ export const useRemoveEducation = (
   });
 
 export const useUpdateEducation = (
-  jobSeekerId: number,
-  educationId: number,
-  onUpdate: () => void
+  jobSeekerId?: number,
+  educationId?: number,
+  onUpdate?: () => void
 ) =>
   useMutation({
-    mutationFn: (request: EducationRequest) =>
-      updateEducation(jobSeekerId, educationId, request),
+    mutationFn: (request: EducationRequest) => {
+      if (!jobSeekerId || !educationId) {
+        return Promise.reject(new Error("Missing job seeker or education ID"));
+      }
+      return updateEducation(jobSeekerId, educationId, request);
+    },
     onSuccess: () => {
       toast.success("Education updated successfully");
-      onUpdate();
+      onUpdate?.();
     },
-    onError: (error) => toast.error(error.message || "Failed to update"),
+    onError: (error: any) =>
+      toast.error(error?.response?.data?.message || "Failed to update"),
   });

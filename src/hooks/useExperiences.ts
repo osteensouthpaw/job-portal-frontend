@@ -17,50 +17,73 @@ export const useExperiences = (id?: number) =>
   });
 
 export const useAddExperience = (
-  jobSeekerId: number,
+  jobSeekerId?: number,
   onAdd?: (data: ExperienceResponse) => void
 ) =>
   useMutation({
-    mutationFn: (data: ExperienceRequest) =>
-      createExperience(data, jobSeekerId),
+    mutationFn: (data: ExperienceRequest) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return createExperience(data, jobSeekerId);
+    },
     onSuccess: (data) => {
       toast.success("Experience added!");
       onAdd?.(data);
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to add experience");
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to add experience"
+      );
     },
   });
 
 export const useRemoveExperience = (
-  jobSeekerId: number,
+  jobSeekerId?: number,
   onRemove?: (expId: number) => void
 ) =>
   useMutation({
-    mutationFn: (id: number) => deleteExperience(id, jobSeekerId),
+    mutationFn: (id: number) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return deleteExperience(id, jobSeekerId);
+    },
     onSuccess: (data, expId) => {
       toast.success("Experience removed");
       onRemove?.(expId);
     },
     onError: (error: any) => {
       toast.error(
-        error?.response?.data?.message || "Failed to remove experience"
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to remove experience"
       );
     },
   });
 
 export const useUpdateExperience = (
-  jobSeekerId: number,
-  experienceId: number,
-  onUpdate: () => void
+  jobSeekerId?: number,
+  experienceId?: number,
+  onUpdate?: () => void
 ) =>
   useMutation({
-    mutationFn: (request: ExperienceRequest) =>
-      updateExperience(experienceId, jobSeekerId, request),
+    mutationFn: (request: ExperienceRequest) => {
+      if (!jobSeekerId || !experienceId) {
+        return Promise.reject(new Error("Missing job seeker or experience ID"));
+      }
+      return updateExperience(experienceId, jobSeekerId, request);
+    },
     onSuccess: () => {
       toast.success("Experience updated successfully");
-      onUpdate();
+      onUpdate?.();
     },
-    onError: (error) =>
-      toast.error(error.message || "Failed to update experience"),
+    onError: (error: any) =>
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to update experience"
+      ),
   });

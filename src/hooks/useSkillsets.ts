@@ -17,43 +17,58 @@ export const useFetchSkills = (id?: number) =>
   });
 
 export const useAddSkill = (
-  jobSeekerId: number,
+  jobSeekerId?: number,
   onAdd?: (newSkill: SkillSetResponse) => void
 ) =>
   useMutation({
-    mutationFn: (data: SkillRequest) => createSkill(data, jobSeekerId),
+    mutationFn: (data: SkillRequest) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return createSkill(data, jobSeekerId);
+    },
     onSuccess: (newSkill) => {
       toast.success("Skill added!");
       onAdd?.(newSkill);
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to add skill");
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to add skill");
     },
   });
 
 export const useRemoveSkill = (
-  jobSeekerId: number,
+  jobSeekerId?: number,
   onRemove?: (skillId: number) => void
 ) =>
   useMutation({
-    mutationFn: (id: number) => deleteSkill(id, jobSeekerId),
+    mutationFn: (id: number) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return deleteSkill(id, jobSeekerId);
+    },
     onSuccess: (data, skillId) => {
       toast.success("Skill removed");
       onRemove?.(skillId);
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to remove skill");
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to remove skill");
     },
   });
 
 export const useUpdateSkill = (
-  skillId: number,
-  jobSeekerId: number,
+  skillId?: number,
+  jobSeekerId?: number,
   onUpdate?: () => void
 ) =>
   useMutation({
-    mutationFn: (request: SkillRequest) =>
-      updateSkill(skillId, jobSeekerId, request),
+    mutationFn: (request: SkillRequest) => {
+      if (!skillId || !jobSeekerId) {
+        return Promise.reject(new Error("Missing skill or job seeker ID"));
+      }
+      return updateSkill(skillId, jobSeekerId, request);
+    },
     onSuccess: () => onUpdate?.(),
-    onError: (error) => toast.error(error.message || "Failed to save skill"),
+    onError: (error: any) =>
+      toast.error(error?.message || "Failed to save skill"),
   });

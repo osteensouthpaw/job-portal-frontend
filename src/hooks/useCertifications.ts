@@ -17,12 +17,16 @@ export const useFetchCertification = (id?: number) =>
   });
 
 export const useAddCertification = (
-  jobSeekerId: number,
+  jobSeekerId?: number,
   onAdd?: (newCert: CertificationResponse) => void
 ) =>
   useMutation({
-    mutationFn: (data: CertificationRequest) =>
-      createCertification(data, jobSeekerId),
+    mutationFn: (data: CertificationRequest) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return createCertification(data, jobSeekerId);
+    },
     onSuccess: (newCert) => {
       toast.success("Certification added!");
       onAdd?.(newCert);
@@ -35,11 +39,16 @@ export const useAddCertification = (
   });
 
 export const useRemoveCertification = (
-  jobSeekerId: number,
-  onRemove: (certId: number) => void
+  jobSeekerId?: number,
+  onRemove?: (certId: number) => void
 ) =>
   useMutation({
-    mutationFn: (id: number) => deleteCertification(id, jobSeekerId),
+    mutationFn: (id: number) => {
+      if (!jobSeekerId) {
+        return Promise.reject(new Error("No job seeker ID provided"));
+      }
+      return deleteCertification(id, jobSeekerId);
+    },
     onSuccess: (data, certId) => {
       toast.success("Certification removed");
       onRemove?.(certId);
@@ -52,17 +61,23 @@ export const useRemoveCertification = (
   });
 
 export const useUpdateCertification = (
-  certificateId: number,
-  jobSeekerId: number,
-  onUpdate: () => void
+  certificateId?: number,
+  jobSeekerId?: number,
+  onUpdate?: () => void
 ) =>
   useMutation({
-    mutationFn: (request: CertificationRequest) =>
-      updateCertification(certificateId, jobSeekerId, request),
+    mutationFn: (request: CertificationRequest) => {
+      if (!certificateId || !jobSeekerId) {
+        return Promise.reject(
+          new Error("Missing certificate or job seeker ID")
+        );
+      }
+      return updateCertification(certificateId, jobSeekerId, request);
+    },
     onSuccess: () => {
       toast.success("Certificate edited successfully");
-      onUpdate();
+      onUpdate?.();
     },
-    onError: (error) =>
-      toast.error(error.message || "Failed to update certificate"),
+    onError: (error: any) =>
+      toast.error(error?.message || "Failed to update certificate"),
   });
