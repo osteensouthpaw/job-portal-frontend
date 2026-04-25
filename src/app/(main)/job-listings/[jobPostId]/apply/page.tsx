@@ -29,17 +29,9 @@ export default function JobApplicationPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-    }
-  }, [user, router]);
-
-  if (!user) return null;
-
   const { data: jobApplication, isPending } = useJobApplication(
     Number(jobPostId),
-    user.id
+    user?.id
   );
 
   const methods = useForm<ApplicationFormData>({
@@ -82,15 +74,6 @@ export default function JobApplicationPage() {
 
   const { data: jobPost, isLoading } = useJobPost(Number(jobPostId));
 
-  if (isLoading || isPending) {
-    return "Loading...";
-  }
-
-  if (!jobPost) return notFound();
-
-  if (jobApplication)
-    return redirect(`/job-listings/${jobPostId}/job-application`);
-
   const {
     mutate: createJobApplication,
     isSuccess: isSubmitted,
@@ -99,6 +82,23 @@ export default function JobApplicationPage() {
     queryClient.invalidateQueries({ queryKey: ["applications"] });
     toast.success("Application submitted successfully");
   });
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth/login");
+    }
+  }, [user, router]);
+
+  if (!user) return null;
+
+  if (isLoading || isPending) {
+    return "Loading...";
+  }
+
+  if (!jobPost) return notFound();
+
+  if (jobApplication)
+    return redirect(`/job-listings/${jobPostId}/job-application`);
 
   const onFormSubmit = async (data: ApplicationFormData) => {
     createJobApplication({

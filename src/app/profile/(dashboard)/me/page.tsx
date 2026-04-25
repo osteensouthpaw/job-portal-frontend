@@ -14,7 +14,7 @@ import {
   updateJobSeekerProfile,
 } from "@/services/profile-service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -84,40 +84,38 @@ import { EducationDialog } from "./dialogs/EducationDialog";
 import { ExperienceDialog } from "./dialogs/ExperienceDialog";
 import { SkillDialog } from "./dialogs/SkillDialog";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
   const { user } = useAuth();
+  const router = useRouter();
 
   const queryClient = useQueryClient();
-
-  if (!user) {
-    redirect("/auth/login");
-  }
 
   const {
     data: profile,
     isLoading: profileLoading,
     error: profileError,
-  } = useJobSeekerProfile(user.id);
+  } = useJobSeekerProfile(user?.id);
 
   // Experience Query
   const { data: experiences = [], isLoading: expLoading } = useExperiences(
-    user.id
+    user?.id
   );
 
   // Education Query
   const { data: educations = [], isLoading: eduLoading } = useEducation(
-    user.id
+    user?.id
   );
 
   // Skills Query
   const { data: skills = [], isLoading: skillsLoading } = useFetchSkills(
-    user.id
+    user?.id
   );
 
   // Certifications Query
   const { data: certifications = [], isLoading: certsLoading } =
-    useFetchCertification(user.id);
+    useFetchCertification(user?.id);
 
   // Profile Edit Form
   const [isEditing, setIsEditing] = useState(false);
@@ -167,7 +165,7 @@ const ProfilePage = () => {
     onSuccess: () => {
       toast.success("Profile updated successfully!");
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
     },
     onError: () => toast.error("Failed to update profile"),
   });
@@ -294,12 +292,12 @@ const ProfilePage = () => {
   const onMutateExperience = () => {
     setExpDialogOpen(false);
     setEditingExp(null);
-    queryClient.invalidateQueries({ queryKey: ["experiences", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["experiences", user?.id] });
   };
 
-  const addExperienceMutation = useAddExperience(user.id, onMutateExperience);
+  const addExperienceMutation = useAddExperience(user?.id, onMutateExperience);
   const updateExperienceMutation = useUpdateExperience(
-    user.id,
+    user?.id,
     editingExp?.id,
     onMutateExperience
   );
@@ -307,21 +305,21 @@ const ProfilePage = () => {
     ? updateExperienceMutation
     : addExperienceMutation;
 
-  const expDeleteMutation = useRemoveExperience(user.id, () => {
+  const expDeleteMutation = useRemoveExperience(user?.id, () => {
     toast.success("Experience removed");
-    queryClient.invalidateQueries({ queryKey: ["experiences", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["experiences", user?.id] });
   });
 
   // --- Education Handlers ---
   const onMutateEducation = () => {
     setEduDialogOpen(false);
     setEditingEdu(null);
-    queryClient.invalidateQueries({ queryKey: ["educations", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["educations", user?.id] });
   };
 
-  const addEducationMutation = useAddEducation(user.id, onMutateEducation);
+  const addEducationMutation = useAddEducation(user?.id, onMutateEducation);
   const updateEducationMutation = useUpdateEducation(
-    user.id,
+    user?.id,
     editingEdu?.id,
     onMutateEducation
   );
@@ -329,9 +327,9 @@ const ProfilePage = () => {
     ? updateEducationMutation
     : addEducationMutation;
 
-  const eduDeleteMutation = useRemoveEducation(user.id, () => {
+  const eduDeleteMutation = useRemoveEducation(user?.id, () => {
     toast.success("Education removed");
-    queryClient.invalidateQueries({ queryKey: ["educations", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["educations", user?.id] });
   });
 
   // --- Skill Handlers ---
@@ -339,45 +337,45 @@ const ProfilePage = () => {
     toast.success("Skill added successfully");
     setSkillDialogOpen(false);
     setEditingSkill(null);
-    queryClient.invalidateQueries({ queryKey: ["skills", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["skills", user?.id] });
   };
 
-  const addSkillMutation = useAddSkill(user.id, onMutateSkill);
+  const addSkillMutation = useAddSkill(user?.id, onMutateSkill);
   const updateSkillMutation = useUpdateSkill(
     editingSkill?.id,
-    user.id,
+    user?.id,
     onMutateSkill
   );
   const skillMutation = editingSkill ? updateSkillMutation : addSkillMutation;
 
-  const skillDeleteMutation = useRemoveSkill(user.id, () => {
+  const skillDeleteMutation = useRemoveSkill(user?.id, () => {
     toast.success("Skill removed");
-    queryClient.invalidateQueries({ queryKey: ["skills", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["skills", user?.id] });
   });
 
   // --- Certification Handlers ---
   const onMutateCertification = () => {
     setCertDialogOpen(false);
     setEditingCert(null);
-    queryClient.invalidateQueries({ queryKey: ["certifications", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["certifications", user?.id] });
   };
 
   const addCertificationMutation = useAddCertification(
-    user.id,
+    user?.id,
     onMutateCertification
   );
   const updateCertificationMutation = useUpdateCertification(
     editingCert?.id,
-    user.id,
+    user?.id,
     onMutateCertification
   );
   const certMutation = editingCert
     ? updateCertificationMutation
     : addCertificationMutation;
 
-  const certDeleteMutation = useRemoveCertification(user.id, () => {
+  const certDeleteMutation = useRemoveCertification(user?.id, () => {
     toast.success("Certification removed");
-    queryClient.invalidateQueries({ queryKey: ["certifications", user.id] });
+    queryClient.invalidateQueries({ queryKey: ["certifications", user?.id] });
   });
 
   // --- UI Handlers ---
@@ -457,6 +455,12 @@ const ProfilePage = () => {
     });
     return acc;
   }, [skills]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth/login");
+    }
+  }, [user, router]);
 
   // --- Render ---
   if (profileLoading) return <div>Loading...</div>;

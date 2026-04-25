@@ -15,7 +15,6 @@ import { useJobSeekerProfile } from "@/hooks/useProfiles";
 import { ApplicationStatus } from "@/services/application-service";
 import { formatCurrency } from "@/utils/formatCurrency";
 import {
-  AlertCircle,
   ArrowLeft,
   Briefcase,
   Building2,
@@ -25,7 +24,6 @@ import {
   DollarSign,
   Download,
   ExternalLink,
-  Eye,
   FileText,
   Globe,
   Linkedin,
@@ -46,16 +44,11 @@ export default function JobApplicationDetailPage() {
   const { user } = useAuth();
   const jobPostId = Number(params.jobPostId);
 
-  if (!user) {
-    router.push("/login");
-    return null;
-  }
-
   const {
     data: application,
     isLoading: appLoading,
     error: appError,
-  } = useJobApplication(jobPostId, user.id);
+  } = useJobApplication(jobPostId, user?.id);
   const {
     data: jobPost,
     isLoading: jobLoading,
@@ -67,7 +60,7 @@ export default function JobApplicationDetailPage() {
     data: profile,
     isLoading: profileLoading,
     error: profileError,
-  } = useJobSeekerProfile(user.id);
+  } = useJobSeekerProfile(user?.id);
   const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
 
   const statusConfig: Record<
@@ -104,6 +97,12 @@ export default function JobApplicationDetailPage() {
       </div>
     );
   }
+
+  if (!user) {
+    router.push("/login");
+    return null;
+  }
+
   if (
     appError ||
     !application ||

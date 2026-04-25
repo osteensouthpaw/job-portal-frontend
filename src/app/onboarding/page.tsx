@@ -26,7 +26,10 @@ const UserOnboading = () => {
       {user.userType === UserType.RECRUITER ? (
         <RecruiterForm />
       ) : (
-        <JobSeekerOnboarding onComplete={() => router.push("/job-listings")} />
+        <JobSeekerOnboarding
+          jobSeekerId={user.id}
+          onComplete={() => router.push("/job-listings")}
+        />
       )}
     </div>
   );

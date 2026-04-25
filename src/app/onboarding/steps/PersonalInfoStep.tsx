@@ -1,5 +1,5 @@
 "use client";
-import { ApiError, useAuth } from "@/app/AuthProvider";
+import { useAuth } from "@/app/AuthProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateJobSeeerProfile } from "@/hooks/useProfiles";
 import { ExperienceLevel } from "@/services/jobPost-service";
-import {
-  JobSeekerProfileRequest,
-  createJobSeeerProfile,
-} from "@/services/profile-service";
-import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { JobSeekerProfileRequest } from "@/services/profile-service";
 import {
   AlertCircle,
   ChevronRight,

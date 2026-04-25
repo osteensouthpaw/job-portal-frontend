@@ -26,9 +26,13 @@ import SkillsStep from "./steps/SkillsStep";
 
 interface OnboardingProps {
   onComplete: () => void;
+  jobSeekerId: number;
 }
 
-export default function JobSeekerOnboarding({ onComplete }: OnboardingProps) {
+export default function JobSeekerOnboarding({
+  onComplete,
+  jobSeekerId,
+}: OnboardingProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
@@ -89,13 +93,37 @@ export default function JobSeekerOnboarding({ onComplete }: OnboardingProps) {
       case 0:
         return <PersonalInfoStep onNext={handleNext} />;
       case 1:
-        return <ExperienceStep onNext={handleNext} onSkip={handleSkip} />;
+        return (
+          <ExperienceStep
+            jobSeekerId={jobSeekerId}
+            onNext={handleNext}
+            onSkip={handleSkip}
+          />
+        );
       case 2:
-        return <EducationStep onNext={handleNext} onSkip={handleSkip} />;
+        return (
+          <EducationStep
+            jobSeekerId={jobSeekerId}
+            onNext={handleNext}
+            onSkip={handleSkip}
+          />
+        );
       case 3:
-        return <SkillsStep onNext={handleNext} onSkip={handleSkip} />;
+        return (
+          <SkillsStep
+            jobSeekerId={jobSeekerId}
+            onNext={handleNext}
+            onSkip={handleSkip}
+          />
+        );
       case 4:
-        return <CertificationStep onNext={handleNext} onSkip={handleSkip} />;
+        return (
+          <CertificationStep
+            jobSeekerId={jobSeekerId}
+            onNext={handleNext}
+            onSkip={handleSkip}
+          />
+        );
       default:
         return null;
     }

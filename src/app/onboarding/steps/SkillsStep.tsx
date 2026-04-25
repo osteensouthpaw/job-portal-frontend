@@ -1,5 +1,4 @@
 "use client";
-import { useAuth } from "@/app/AuthProvider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,16 +13,25 @@ import { useForm } from "react-hook-form";
 interface SkillsStepProps {
   onNext: () => void;
   onSkip: () => void;
+  jobSeekerId: number;
 }
 
-export default function SkillsStep({ onNext, onSkip }: SkillsStepProps) {
+export default function SkillsStep({
+  onNext,
+  onSkip,
+  jobSeekerId,
+}: SkillsStepProps) {
   const [skills, setSkills] = useState<SkillSetResponse[]>([]);
 
-  const { mutate: addSkill, isPending: isAdding } = useAddSkill((newSkill) => {
-    setSkills([...skills, newSkill]);
-    reset();
-  });
+  const { mutate: addSkill, isPending: isAdding } = useAddSkill(
+    jobSeekerId,
+    (newSkill) => {
+      setSkills([...skills, newSkill]);
+      reset();
+    }
+  );
   const { mutate: removeSkillMutate, isPending: isRemoving } = useRemoveSkill(
+    jobSeekerId,
     (skillId) =>
       setSkills((skills) =>
         skills.filter((skillset) => skillset.id !== skillId)

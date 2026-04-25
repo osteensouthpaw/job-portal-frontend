@@ -23,12 +23,18 @@ import { toast } from "sonner";
 interface EducationStepProps {
   onNext: () => void;
   onSkip: () => void;
+  jobSeekerId: number;
 }
 
-export default function EducationStep({ onNext, onSkip }: EducationStepProps) {
+export default function EducationStep({
+  onNext,
+  onSkip,
+  jobSeekerId,
+}: EducationStepProps) {
   const [educations, setEducations] = useState<EducationResponse[]>([]);
 
   const { mutate: addEducation, isPending: isAdding } = useAddEducation(
+    jobSeekerId,
     (newEducation) => {
       setEducations([...educations, newEducation]);
       reset();
@@ -40,8 +46,10 @@ export default function EducationStep({ onNext, onSkip }: EducationStepProps) {
       educations.filter((education) => education.id !== educationId)
     );
 
-  const { mutate: removeEdu, isPending: isRemoving } =
-    useRemoveEducation(onRemove);
+  const { mutate: removeEdu, isPending: isRemoving } = useRemoveEducation(
+    jobSeekerId,
+    onRemove
+  );
 
   const {
     register,

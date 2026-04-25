@@ -18,17 +18,20 @@ import { toast } from "sonner";
 interface CertificationStepProps {
   onNext: () => void;
   onSkip: () => void;
+  jobSeekerId?: number;
 }
 
 export default function CertificationStep({
   onNext,
   onSkip,
+  jobSeekerId,
 }: CertificationStepProps) {
   const [certifications, setCertifications] = useState<CertificationResponse[]>(
     []
   );
 
   const { mutate: addCertification, isPending: isAdding } = useAddCertification(
+    jobSeekerId,
     (newCert) => {
       setCertifications([...certifications, newCert]);
       reset();
@@ -36,6 +39,7 @@ export default function CertificationStep({
   );
 
   const { mutate: removeCert, isPending: isRemoving } = useRemoveCertification(
+    jobSeekerId,
     (certId) =>
       setCertifications((certs) => certs.filter((cert) => cert.id !== certId))
   );

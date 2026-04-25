@@ -74,7 +74,7 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
     const responseInterceptor = apiClient.interceptors.response.use(
       (response) => response,
       async (error: AxiosError<ApiError>) => {
-        const previousRequest = error?.config!;
+        const previousRequest = error.config as any; // Type assertion to access custom properties
 
         if (
           error.response?.status === 401 &&

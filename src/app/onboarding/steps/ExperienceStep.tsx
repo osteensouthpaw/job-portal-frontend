@@ -25,11 +25,13 @@ import { toast } from "sonner";
 interface ExperienceStepProps {
   onNext: () => void;
   onSkip: () => void;
+  jobSeekerId: number;
 }
 
 export default function ExperienceStep({
   onNext,
   onSkip,
+  jobSeekerId,
 }: ExperienceStepProps) {
   const [experiences, setExperiences] = useState<ExperienceResponse[]>([]);
 
@@ -59,6 +61,7 @@ export default function ExperienceStep({
   const endDate = watch("endDate");
 
   const { mutate: addExperience, isPending: isAdding } = useAddExperience(
+    jobSeekerId,
     (newExp) => {
       setExperiences([...experiences, newExp]);
       reset();
@@ -70,8 +73,10 @@ export default function ExperienceStep({
       prevExp.filter((experience) => experience.id !== expId)
     );
 
-  const { mutate: removeExp, isPending: isRemoving } =
-    useRemoveExperience(onRemove);
+  const { mutate: removeExp, isPending: isRemoving } = useRemoveExperience(
+    jobSeekerId,
+    onRemove
+  );
 
   const onSubmit = (data: ExperienceRequest) => {
     // Date validation

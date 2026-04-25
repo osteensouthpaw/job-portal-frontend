@@ -46,9 +46,9 @@ export default function JobBrowsePage() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(true);
-  const [sortBy, setSortBy] = useState<"newest" | "relevant" | "salary">(
-    "newest"
-  );
+  const [sortBy, setSortBy] = useState<
+    "createdAt" | "applicationDeadline" | "salary"
+  >("createdAt");
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 5;
 
@@ -187,10 +187,10 @@ export default function JobBrowsePage() {
                     Newest
                   </div>
                 </SelectItem>
-                <SelectItem value="createdAt">
+                <SelectItem value="applicationDeadline">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
-                    Most Relevant
+                    Deadline
                   </div>
                 </SelectItem>
                 <SelectItem value="salary">
