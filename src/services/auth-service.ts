@@ -5,7 +5,7 @@ import { SignupFormData } from "@/app/auth/register/page";
 export interface UserResponse {
   id: number;
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   imageUrl: string;
   gender: Gender;

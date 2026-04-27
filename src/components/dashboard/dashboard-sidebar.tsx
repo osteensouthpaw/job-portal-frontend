@@ -92,7 +92,10 @@ export default function DashboardSidebar() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-foreground truncate">{`${user?.firstName.toUpperCase()} ${user?.lastName.toUpperCase()}`}</p>
+                <p className="text-foreground truncate">{`${user?.firstName.toUpperCase()}`}</p>
+                {user?.lastName && (
+                  <p className="text-foreground truncate">{`${user?.lastName.toUpperCase()}`}</p>
+                )}
                 <p className="text-muted-foreground text-sm">
                   {profile.profession}
                 </p>
