@@ -1,4 +1,5 @@
 "use client";
+import { ApiError, useAuth } from "@/app/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerSchema } from "@/schemas/validationSchemas";
 import { register, UserType } from "@/services/auth-service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import {
   ArrowRight,
   Briefcase,
@@ -19,7 +22,7 @@ import {
   Chrome,
   Eye,
   EyeOff,
-  Linkedin,
+  Github,
   Lock,
   Mail,
   Phone,
@@ -32,9 +35,6 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import ErrorMessage from "../ErrorMessage";
-import { ApiError, useAuth } from "@/app/AuthProvider";
-import { AxiosError } from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 export type SignupFormData = z.infer<typeof registerSchema>;
 
@@ -82,11 +82,18 @@ export default function SignupPage() {
       .finally(() => setIsLoading(false));
   });
 
-  const handleSocialSignup = async (provider: string) => {
+  const handleSocialSignup = async (
+    provider: "google" | "github",
+    role: UserType
+  ) => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast.success(`Signing up with ${provider}...`);
-    setIsLoading(false);
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const encodedRole = btoa(JSON.stringify({ role }));
+    const formatedUrl = `${baseUrl?.replace(
+      "/api/v1",
+      ""
+    )}/oauth2/authorization/${provider}?role_hint=${encodedRole}`;
+    window.location.href = formatedUrl;
   };
 
   return (
@@ -419,7 +426,9 @@ export default function SignupPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialSignup("Google")}
+                onClick={() =>
+                  handleSocialSignup("google", form.getValues("userType"))
+                }
                 disabled={isLoading}
                 className="gap-2"
               >
@@ -429,12 +438,14 @@ export default function SignupPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialSignup("LinkedIn")}
+                onClick={() =>
+                  handleSocialSignup("github", form.getValues("userType"))
+                }
                 disabled={isLoading}
                 className="gap-2"
               >
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
+                <Github className="h-4 w-4" />
+                GitHub
               </Button>
             </div>
             {/* Login Link */}

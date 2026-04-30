@@ -16,6 +16,7 @@ import {
   Chrome,
   Eye,
   EyeOff,
+  Github,
   Linkedin,
   Lock,
   Mail,
@@ -64,11 +65,14 @@ export default function LoginPage() {
       .finally(() => setIsLoading(false));
   });
 
-  const handleSocialLogin = async (provider: string) => {
+  const handleSocialLogin = async (provider: "google" | "github") => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast.success(`Logging in with ${provider}...`);
-    setIsLoading(false);
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const formatedUrl = `${baseUrl?.replace(
+      "/api/v1",
+      ""
+    )}/oauth2/authorization/${provider}`;
+    window.location.href = formatedUrl;
   };
 
   return (
@@ -228,7 +232,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin("Google")}
+                onClick={() => handleSocialLogin("google")}
                 disabled={isLoading}
                 className="gap-2"
               >
@@ -238,12 +242,12 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin("LinkedIn")}
+                onClick={() => handleSocialLogin("github")}
                 disabled={isLoading}
                 className="gap-2"
               >
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
+                <Github className="h-4 w-4" />
+                GitHub
               </Button>
             </div>
 
