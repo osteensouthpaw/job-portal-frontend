@@ -3,8 +3,6 @@ import {
   createJobSeeerProfile,
   findJobSeekerProfile,
   JobSeekerProfileRequest,
-  JobSeekerProfileResponse,
-  JobSeekerProfileResponse,
 } from "@/services/profile-service";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
