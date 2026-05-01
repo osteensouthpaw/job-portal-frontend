@@ -411,7 +411,7 @@ export default function SignupPage() {
               </Button>
             </form>
             {/* Divider */}
-            <div className="relative my-6">
+            {/* <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-muted"></div>
               </div>
@@ -420,9 +420,9 @@ export default function SignupPage() {
                   Or sign up with
                 </span>
               </div>
-            </div>
+            </div> */}
             {/* Social Signup */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant="outline"
@@ -447,7 +447,7 @@ export default function SignupPage() {
                 <Github className="h-4 w-4" />
                 GitHub
               </Button>
-            </div>
+            </div> */}
             {/* Login Link */}
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">

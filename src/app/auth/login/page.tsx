@@ -216,7 +216,7 @@ export default function LoginPage() {
             </form>
 
             {/* Divider */}
-            <div className="relative my-6">
+            {/* <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-muted"></div>
               </div>
@@ -225,10 +225,10 @@ export default function LoginPage() {
                   Or continue with
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {/* Social Login */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant="outline"
@@ -249,7 +249,7 @@ export default function LoginPage() {
                 <Github className="h-4 w-4" />
                 GitHub
               </Button>
-            </div>
+            </div> */}
 
             {/* Sign Up Link */}
             <div className="mt-6 text-center text-sm">
