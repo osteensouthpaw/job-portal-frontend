@@ -12,12 +12,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateJobSeekerProfile } from "@/hooks/useProfiles";
+import {
+  useCreateJobSeekerProfile,
+  useJobSeekerProfile,
+} from "@/hooks/useProfiles";
 import { ExperienceLevel } from "@/services/jobPost-service";
 import {
   JobSeekerProfileRequest,
   updateJobSeekerProfile,
 } from "@/services/profile-service";
+
 import {
   AlertCircle,
   ChevronRight,
@@ -27,7 +31,6 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -37,10 +40,8 @@ interface PersonalInfoStepProps {
 
 export default function PersonalInfoStep({ onNext }: PersonalInfoStepProps) {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<JobSeekerProfileRequest | null>(null);
-  const { mutate: saveProfile, isPending } = useCreateJobSeekerProfile(
-    (profile) => setProfile(profile)
-  );
+  const { mutate: saveProfile, isPending } = useCreateJobSeekerProfile();
+  const { data: profile } = useJobSeekerProfile(user?.id);
 
   const {
     register,
@@ -51,16 +52,16 @@ export default function PersonalInfoStep({ onNext }: PersonalInfoStepProps) {
   } = useForm<JobSeekerProfileRequest>({
     mode: "onBlur",
     defaultValues: {
-      profession: "",
-      bio: "",
-      phone: "",
-      personalWebsiteUrl: "",
-      linkedInUrl: "",
-      gitHubUrl: "",
-      twitterUrl: "",
-      experienceLevel: ExperienceLevel.PROFESSIONAL,
-      currentAnnualSalary: 0,
-      dateOfBirth: "",
+      profession: profile?.profession || "",
+      bio: profile?.bio || "",
+      phone: profile?.phone || "",
+      personalWebsiteUrl: profile?.personalWebsiteUrl || "",
+      linkedInUrl: profile?.linkedInUrl || "",
+      gitHubUrl: profile?.gitHubUrl || "",
+      twitterUrl: profile?.twitterUrl || "",
+      experienceLevel: profile?.experienceLevel || ExperienceLevel.PROFESSIONAL,
+      currentAnnualSalary: profile?.currentAnnualSalary || 0,
+      dateOfBirth: profile?.dateOfBirth || undefined,
     },
   });
 
@@ -71,7 +72,11 @@ export default function PersonalInfoStep({ onNext }: PersonalInfoStepProps) {
       toast.error("Email not found");
       return;
     }
-    profile ? updateJobSeekerProfile(data) : saveProfile(data);
+    profile
+      ? updateJobSeekerProfile(data).then(() =>
+          toast.success("Profile updated! ✓")
+        )
+      : saveProfile(data);
     onNext();
   };
 

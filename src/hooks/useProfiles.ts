@@ -4,6 +4,7 @@ import {
   findJobSeekerProfile,
   JobSeekerProfileRequest,
   JobSeekerProfileResponse,
+  JobSeekerProfileResponse,
 } from "@/services/profile-service";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -16,15 +17,13 @@ export const useJobSeekerProfile = (userId?: number, isJobSeeker?: boolean) =>
     enabled: isJobSeeker,
   });
 
-export const useCreateJobSeekerProfile = (
-  onNext?: (savedProfile: JobSeekerProfileResponse) => void
-) =>
+export const useCreateJobSeekerProfile = (onNext?: () => void) =>
   useMutation({
     mutationFn: (data: JobSeekerProfileRequest) =>
       createJobSeeerProfile(data).then((res) => res.data),
-    onSuccess: (savedProfile) => {
+    onSuccess: () => {
       toast.success("Profile saved! ✓");
-      onNext?.(savedProfile);
+      onNext?.();
     },
     onError: (error: AxiosError<ApiError>) => {
       toast.error(error?.response?.data?.message || "Failed to save profile");
