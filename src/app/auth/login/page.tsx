@@ -10,20 +10,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  ArrowRight,
-  Briefcase,
-  Chrome,
-  Eye,
-  EyeOff,
-  Github,
-  Linkedin,
-  Lock,
-  Mail,
-} from "lucide-react";
+import { ArrowRight, Briefcase, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { ApiError, useAuth } from "@/app/AuthProvider";
 import { loginSchema } from "@/schemas/validationSchemas";
