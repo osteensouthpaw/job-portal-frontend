@@ -106,10 +106,9 @@ export async function findJobSeekerProfile(id: number) {
 export async function updateJobSeekerProfile(
   profileData: JobSeekerProfileRequest
 ) {
-  return await apiClient.patch<JobSeekerProfileResponse>(
-    `job-seekers/me`,
-    profileData
-  );
+  return await apiClient
+    .patch<JobSeekerProfileResponse>(`job-seekers/me`, profileData)
+    .then((res) => res.data);
 }
 
 export async function createJobSeeerProfile(

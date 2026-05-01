@@ -11,9 +11,8 @@ import {
   JobSeekerProfileRequest,
   SkillRequest,
   SkillSetResponse,
-  updateJobSeekerProfile,
 } from "@/services/profile-service";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -53,7 +52,10 @@ import {
   useRemoveExperience,
   useUpdateExperience,
 } from "@/hooks/useExperiences";
-import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import {
+  useJobSeekerProfile,
+  useUpdateJobSeekerProfile,
+} from "@/hooks/useProfiles";
 import {
   useAddSkill,
   useFetchSkills,
@@ -78,13 +80,12 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import "react-day-picker/dist/style.css";
 import { CertificationDialog } from "./dialogs/CertificationDialog";
 import { EducationDialog } from "./dialogs/EducationDialog";
 import { ExperienceDialog } from "./dialogs/ExperienceDialog";
 import { SkillDialog } from "./dialogs/SkillDialog";
-import { redirect } from "next/navigation";
-import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -160,14 +161,8 @@ const ProfilePage = () => {
   });
 
   // Profile Update Mutation
-  const updateProfileMutation = useMutation({
-    mutationFn: updateJobSeekerProfile,
-    onSuccess: () => {
-      toast.success("Profile updated successfully!");
-      setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
-    },
-    onError: () => toast.error("Failed to update profile"),
+  const { mutate: updateProfile } = useUpdateJobSeekerProfile(user?.id!, () => {
+    setIsEditing(false);
   });
 
   // Experience Dialog State
@@ -537,9 +532,7 @@ const ProfilePage = () => {
                 <Button
                   size="sm"
                   className="bg-green-600 hover:bg-green-700 text-white"
-                  onClick={handleSubmit((data) =>
-                    updateProfileMutation.mutate(data)
-                  )}
+                  onClick={handleSubmit((data) => updateProfile(data))}
                   disabled={!isDirty}
                 >
                   <Save className="h-4 w-4 mr-2" />
