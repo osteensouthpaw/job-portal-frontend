@@ -27,7 +27,6 @@ export default function SkillsStep({
     jobSeekerId,
     (newSkill) => {
       setSkills([...skills, newSkill]);
-      reset();
     }
   );
   const { mutate: removeSkillMutate, isPending: isRemoving } = useRemoveSkill(
@@ -52,6 +51,7 @@ export default function SkillsStep({
   });
 
   const onSubmit = (data: SkillRequest) => {
+    reset();
     addSkill(data);
   };
 

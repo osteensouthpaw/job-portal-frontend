@@ -64,7 +64,6 @@ export default function ExperienceStep({
     jobSeekerId,
     (newExp) => {
       setExperiences([...experiences, newExp]);
-      reset();
     }
   );
 
@@ -95,6 +94,7 @@ export default function ExperienceStep({
       return;
     }
 
+    reset();
     addExperience(data);
   };
 
@@ -232,7 +232,6 @@ export default function ExperienceStep({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="FULL_TIME">Full-time</SelectItem>
-              <SelectItem value="PART_TIME">Part-time</SelectItem>
               <SelectItem value="CONTRACT">Contract</SelectItem>
               <SelectItem value="FREELANCE">Freelance</SelectItem>
             </SelectContent>
@@ -247,6 +246,7 @@ export default function ExperienceStep({
               id="start-date"
               type="date"
               {...register("startDate", {
+                required: "Start date is required",
                 validate: (value) => {
                   if (value && new Date(value) > new Date()) {
                     return "Start date cannot be in the future";
@@ -264,6 +264,9 @@ export default function ExperienceStep({
               id="end-date"
               type="date"
               {...register("endDate", {
+                required: !isCurrentJob
+                  ? "End date is required unless it's your current job"
+                  : false,
                 validate: (value) => {
                   if (isCurrentJob) return true;
                   if (
@@ -318,12 +321,12 @@ export default function ExperienceStep({
 
         <Button
           type="submit"
-          disabled={isAdding || isSubmitting}
+          disabled={isSubmitting}
           variant="outline"
           className="w-full gap-2"
         >
           <Plus className="h-4 w-4" />
-          {isAdding || isSubmitting ? "Adding..." : "Add Experience"}
+          Add Experience
         </Button>
       </form>
 

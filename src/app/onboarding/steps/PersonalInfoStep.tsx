@@ -12,9 +12,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateJobSeeerProfile } from "@/hooks/useProfiles";
+import { useCreateJobSeekerProfile } from "@/hooks/useProfiles";
 import { ExperienceLevel } from "@/services/jobPost-service";
-import { JobSeekerProfileRequest } from "@/services/profile-service";
+import {
+  JobSeekerProfileRequest,
+  updateJobSeekerProfile,
+} from "@/services/profile-service";
 import {
   AlertCircle,
   ChevronRight,
@@ -24,6 +27,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -33,7 +37,10 @@ interface PersonalInfoStepProps {
 
 export default function PersonalInfoStep({ onNext }: PersonalInfoStepProps) {
   const { user } = useAuth();
-  const { mutate: saveProfile, isPending } = useCreateJobSeeerProfile(onNext);
+  const [profile, setProfile] = useState<JobSeekerProfileRequest | null>(null);
+  const { mutate: saveProfile, isPending } = useCreateJobSeekerProfile(
+    (profile) => setProfile(profile)
+  );
 
   const {
     register,
@@ -64,7 +71,8 @@ export default function PersonalInfoStep({ onNext }: PersonalInfoStepProps) {
       toast.error("Email not found");
       return;
     }
-    saveProfile(data);
+    profile ? updateJobSeekerProfile(data) : saveProfile(data);
+    onNext();
   };
 
   const renderError = (error?: any) => {

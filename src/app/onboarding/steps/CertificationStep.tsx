@@ -34,7 +34,6 @@ export default function CertificationStep({
     jobSeekerId,
     (newCert) => {
       setCertifications([...certifications, newCert]);
-      reset();
     }
   );
 
@@ -65,6 +64,7 @@ export default function CertificationStep({
       toast.error("Certification date cannot be in the future");
       return;
     }
+    reset();
     addCertification(data);
   };
 

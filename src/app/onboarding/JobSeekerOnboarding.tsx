@@ -232,8 +232,8 @@ export default function JobSeekerOnboarding({
 
               <div className="flex gap-2">
                 {currentStep > 0 && (
-                  <Button variant="ghost" onClick={handleSkip}>
-                    Skip
+                  <Button variant="ghost" onClick={onComplete}>
+                    Skip All
                   </Button>
                 )}
               </div>

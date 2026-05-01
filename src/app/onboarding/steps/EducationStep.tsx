@@ -37,7 +37,6 @@ export default function EducationStep({
     jobSeekerId,
     (newEducation) => {
       setEducations([...educations, newEducation]);
-      reset();
     }
   );
 
@@ -93,6 +92,7 @@ export default function EducationStep({
       }
     }
 
+    reset();
     addEducation(data);
   };
 
