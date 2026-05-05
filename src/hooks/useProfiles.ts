@@ -30,7 +30,7 @@ export const useCreateJobSeekerProfile = (onNext?: () => void) =>
   });
 
 export const useUpdateJobSeekerProfile = (
-  userId: number,
+  userId?: number,
   onSuccess?: () => void
 ) => {
   const queryClient = useQueryClient();
@@ -39,7 +39,7 @@ export const useUpdateJobSeekerProfile = (
     mutationFn: updateJobSeekerProfile,
     onSuccess: () => {
       toast.success("Profile updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+      queryClient.invalidateQueries({ queryKey: ["profiles", userId] });
       onSuccess?.();
     },
     onError: (error: AxiosError<ApiError>) => {

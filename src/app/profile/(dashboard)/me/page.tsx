@@ -161,7 +161,7 @@ const ProfilePage = () => {
   });
 
   // Profile Update Mutation
-  const { mutate: updateProfile } = useUpdateJobSeekerProfile(user?.id!, () => {
+  const { mutate: updateProfile } = useUpdateJobSeekerProfile(user?.id, () => {
     setIsEditing(false);
   });
 
