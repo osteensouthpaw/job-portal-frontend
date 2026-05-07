@@ -1,4 +1,4 @@
-import DashboardSidebar from "@/components/dashboard/dashboard-sidebar";
+import DashboardSidebar from "@/app/(dashboard)/components/dashboard-sidebar";
 import NavBar from "@/components/general/NavBar";
 import { Container } from "@/components/ui/container";
 import {

@@ -13,7 +13,7 @@ export const useJobSeekerProfile = (userId?: number, isJobSeeker?: boolean) =>
   useQuery({
     queryKey: ["profiles", userId],
     queryFn: () => findJobSeekerProfile(userId!),
-    enabled: isJobSeeker,
+    enabled: isJobSeeker && !!userId,
   });
 
 export const useCreateJobSeekerProfile = (onNext?: () => void) =>

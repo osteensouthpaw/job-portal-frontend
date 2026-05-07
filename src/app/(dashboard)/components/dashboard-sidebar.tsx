@@ -20,48 +20,63 @@ import { UserType } from "@/services/auth-service";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import {
   ArrowLeft,
+  BarChart3,
+  Briefcase,
+  Calendar,
   Flag,
   LayoutDashboard,
   Search,
   Settings,
   UserRoundCog,
+  Users,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+
+const jobSeekerTabs: {
+  title: string;
+  url: string;
+  icon: React.ElementType;
+}[] = [
+  { title: "Dashboard", url: "/job-seeker/dashboard", icon: LayoutDashboard },
+  { title: "Profile", url: "/job-seeker/me", icon: UserRoundCog },
+  { title: "Applications", url: "/job-seeker/job-applications", icon: Search },
+  { title: "Favourites", url: "/job-seeker/favourites", icon: Flag },
+  { title: "Settings", url: "/job-seeker/settings", icon: Settings },
+];
+
+const organizationTabs: {
+  title: string;
+  url: string;
+  icon: React.ElementType;
+}[] = [
+  { title: "dashboard", url: "/organization/dashboard", icon: LayoutDashboard },
+  { title: "candidates", url: "/organization/candidates", icon: Users },
+  { title: "jobs", url: "/organization/postings", icon: Briefcase },
+  { title: "interviews", url: "/organization/interviews", icon: Calendar },
+  { title: "analytics", url: "/organization/analytics", icon: BarChart3 },
+  { title: "settings", url: "/organization/settings", icon: Settings },
+];
 
 export default function DashboardSidebar() {
   const { user } = useAuth();
-  const { data: profile, isLoading, isError } = useJobSeekerProfile(user?.id);
+  const router = useRouter();
+
+  const isJobSeeker = user?.userType.includes(UserType.JOB_SEEKER);
+  const {
+    data: profile,
+    isLoading,
+    isError,
+  } = useJobSeekerProfile(user?.id, isJobSeeker);
   const pathname = usePathname();
 
-  const items = [
-    {
-      title: "Dashboard",
-      url: "/profile/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Profile",
-      url: "/profile/me",
-      icon: UserRoundCog,
-    },
-    {
-      title: "Applications",
-      url: "/profile/job-applications",
-      icon: Search,
-    },
-    {
-      title: "Favourites",
-      url: "/profile/favourites",
-      icon: Flag,
-    },
-    {
-      title: "Settings",
-      url: "/profile/settings",
-      icon: Settings,
-    },
-  ];
+  const tabLinks = isJobSeeker ? jobSeekerTabs : organizationTabs;
 
-  if (!profile || isLoading) {
+  useEffect(() => {
+    if (!user) router.push("/auth/login");
+  }, [user, router]);
+
+  if (!profile || isLoading || !user) {
     return null;
   }
 
@@ -97,7 +112,7 @@ export default function DashboardSidebar() {
                   <p className="text-foreground truncate">{`${user?.lastName.toUpperCase()}`}</p>
                 )}
                 <p className="text-muted-foreground text-sm">
-                  {profile.profession}
+                  {isJobSeeker && profile.profession}
                 </p>
               </div>
             </div>
@@ -106,7 +121,7 @@ export default function DashboardSidebar() {
           <SidebarGroupContent>
             {user && user.userType !== UserType.PENDING && (
               <SidebarMenu className="space-y-2">
-                {items.map((item) => (
+                {tabLinks.map((item) => (
                   <SidebarMenuItem
                     key={item.title}
                     className={pathname === item.url ? "bg-secondary" : ""}
