@@ -57,13 +57,13 @@ export default function Navbar({
   const navLinks =
     user?.userType === UserType.JOB_SEEKER
       ? [
-          { id: "dashboard", label: "Dashboard", icon: Home },
+          { id: "jobseekerDashboard", label: "Dashboard", icon: Home },
           { id: "jobs", label: "Find Jobs", icon: Briefcase },
           { id: "applications", label: "Applications", icon: FileText },
           { id: "saved", label: "Saved Jobs", icon: Heart },
         ]
       : [
-          { id: "dashboard", label: "Dashboard", icon: Home },
+          { id: "organizationDashboard", label: "Dashboard", icon: Home },
           { id: "jobs", label: "Job Postings", icon: Briefcase },
           { id: "candidates", label: "Candidates", icon: User },
           { id: "messages", label: "Messages", icon: MessageSquare },

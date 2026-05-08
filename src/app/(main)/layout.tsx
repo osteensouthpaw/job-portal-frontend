@@ -5,12 +5,14 @@ import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 const tabRouteMap: Record<string, string> = {
-  dashboard: "/job-seeker/dashboard",
   profile: "/job-seeker/me",
   applications: "/job-seeker/job-applications",
   saved: "/job-seeker/favourites",
   jobs: "/job-listings",
   settings: "/job-seeker/settings",
+  jobseekerDashboard: "/job-seeker/dashboard",
+  organizationDashboard: "/organization/dashboard",
+  candidates: "/organization/candidates",
 };
 
 function getActiveTab(pathname: string): string {

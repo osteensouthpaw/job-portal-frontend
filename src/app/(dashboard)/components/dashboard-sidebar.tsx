@@ -76,7 +76,7 @@ export default function DashboardSidebar() {
     if (!user) router.push("/auth/login");
   }, [user, router]);
 
-  if (!profile || isLoading || !user) {
+  if (isLoading || !user) {
     return null;
   }
 
@@ -112,7 +112,7 @@ export default function DashboardSidebar() {
                   <p className="text-foreground truncate">{`${user?.lastName.toUpperCase()}`}</p>
                 )}
                 <p className="text-muted-foreground text-sm">
-                  {isJobSeeker && profile.profession}
+                  {isJobSeeker && profile?.profession}
                 </p>
               </div>
             </div>
