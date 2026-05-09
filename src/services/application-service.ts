@@ -45,13 +45,25 @@ export async function createJobApplication({
 
 export async function findApplicationByUser(
   jobPostId: number,
-  applicantId: number
+  applicantId: number,
 ) {
   return apiClient.get<JobApplicationResponse>(
-    `/job-applications/${jobPostId}/applicants/${applicantId}`
+    `/job-applications/${jobPostId}/applicants/${applicantId}`,
   );
 }
 
 export async function deleteApplication(jobPostId: number) {
   return apiClient.delete<void>(`/job-applications/${jobPostId}`);
+}
+
+export async function getApplicationsForJobPost(jobPostId: number) {
+  return apiClient.get<PageResponse<JobApplicationResponse>>(
+    `/job-posts/${jobPostId}/applications`,
+  );
+}
+
+export async function getRecentApplicationsForRecruiter() {
+  return apiClient.get<PageResponse<JobApplicationResponse>>(
+    `recruiter/job-applications`,
+  );
 }

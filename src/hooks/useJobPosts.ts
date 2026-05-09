@@ -9,6 +9,13 @@ export const useJobPosts = (params?: Record<string, any>) =>
     queryFn: () => jobPostService.jobPosts(params),
   });
 
+export const useRecruiterJobPosts = () =>
+  useQuery({
+    queryKey: ["recruiterJobPosts"],
+    queryFn: () =>
+      jobPostService.getJobPostsByRecruiter().then((res) => res.data),
+  });
+
 export const useJobPost = (jobPostId: number) =>
   useQuery({
     queryKey: ["jobPost", jobPostId],
@@ -38,12 +45,12 @@ export const useToggleLike = () => {
     mutationFn: (jobPostId: number) =>
       jobPostService.toggleLike(jobPostId).then((res) => res.data),
     onSuccess: (data, jobPostId) => {
-      queryClient.invalidateQueries({
+      (queryClient.invalidateQueries({
         queryKey: ["jobPosts", { isLiked: true }, jobPostId],
       }),
         queryClient.invalidateQueries({
           queryKey: ["jobPosts", { isLiked: true }],
-        });
+        }));
     },
   });
 };
@@ -99,3 +106,9 @@ export const useDeleteJobPost = () => {
     },
   });
 };
+
+export const useTotalOpenJobPosts = () =>
+  useQuery({
+    queryKey: ["totalJobs"],
+    queryFn: jobPostService.totalOpenJobPost,
+  });

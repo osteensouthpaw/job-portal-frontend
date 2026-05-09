@@ -73,7 +73,7 @@ class JobPostService {
   };
 
   async getJobPostsByRecruiter() {
-    return apiClient.get<PageResponse<JobPostResponse>>("/");
+    return apiClient.get<PageResponse<JobPostResponse>>(`recruiters/job-posts`);
   }
 
   getLikedJobPosts = async () => {
@@ -100,6 +100,10 @@ class JobPostService {
 
   deleteJobPost = (jobPostId: number) => {
     return apiClient.delete<void>(`job-posts/${jobPostId}`);
+  };
+
+  totalOpenJobPost = () => {
+    return apiClient.get<number>("job-posts/open").then((res) => res.data);
   };
 }
 
