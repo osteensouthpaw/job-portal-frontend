@@ -1,66 +1,38 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
+import { applicationStatusConfig } from "@/lib/application-status-config";
+import { ApplicationStatus } from "@/services/application-service";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { ExternalLink, Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 interface CandidateCardProps {
+  id: number;
   name: string;
   position: string;
   location: string;
   email: string;
-  phone: string;
   experience: string;
   skills: string[];
   appliedFor: string;
-  status: "new" | "screening" | "interview" | "offer" | "rejected";
+  status: ApplicationStatus;
   avatar?: string;
   onClick?: () => void;
-  onQuickView?: () => void;
 }
 
 export function CandidateCard({
+  id,
   name,
   position,
-  location,
   email,
-  phone,
-  experience,
-  skills,
   appliedFor,
   status,
   avatar,
   onClick,
-  onQuickView,
 }: CandidateCardProps) {
-  const statusConfig = {
-    new: {
-      label: "New",
-      className:
-        "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-    },
-    screening: {
-      label: "Screening",
-      className:
-        "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400",
-    },
-    interview: {
-      label: "Interview",
-      className:
-        "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
-    },
-    offer: {
-      label: "Offer Sent",
-      className:
-        "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
-    },
-    rejected: {
-      label: "Rejected",
-      className: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-    },
-  };
-
-  const config = statusConfig[status];
+  const config = applicationStatusConfig[status];
+  const { data: jobSeekerProfile, isLoading } = useJobSeekerProfile(id);
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -84,29 +56,21 @@ export function CandidateCard({
                 <h3 className="text-foreground mb-1 truncate">{name}</h3>
                 <p className="text-muted-foreground truncate">{position}</p>
               </div>
-              <Badge className={config.className}>{config.label}</Badge>
+              <Badge className={config.className}>
+                <config.icon className="h-4 w-4 mr-1" />
+                {config.label}
+              </Badge>
             </div>
 
             {/* Contact & Location */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1 truncate">
-                <MapPin className="h-4 w-4 flex-shrink-0" />
-                {location}
-              </span>
               <span className="flex items-center gap-1 truncate">
                 <Mail className="h-4 w-4 flex-shrink-0" />
                 {email}
               </span>
               <span className="flex items-center gap-1 truncate">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                {phone}
-              </span>
-            </div>
-
-            {/* Rating & Experience */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
-              <span className="text-sm text-muted-foreground">
-                {experience} experience
+                {jobSeekerProfile?.phone}
               </span>
             </div>
 
@@ -117,9 +81,9 @@ export function CandidateCard({
 
             {/* Skills */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {skills.map((skill, index) => (
+              {jobSeekerProfile?.skills.map((skill, index) => (
                 <Badge key={index} variant="outline" className="text-xs">
-                  {skill}
+                  {skill.description}
                 </Badge>
               ))}
             </div>
@@ -132,11 +96,6 @@ export function CandidateCard({
                 onClick={onClick}
               >
                 View Profile
-              </Button>
-              <Button size="sm" variant="outline" onClick={onQuickView}>
-                <ExternalLink className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Quick View</span>
-                <span className="sm:hidden">View</span>
               </Button>
               <Button size="sm" variant="outline">
                 Message

@@ -1,40 +1,40 @@
 "use client";
-import { useState } from "react";
-import { AnalyticsCard } from "./components/AnalyticsCard";
-import { JobPostingCard } from "./components/JobPostingCard";
-import { ApplicationFunnelChart } from "./components/ApplicationFunnelChart";
-import { ApplicationsOverTimeChart } from "./components/ApplicationsOverTimeChart";
-import { ActivityFeed } from "./components/ActivityFeed";
-import { TopPerformingJobs } from "./components/TopPerformingJobs";
-import { JobApplicationsList } from "./components/JobApplicationsList";
-
-import {
-  Search,
-  Users,
-  Briefcase,
-  Calendar,
-  CheckCircle,
-  Download,
-  Filter,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  useRecruiterJobPosts,
-  useTotalOpenJobPosts,
-} from "@/hooks/useJobPosts";
-import {
   useApplicationsForJobPost,
   useRecentApplications,
 } from "@/hooks/useApplications";
+import {
+  useRecruiterJobPosts,
+  useTotalOpenJobPosts,
+} from "@/hooks/useJobPosts";
+import { JobPostResponse } from "@/services/jobPost-service";
+import {
+  Briefcase,
+  CheckCircle,
+  Download,
+  Filter,
+  Search,
+  Users,
+} from "lucide-react";
+import { useState } from "react";
+import { ActivityFeed } from "./components/ActivityFeed";
+import { AnalyticsCard } from "./components/AnalyticsCard";
+import { ApplicationFunnelChart } from "./components/ApplicationFunnelChart";
+import { ApplicationsOverTimeChart } from "./components/ApplicationsOverTimeChart";
 import { CandidateCard } from "./components/CandidateCard";
+import { JobApplicantsList } from "./components/JobApplicantsList";
+import { JobPostingCard } from "./components/JobPostingCard";
+import { TopPerformingJobs } from "./components/TopPerformingJobs";
+import { JobApplicationResponse } from "@/services/application-service";
 
 export default function RecruiterDashboard() {
   const { data: jobPosts } = useRecruiterJobPosts();
   const { data: recentApplications } = useRecentApplications();
   const { data: totalOpenJobPosts = 0 } = useTotalOpenJobPosts();
-  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [selectedJob, setSelectedJob] = useState<JobPostResponse | null>(null);
 
   // Get applications for selected job
   const { data: applicationsData } = useApplicationsForJobPost(selectedJob?.id);
@@ -50,12 +50,7 @@ export default function RecruiterDashboard() {
       experience: "N/A",
       skills: ["Resume", "Interview", "Referral"],
       appliedFor: application.appliedPost.jobTitle,
-      status:
-        application.applicationStatus === "ACCEPTED"
-          ? "offer"
-          : application.applicationStatus === "REJECTED"
-            ? "rejected"
-            : "new",
+      status: application.applicationStatus,
       avatar: application.appliedUser.imageUrl,
     })) || [];
 
@@ -82,46 +77,26 @@ export default function RecruiterDashboard() {
   ];
 
   // Transform job posts for display
-  const activeJobs =
-    jobPosts?.content.map((job) => ({
-      id: job.id,
-      title: job.jobTitle,
-      department: "Engineering",
-      postedDate: new Date(job.createdAt).toLocaleDateString(),
-      applicants: job.totalApplications,
-      views: job.totalLikes,
-      status: job.isOpen ? ("active" as const) : ("paused" as const),
-      deadline: new Date(job.applicationDeadline).toLocaleDateString(),
-    })) || [];
+  const activeJobs = jobPosts?.content || [];
 
-  const handleViewApplications = (job: any) => {
-    setSelectedJob(job);
-  };
-
-  const handleUpdateApplicationStatus = (
-    applicationId: number,
-    status: "accepted" | "rejected",
-  ) => {
-    console.log(`Update application ${applicationId} to ${status}`);
-  };
+  const handleViewApplications = (job: JobPostResponse) => setSelectedJob(job);
 
   // Show job applications list when a job is selected
-  if (selectedJob) {
+  if (selectedJob && applicationsData) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">
-            Applications for {selectedJob.title}
+            Applications for {selectedJob.jobTitle}
           </h1>
           <Button variant="outline" onClick={() => setSelectedJob(null)}>
             Back to Dashboard
           </Button>
         </div>
-        <JobApplicationsList
-          jobTitle={selectedJob.title}
-          applications={applicationsData?.content || []}
+        <JobApplicantsList
+          jobTitle={selectedJob.jobTitle}
+          applications={applicationsData.content}
           onBack={() => setSelectedJob(null)}
-          onUpdateStatus={handleUpdateApplicationStatus}
         />
       </div>
     );
@@ -184,16 +159,7 @@ export default function RecruiterDashboard() {
         <div className="space-y-4">
           {recentApplicants.length > 0 ? (
             recentApplicants.map((candidate) => (
-              <CandidateCard
-                key={candidate.id}
-                {...candidate}
-                onClick={() => {
-                  /* optional: view candidate profile */
-                }}
-                onQuickView={() => {
-                  /* optional: quick view action */
-                }}
-              />
+              <CandidateCard key={candidate.id} {...candidate} />
             ))
           ) : (
             <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
@@ -213,7 +179,12 @@ export default function RecruiterDashboard() {
           {activeJobs.map((job) => (
             <JobPostingCard
               key={job.id}
-              {...job}
+              title={job.jobTitle}
+              department={job.organization.companyName}
+              postedDate={job.createdAt}
+              applicants={job.totalApplications}
+              likes={job.totalLikes}
+              deadline={job.applicationDeadline}
               onViewApplications={() => handleViewApplications(job)}
             />
           ))}

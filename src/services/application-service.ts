@@ -48,7 +48,7 @@ export async function findApplicationByUser(
   applicantId: number,
 ) {
   return apiClient.get<JobApplicationResponse>(
-    `/job-applications/${jobPostId}/applicants/${applicantId}`,
+    `/job-posts/${jobPostId}/applicants/${applicantId}`,
   );
 }
 
@@ -64,6 +64,30 @@ export async function getApplicationsForJobPost(jobPostId: number) {
 
 export async function getRecentApplicationsForRecruiter() {
   return apiClient.get<PageResponse<JobApplicationResponse>>(
-    `recruiter/job-applications`,
+    `recruiters/job-applications`,
   );
+}
+
+export async function acceptApplication({
+  applicantId,
+  jobPostId,
+}: {
+  applicantId: number;
+  jobPostId: number;
+}) {
+  return apiClient.patch<void>(`/job-applications/accept`, null, {
+    params: { applicantId, jobPostId },
+  });
+}
+
+export async function rejectApplication({
+  applicantId,
+  jobPostId,
+}: {
+  applicantId: number;
+  jobPostId: number;
+}) {
+  return apiClient.patch<void>(`/job-applications/reject`, null, {
+    params: { applicantId, jobPostId },
+  });
 }

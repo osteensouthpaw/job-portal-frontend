@@ -6,120 +6,69 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  ApplicationStatus,
+  JobApplicationResponse,
+} from "@/services/application-service";
+import { applicationStatusConfig } from "@/lib/application-status-config";
+import {
   ArrowLeft,
   Mail,
   MapPin,
   Phone,
   Search,
   SlidersHorizontal,
-  Star,
 } from "lucide-react";
 import { useState } from "react";
 import { CandidateProfileView } from "./CandidateProfileView";
 
-interface Application {
-  id: number;
-  name: string;
-  position: string;
-  location: string;
-  email: string;
-  phone: string;
-  rating: number;
-  experience: string;
-  skills: string[];
-  appliedFor: string;
-  appliedDate: string;
-  status: "new" | "screening" | "interview" | "offer" | "rejected" | "accepted";
-  avatar?: string;
-  summary?: string;
-  education?: Array<{ degree: string; school: string; year: string }>;
-  workHistory?: Array<{
-    title: string;
-    company: string;
-    period: string;
-    description: string;
-  }>;
-  certifications?: string[];
-  portfolio?: string;
-  linkedin?: string;
-  github?: string;
-  coverLetter?: string;
-}
-
 interface JobApplicationsListProps {
   jobTitle: string;
-  applications: Application[];
+  applications: JobApplicationResponse[];
   onBack: () => void;
-  onUpdateStatus: (
-    applicationId: number,
-    status: "accepted" | "rejected",
-  ) => void;
 }
 
-export function JobApplicationsList({
+export function JobApplicantsList({
   jobTitle,
   applications,
   onBack,
-  onUpdateStatus,
 }: JobApplicationsListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedCandidate, setSelectedCandidate] =
-    useState<Application | null>(null);
+    useState<JobApplicationResponse | null>(null);
 
-  const statusConfig = {
-    new: {
-      label: "New",
-      className:
-        "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
-    },
-    screening: {
-      label: "Screening",
-      className:
-        "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400",
-    },
-    interview: {
-      label: "Interview",
-      className:
-        "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
-    },
-    offer: {
-      label: "Offer Sent",
-      className:
-        "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
-    },
-    rejected: {
-      label: "Rejected",
-      className: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
-    },
-    accepted: {
-      label: "Accepted",
-      className:
-        "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
-    },
-  };
+  const statusConfig = applicationStatusConfig;
 
   const filteredApplications = applications.filter((app) => {
-    const matchesSearch =
-      app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.skills.some((skill) =>
-        skill.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
+    const searchTarget = [
+      app.appliedUser.firstName,
+      app.appliedUser.lastName,
+      app.appliedUser.email,
+      app.appliedPost.jobTitle,
+      app.appliedPost.organization.companyName,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
+    const matchesSearch = searchTarget.includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || app.applicationStatus === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
 
-  const statusCounts = {
+  const statusCounts: Record<ApplicationStatus | "all", number> = {
     all: applications.length,
-    new: applications.filter((a) => a.status === "new").length,
-    screening: applications.filter((a) => a.status === "screening").length,
-    interview: applications.filter((a) => a.status === "interview").length,
-    offer: applications.filter((a) => a.status === "offer").length,
-    accepted: applications.filter((a) => a.status === "accepted").length,
-    rejected: applications.filter((a) => a.status === "rejected").length,
+    [ApplicationStatus.APPLIED]: applications.filter(
+      (a) => a.applicationStatus === ApplicationStatus.APPLIED,
+    ).length,
+    [ApplicationStatus.ACCEPTED]: applications.filter(
+      (a) => a.applicationStatus === ApplicationStatus.ACCEPTED,
+    ).length,
+    [ApplicationStatus.REJECTED]: applications.filter(
+      (a) => a.applicationStatus === ApplicationStatus.REJECTED,
+    ).length,
   };
 
   return (
@@ -164,18 +113,14 @@ export function JobApplicationsList({
         <Tabs value={statusFilter} onValueChange={setStatusFilter}>
           <TabsList className="inline-flex">
             <TabsTrigger value="all">All ({statusCounts.all})</TabsTrigger>
-            <TabsTrigger value="new">New ({statusCounts.new})</TabsTrigger>
-            <TabsTrigger value="screening">
-              Screening ({statusCounts.screening})
+            <TabsTrigger value={ApplicationStatus.APPLIED}>
+              Applied ({statusCounts[ApplicationStatus.APPLIED]})
             </TabsTrigger>
-            <TabsTrigger value="interview">
-              Interview ({statusCounts.interview})
+            <TabsTrigger value={ApplicationStatus.ACCEPTED}>
+              Accepted ({statusCounts[ApplicationStatus.ACCEPTED]})
             </TabsTrigger>
-            <TabsTrigger value="accepted">
-              Accepted ({statusCounts.accepted})
-            </TabsTrigger>
-            <TabsTrigger value="rejected">
-              Rejected ({statusCounts.rejected})
+            <TabsTrigger value={ApplicationStatus.REJECTED}>
+              Rejected ({statusCounts[ApplicationStatus.REJECTED]})
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -185,10 +130,17 @@ export function JobApplicationsList({
       <div className="space-y-4">
         {filteredApplications.length > 0 ? (
           filteredApplications.map((application) => {
-            const config = statusConfig[application.status];
+            const config = statusConfig[application.applicationStatus];
+            const candidateName =
+              `${application.appliedUser.firstName} ${application.appliedUser.lastName ?? ""}`.trim();
+            const companyLocation =
+              application.appliedPost.organization.companyLocation ||
+              application.appliedPost.location ||
+              "Location unavailable";
+
             return (
               <Card
-                key={application.id}
+                key={`${application.appliedUser.id}-${application.appliedPost.id}`}
                 className="hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => setSelectedCandidate(application)}
               >
@@ -196,9 +148,9 @@ export function JobApplicationsList({
                   <div className="flex flex-col sm:flex-row gap-4">
                     {/* Avatar */}
                     <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
-                      <AvatarImage src={application.avatar} />
+                      <AvatarImage src={application.appliedUser.imageUrl} />
                       <AvatarFallback className="bg-gradient-to-br from-green-400 to-emerald-600 text-white">
-                        {application.name
+                        {candidateName
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
@@ -210,10 +162,10 @@ export function JobApplicationsList({
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                         <div className="min-w-0">
                           <h3 className="text-foreground mb-1 truncate">
-                            {application.name}
+                            {candidateName}
                           </h3>
                           <p className="text-muted-foreground truncate">
-                            {application.position}
+                            {application.appliedPost.jobTitle}
                           </p>
                         </div>
                         <Badge className={config.className}>
@@ -225,54 +177,33 @@ export function JobApplicationsList({
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-3 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1 truncate">
                           <MapPin className="h-4 w-4 flex-shrink-0" />
-                          {application.location}
+                          {companyLocation}
                         </span>
                         <span className="flex items-center gap-1 truncate">
                           <Mail className="h-4 w-4 flex-shrink-0" />
-                          {application.email}
+                          {application.appliedUser.email}
                         </span>
                         <span className="flex items-center gap-1 truncate">
                           <Phone className="h-4 w-4 flex-shrink-0" />
-                          {application.phone}
+                          N/A
                         </span>
                       </div>
 
-                      {/* Rating & Date */}
+                      {/* Applied Date */}
                       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-4 w-4 ${
-                                i < application.rating
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300 dark:text-gray-600"
-                              }`}
-                            />
-                          ))}
-                        </div>
                         <span className="text-sm text-muted-foreground">
-                          Applied on {application.appliedDate}
+                          Applied on{" "}
+                          {new Date(
+                            application.appliedDate,
+                          ).toLocaleDateString()}
                         </span>
                       </div>
 
-                      {/* Skills */}
-                      <div className="flex flex-wrap gap-2">
-                        {application.skills.slice(0, 4).map((skill, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="text-xs"
-                          >
-                            {skill}
-                          </Badge>
-                        ))}
-                        {application.skills.length > 4 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{application.skills.length - 4} more
-                          </Badge>
-                        )}
-                      </div>
+                      {application.resumeUrl && (
+                        <Badge variant="outline" className="text-xs">
+                          Resume attached
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -295,14 +226,22 @@ export function JobApplicationsList({
         <CandidateProfileView
           open={!!selectedCandidate}
           onClose={() => setSelectedCandidate(null)}
-          candidate={selectedCandidate}
-          onAccept={() => {
-            onUpdateStatus(selectedCandidate.id, "accepted");
-            setSelectedCandidate(null);
-          }}
-          onReject={() => {
-            onUpdateStatus(selectedCandidate.id, "rejected");
-            setSelectedCandidate(null);
+          userId={selectedCandidate.appliedUser.id}
+          applicantId={selectedCandidate.appliedUser.id}
+          jobPostId={selectedCandidate.appliedPost.id}
+          candidate={{
+            name: `${selectedCandidate.appliedUser.firstName} ${selectedCandidate.appliedUser.lastName ?? ""}`.trim(),
+            position: selectedCandidate.appliedPost.jobTitle,
+            location:
+              selectedCandidate.appliedPost.organization.companyLocation ||
+              selectedCandidate.appliedPost.location ||
+              "Location unavailable",
+            email: selectedCandidate.appliedUser.email,
+            appliedFor: selectedCandidate.appliedPost.jobTitle,
+            appliedDate: selectedCandidate.appliedDate,
+            status: selectedCandidate.applicationStatus,
+            avatar: selectedCandidate.appliedUser.imageUrl,
+            coverLetter: selectedCandidate.coverLetter,
           }}
         />
       )}

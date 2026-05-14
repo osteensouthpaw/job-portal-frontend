@@ -264,7 +264,7 @@ export default function JobApplicationDetailPage() {
                   <span className="text-foreground">
                     {jobPost.applicationDeadline
                       ? new Date(
-                          jobPost.applicationDeadline
+                          jobPost.applicationDeadline,
                         ).toLocaleDateString()
                       : "-"}
                   </span>

@@ -1,15 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Users, Calendar, MoreVertical } from "lucide-react";
+import { Heart, Users, Calendar, MoreVertical } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface JobPostingCardProps {
   title: string;
   department: string;
   postedDate: string;
   applicants: number;
-  views: number;
-  status: "active" | "paused" | "closed";
+  likes: number;
   deadline: string;
   onViewApplications?: () => void;
 }
@@ -19,31 +18,11 @@ export function JobPostingCard({
   department,
   postedDate,
   applicants,
-  views,
-  status,
+  likes,
   deadline,
   onViewApplications,
 }: JobPostingCardProps) {
-  const statusConfig = {
-    active: {
-      label: "Active",
-      className:
-        "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
-    },
-    paused: {
-      label: "Paused",
-      className:
-        "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400",
-    },
-    closed: {
-      label: "Closed",
-      className:
-        "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400",
-    },
-  };
-
-  const config = statusConfig[status];
-
+  const isExpired = new Date(deadline) < new Date();
   return (
     <Card>
       <CardContent className="p-4 sm:p-6">
@@ -77,16 +56,24 @@ export function JobPostingCard({
           </div>
           <div>
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
-              <Eye className="h-4 w-4" />
-              <span className="text-sm">Views</span>
+              <Heart className="h-4 w-4" />
+              <span className="text-sm">Likes</span>
             </div>
-            <p className="text-foreground text-xl">{views}</p>
+            <p className="text-foreground text-xl">{likes}</p>
           </div>
         </div>
 
         {/* Status & Deadline */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-          <Badge className={config.className}>{config.label}</Badge>
+          <Badge
+            className={
+              isExpired
+                ? "bg-red-100 text-red-700"
+                : "bg-green-100 text-green-700"
+            }
+          >
+            {isExpired ? "Expired" : "Active"}
+          </Badge>
           <span className="text-sm text-muted-foreground">
             Deadline: {deadline}
           </span>
