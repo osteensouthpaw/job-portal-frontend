@@ -28,6 +28,7 @@ import { CandidateCard } from "./components/CandidateCard";
 import { JobApplicantsList } from "./components/JobApplicantsList";
 import { JobPostingCard } from "./components/JobPostingCard";
 import { TopPerformingJobs } from "./components/TopPerformingJobs";
+import { CandidateProfileView } from "./components/CandidateProfileView";
 import { JobApplicationResponse } from "@/services/application-service";
 
 export default function RecruiterDashboard() {
@@ -35,26 +36,12 @@ export default function RecruiterDashboard() {
   const { data: recentApplications } = useRecentApplications();
   const { data: totalOpenJobPosts = 0 } = useTotalOpenJobPosts();
   const [selectedJob, setSelectedJob] = useState<JobPostResponse | null>(null);
+  const [selectedCandidate, setSelectedCandidate] =
+    useState<JobApplicationResponse | null>(null);
 
   // Get applications for selected job
   const { data: applicationsData } = useApplicationsForJobPost(selectedJob?.id);
 
-  const recentApplicants =
-    recentApplications?.content.map((application) => ({
-      id: application.appliedUser.id,
-      name: `${application.appliedUser.firstName} ${application.appliedUser.lastName ?? ""}`.trim(),
-      position: application.appliedPost.jobTitle,
-      location: application.appliedPost.organization.companyLocation,
-      email: application.appliedUser.email,
-      phone: "N/A",
-      experience: "N/A",
-      skills: ["Resume", "Interview", "Referral"],
-      appliedFor: application.appliedPost.jobTitle,
-      status: application.applicationStatus,
-      avatar: application.appliedUser.imageUrl,
-    })) || [];
-
-  // Compute analytics from real data
   const analyticsData = [
     {
       title: "Total Applicants",
@@ -76,8 +63,8 @@ export default function RecruiterDashboard() {
     },
   ];
 
-  // Transform job posts for display
   const activeJobs = jobPosts?.content || [];
+  const applications = recentApplications?.content || [];
 
   const handleViewApplications = (job: JobPostResponse) => setSelectedJob(job);
 
@@ -157,9 +144,13 @@ export default function RecruiterDashboard() {
           </div>
         </div>
         <div className="space-y-4">
-          {recentApplicants.length > 0 ? (
-            recentApplicants.map((candidate) => (
-              <CandidateCard key={candidate.id} {...candidate} />
+          {applications.length > 0 ? (
+            applications.map((candidate) => (
+              <CandidateCard
+                key={candidate.appliedUser.id}
+                jobApplication={candidate}
+                onClick={() => setSelectedCandidate(candidate)}
+              />
             ))
           ) : (
             <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
@@ -233,6 +224,27 @@ export default function RecruiterDashboard() {
           </div>
         </CardContent>
       </Card>
+      {selectedCandidate && (
+        <CandidateProfileView
+          open={!!selectedCandidate}
+          onClose={() => setSelectedCandidate(null)}
+          userId={selectedCandidate.appliedUser.id}
+          applicantId={selectedCandidate.appliedUser.id}
+          jobPostId={selectedCandidate.appliedPost.id}
+          candidate={{
+            name: `${selectedCandidate.appliedUser.firstName} ${selectedCandidate.appliedUser.lastName ?? ""}`.trim(),
+            position: selectedCandidate.appliedPost.jobTitle,
+            location: selectedCandidate.appliedPost.location,
+            email: selectedCandidate.appliedUser.email,
+            appliedFor: selectedCandidate.appliedPost.jobTitle,
+            appliedDate: selectedCandidate.appliedDate,
+            status: selectedCandidate.applicationStatus,
+            avatar: selectedCandidate.appliedUser.imageUrl,
+            coverLetter: selectedCandidate.coverLetter,
+            resume: selectedCandidate.resumeUrl,
+          }}
+        />
+      )}
     </div>
   );
 }

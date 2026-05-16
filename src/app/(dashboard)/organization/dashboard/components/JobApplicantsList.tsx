@@ -5,16 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { applicationStatusConfig } from "@/lib/application-status-config";
 import {
   ApplicationStatus,
   JobApplicationResponse,
 } from "@/services/application-service";
-import { applicationStatusConfig } from "@/lib/application-status-config";
 import {
   ArrowLeft,
   Mail,
   MapPin,
-  Phone,
   Search,
   SlidersHorizontal,
 } from "lucide-react";
@@ -133,10 +132,7 @@ export function JobApplicantsList({
             const config = statusConfig[application.applicationStatus];
             const candidateName =
               `${application.appliedUser.firstName} ${application.appliedUser.lastName ?? ""}`.trim();
-            const companyLocation =
-              application.appliedPost.organization.companyLocation ||
-              application.appliedPost.location ||
-              "Location unavailable";
+            const companyLocation = application.appliedPost.location;
 
             return (
               <Card
@@ -183,10 +179,6 @@ export function JobApplicantsList({
                           <Mail className="h-4 w-4 flex-shrink-0" />
                           {application.appliedUser.email}
                         </span>
-                        <span className="flex items-center gap-1 truncate">
-                          <Phone className="h-4 w-4 flex-shrink-0" />
-                          N/A
-                        </span>
                       </div>
 
                       {/* Applied Date */}
@@ -232,16 +224,14 @@ export function JobApplicantsList({
           candidate={{
             name: `${selectedCandidate.appliedUser.firstName} ${selectedCandidate.appliedUser.lastName ?? ""}`.trim(),
             position: selectedCandidate.appliedPost.jobTitle,
-            location:
-              selectedCandidate.appliedPost.organization.companyLocation ||
-              selectedCandidate.appliedPost.location ||
-              "Location unavailable",
+            location: selectedCandidate.appliedPost.location,
             email: selectedCandidate.appliedUser.email,
             appliedFor: selectedCandidate.appliedPost.jobTitle,
             appliedDate: selectedCandidate.appliedDate,
             status: selectedCandidate.applicationStatus,
             avatar: selectedCandidate.appliedUser.imageUrl,
             coverLetter: selectedCandidate.coverLetter,
+            resume: selectedCandidate.resumeUrl,
           }}
         />
       )}

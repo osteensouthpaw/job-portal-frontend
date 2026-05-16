@@ -65,6 +65,7 @@ interface CandidateProfileViewProps {
     linkedin?: string;
     github?: string;
     coverLetter?: string;
+    resume?: string;
   };
 }
 
@@ -89,6 +90,7 @@ export function CandidateProfileView({
         experience: jobSeekerProfile.experienceLevel || candidate.experience,
         linkedin: jobSeekerProfile.linkedInUrl || candidate.linkedin,
         github: jobSeekerProfile.gitHubUrl || candidate.github,
+        portfolio: jobSeekerProfile.personalWebsiteUrl,
         skills: jobSeekerProfile.skills
           ? jobSeekerProfile.skills.map((s: any) => s.skill)
           : candidate.skills,
@@ -166,9 +168,11 @@ export function CandidateProfileView({
                     </span>
                   )}
                   {enrichedCandidate.experience && (
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 capitalize">
                       <Briefcase className="h-4 w-4" />
-                      {enrichedCandidate.experience}
+                      {enrichedCandidate.experience
+                        .toLowerCase()
+                        .replace("_", " ")}
                     </span>
                   )}
                 </div>
@@ -232,7 +236,7 @@ export function CandidateProfileView({
                     </p>
                     <p className="text-foreground flex items-center gap-1">
                       <Calendar className="h-4 w-4" />
-                      {enrichedCandidate.appliedDate}
+                      {new Date(enrichedCandidate.appliedDate).toDateString()}
                     </p>
                   </div>
                   <div>
@@ -262,7 +266,7 @@ export function CandidateProfileView({
 
             {/* Tabs */}
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-4 mb-4">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="experience">Experience</TabsTrigger>
                 <TabsTrigger value="education">Education</TabsTrigger>
@@ -408,28 +412,7 @@ export function CandidateProfileView({
               </TabsContent>
 
               <TabsContent value="documents" className="space-y-3">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
-                          <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
-                        </div>
-                        <div>
-                          <p className="text-foreground">Resume.pdf</p>
-                          <p className="text-sm text-muted-foreground">
-                            Uploaded {enrichedCandidate.appliedDate}
-                          </p>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-                {enrichedCandidate.coverLetter && (
+                {enrichedCandidate.resume && (
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
@@ -438,15 +421,25 @@ export function CandidateProfileView({
                             <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
                           </div>
                           <div>
-                            <p className="text-foreground">Cover_Letter.pdf</p>
+                            <p className="text-foreground">Resume.pdf</p>
                             <p className="text-sm text-muted-foreground">
-                              Uploaded {enrichedCandidate.appliedDate}
+                              Uploaded on{" "}
+                              {new Date(
+                                enrichedCandidate.appliedDate,
+                              ).toDateString()}
                             </p>
                           </div>
                         </div>
                         <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4 mr-1" />
-                          Download
+                          <a
+                            className="flex gap-2"
+                            href={candidate.resume}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Download className="h-4 w-4 mr-1" />
+                            Download
+                          </a>
                         </Button>
                       </div>
                     </CardContent>

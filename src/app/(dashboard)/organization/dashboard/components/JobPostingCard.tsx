@@ -39,7 +39,7 @@ export function JobPostingCard({
               <span className="hidden sm:inline">•</span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                Posted {postedDate}
+                Posted: {new Date(postedDate).toLocaleDateString()}
               </span>
             </div>
           </div>
@@ -75,7 +75,7 @@ export function JobPostingCard({
             {isExpired ? "Expired" : "Active"}
           </Badge>
           <span className="text-sm text-muted-foreground">
-            Deadline: {deadline}
+            Deadline: {new Date(deadline).toDateString()}
           </span>
         </div>
 
