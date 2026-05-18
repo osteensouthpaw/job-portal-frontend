@@ -60,7 +60,7 @@ export const jobSeekerSchema = z.object({
     .optional()
     .refine(
       (date) => date !== undefined && date < new Date(),
-      "Date of birth cannot be in the future."
+      "Date of birth cannot be in the future.",
     ),
   currentAnnualSalary: z
     .number()
@@ -99,12 +99,19 @@ export const jobPostSchema = z.object({
 
   applicationDeadline: z.coerce
     .date()
-    .min(new Date(), { message: "Deadline must be at least tomorrow." }),
+    .min(new Date(), { message: "Deadline must be a future date." }),
 
   jobDescription: z
     .string()
     .min(20, { message: "Description must be at least 20 characters." })
-    .max(5000, { message: "Description cannot exceed 5000 characters." }),
+    .max(10000, { message: "Description cannot exceed 10,000 characters." }),
+
+  maxApplications: z
+    .number()
+    .min(1, { message: "You must have atleast one applicant" })
+    .max(100000, {
+      message: "A job cannot have more that 100,000 applications",
+    }),
 });
 
 export const jobApplicationSchema = z.object({

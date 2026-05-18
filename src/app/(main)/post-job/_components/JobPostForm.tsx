@@ -62,6 +62,7 @@ export default function JobPostForm({ jobPost }: Props) {
         ? new Date(jobPost.applicationDeadline)
         : new Date(),
       jobDescription: jobPost?.description,
+      maxApplications: jobPost?.maxApplications || 0,
     },
   });
   const { mutate: createJobPost, isPending } = useCreateJobPost();
@@ -222,7 +223,7 @@ export default function JobPostForm({ jobPost }: Props) {
 
         {/* experience Level */}
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
+          <div className="col-span-4">
             <FormField
               control={form.control}
               name="experienceLevel"
@@ -253,12 +254,12 @@ export default function JobPostForm({ jobPost }: Props) {
             />
           </div>
 
-          <div className="col-span-6">
+          <div className="col-span-4">
             <FormField
               control={form.control}
               name="applicationDeadline"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem>
                   <FormLabel>Application Deadline</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -266,8 +267,8 @@ export default function JobPostForm({ jobPost }: Props) {
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
@@ -294,6 +295,24 @@ export default function JobPostForm({ jobPost }: Props) {
               )}
             />
           </div>
+
+          <div className="col-span-4">
+            <FormField
+              defaultValue={0}
+              control={form.control}
+              name="maxApplications"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Maximum Applications</FormLabel>
+                  <FormControl itemType="number">
+                    <Input type="number" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         {/* description */}
@@ -310,10 +329,7 @@ export default function JobPostForm({ jobPost }: Props) {
             </FormItem>
           )}
         />
-        <Button
-          disabled={isPending || isPendingEdit || !form.formState.isValid}
-          type="submit"
-        >
+        <Button disabled={isPending || isPendingEdit} type="submit">
           {jobPost ? "Update" : "Submit"}
         </Button>
       </form>

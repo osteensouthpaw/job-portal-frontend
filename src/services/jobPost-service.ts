@@ -27,7 +27,8 @@ export interface JobPostResponse {
   isOpen: boolean;
   totalApplications: number;
   totalLikes: number;
-  applicationDeadline: string; // Assuming LocalDateTime is converted to string
+  applicationDeadline: string;
+  maxApplications: number; // Assuming LocalDateTime is converted to string
   createdAt: string; // Assuming LocalDateTime is converted to string
 }
 
