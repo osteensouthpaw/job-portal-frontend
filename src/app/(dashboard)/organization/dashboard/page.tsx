@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   useApplicationsForJobPost,
@@ -30,11 +29,16 @@ import { JobPostingCard } from "./components/JobPostingCard";
 import { TopPerformingJobs } from "./components/TopPerformingJobs";
 import { CandidateProfileView } from "./components/CandidateProfileView";
 import { JobApplicationResponse } from "@/services/application-service";
+import PerformanceSummaryCard from "./components/PerformanceSummaryCard";
 
 export default function RecruiterDashboard() {
   const { data: jobPosts, isLoading: isJobPostsLoading } =
     useRecruiterJobPosts();
-  const { data: recentApplications } = useRecentApplications();
+  const {
+    data: recentApplications,
+    isLoading: isRecentApplicationsLoading,
+    isError: isRecentApplicationsError,
+  } = useRecentApplications();
   const { data: totalOpenJobPosts = 0 } = useTotalOpenJobPosts();
   const [selectedJob, setSelectedJob] = useState<JobPostResponse | null>(null);
   const [selectedCandidate, setSelectedCandidate] =
@@ -122,17 +126,23 @@ export default function RecruiterDashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
-        <ApplicationFunnelChart />
-        <ApplicationsOverTimeChart />
+        <ApplicationFunnelChart
+          applications={applications}
+          totalApplications={recentApplications?.totalElements ?? 0}
+          isLoading={isRecentApplicationsLoading}
+          isError={isRecentApplicationsError}
+        />
+        <ApplicationsOverTimeChart
+          applications={applications}
+          isLoading={isRecentApplicationsLoading}
+          isError={isRecentApplicationsError}
+        />
       </div>
 
       {/* Performance & Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
         <div className="lg:col-span-2">
-          <TopPerformingJobs
-            jobs={activeJobs}
-            isLoading={isJobPostsLoading}
-          />
+          <TopPerformingJobs jobs={activeJobs} isLoading={isJobPostsLoading} />
         </div>
         <ActivityFeed />
       </div>
@@ -187,47 +197,12 @@ export default function RecruiterDashboard() {
       </div>
 
       {/* Quick Stats Card */}
-      <Card className="mt-6 sm:mt-8">
-        <CardHeader>
-          <CardTitle>Performance Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <p className="text-green-600 dark:text-green-400 text-2xl sm:text-3xl mb-1">
-                89%
-              </p>
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                Interview Rate
-              </p>
-            </div>
-            <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-              <p className="text-emerald-600 dark:text-emerald-400 text-2xl sm:text-3xl mb-1">
-                24
-              </p>
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                Days Avg. Hiring
-              </p>
-            </div>
-            <div className="text-center p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg">
-              <p className="text-teal-600 dark:text-teal-400 text-2xl sm:text-3xl mb-1">
-                4.8
-              </p>
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                Candidate Rating
-              </p>
-            </div>
-            <div className="text-center p-4 bg-lime-50 dark:bg-lime-900/20 rounded-lg">
-              <p className="text-lime-600 dark:text-lime-400 text-2xl sm:text-3xl mb-1">
-                92%
-              </p>
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                Offer Accept Rate
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <PerformanceSummaryCard
+        applications={applications}
+        jobs={activeJobs}
+        isLoading={isRecentApplicationsLoading || isJobPostsLoading}
+        isError={isRecentApplicationsError}
+      />
       {selectedCandidate && (
         <CandidateProfileView
           open={!!selectedCandidate}
