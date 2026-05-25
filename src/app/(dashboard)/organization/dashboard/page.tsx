@@ -32,7 +32,8 @@ import { CandidateProfileView } from "./components/CandidateProfileView";
 import { JobApplicationResponse } from "@/services/application-service";
 
 export default function RecruiterDashboard() {
-  const { data: jobPosts } = useRecruiterJobPosts();
+  const { data: jobPosts, isLoading: isJobPostsLoading } =
+    useRecruiterJobPosts();
   const { data: recentApplications } = useRecentApplications();
   const { data: totalOpenJobPosts = 0 } = useTotalOpenJobPosts();
   const [selectedJob, setSelectedJob] = useState<JobPostResponse | null>(null);
@@ -128,7 +129,10 @@ export default function RecruiterDashboard() {
       {/* Performance & Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
         <div className="lg:col-span-2">
-          <TopPerformingJobs />
+          <TopPerformingJobs
+            jobs={activeJobs}
+            isLoading={isJobPostsLoading}
+          />
         </div>
         <ActivityFeed />
       </div>
