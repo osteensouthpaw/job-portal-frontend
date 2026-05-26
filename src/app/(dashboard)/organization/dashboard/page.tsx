@@ -30,6 +30,7 @@ import { TopPerformingJobs } from "./components/TopPerformingJobs";
 import { CandidateProfileView } from "./components/CandidateProfileView";
 import { JobApplicationResponse } from "@/services/application-service";
 import PerformanceSummaryCard from "./components/PerformanceSummaryCard";
+import Link from "next/link";
 
 export default function RecruiterDashboard() {
   const { data: jobPosts, isLoading: isJobPostsLoading } =
@@ -178,7 +179,9 @@ export default function RecruiterDashboard() {
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <h2 className="text-foreground">Active Job Postings</h2>
-          <Button variant="ghost">Manage All Jobs</Button>
+          <Button variant="ghost" asChild>
+            <Link href="/organization/job-postings">Manage All Jobs</Link>
+          </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {activeJobs.map((job) => (

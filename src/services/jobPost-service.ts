@@ -73,8 +73,13 @@ class JobPostService {
     return apiClient.get<JobPostResponse>("/job-posts/" + jobPostId);
   };
 
-  async getJobPostsByRecruiter() {
-    return apiClient.get<PageResponse<JobPostResponse>>(`recruiters/job-posts`);
+  async getJobPostsByRecruiter(params?: Record<string, any>) {
+    return apiClient.get<PageResponse<JobPostResponse>>(
+      `recruiters/job-posts`,
+      {
+        params,
+      },
+    );
   }
 
   getLikedJobPosts = async () => {

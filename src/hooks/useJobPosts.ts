@@ -9,11 +9,11 @@ export const useJobPosts = (params?: Record<string, any>) =>
     queryFn: () => jobPostService.jobPosts(params),
   });
 
-export const useRecruiterJobPosts = () =>
+export const useRecruiterJobPosts = (params?: Record<string, any>) =>
   useQuery({
-    queryKey: ["recruiterJobPosts"],
+    queryKey: ["recruiterJobPosts", params],
     queryFn: () =>
-      jobPostService.getJobPostsByRecruiter().then((res) => res.data),
+      jobPostService.getJobPostsByRecruiter(params).then((res) => res.data),
   });
 
 export const useJobPost = (jobPostId: number) =>
