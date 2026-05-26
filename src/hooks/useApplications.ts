@@ -34,10 +34,11 @@ export const useApplicationsForJobPost = (jobPostId?: number) =>
     enabled: !!jobPostId,
   });
 
-export const useRecentApplications = () =>
+export const useRecentApplications = (params?: Record<string, any>) =>
   useQuery({
-    queryKey: ["applications", "recent"],
-    queryFn: () => getRecentApplicationsForRecruiter().then((res) => res.data),
+    queryKey: ["applications", "recent", params],
+    queryFn: () =>
+      getRecentApplicationsForRecruiter(params).then((res) => res.data),
   });
 
 export const useCreateJobApplication = (onSuccess: () => void) => {

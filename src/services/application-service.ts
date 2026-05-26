@@ -62,9 +62,12 @@ export async function getApplicationsForJobPost(jobPostId: number) {
   );
 }
 
-export async function getRecentApplicationsForRecruiter() {
+export async function getRecentApplicationsForRecruiter(
+  params?: Record<string, any>,
+) {
   return apiClient.get<PageResponse<JobApplicationResponse>>(
     `recruiters/job-applications`,
+    { params },
   );
 }
 
