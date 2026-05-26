@@ -20,9 +20,7 @@ import { UserType } from "@/services/auth-service";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import {
   ArrowLeft,
-  BarChart3,
   Briefcase,
-  Calendar,
   Flag,
   LayoutDashboard,
   Search,
@@ -50,12 +48,9 @@ const organizationTabs: {
   url: string;
   icon: React.ElementType;
 }[] = [
-  { title: "dashboard", url: "/organization/dashboard", icon: LayoutDashboard },
-  { title: "candidates", url: "/organization/candidates", icon: Users },
-  { title: "jobs", url: "/organization/postings", icon: Briefcase },
-  { title: "interviews", url: "/organization/interviews", icon: Calendar },
-  { title: "analytics", url: "/organization/analytics", icon: BarChart3 },
-  { title: "settings", url: "/organization/settings", icon: Settings },
+  { title: "Dashboard", url: "/organization/dashboard", icon: LayoutDashboard },
+  { title: "Candidates", url: "/organization/candidates", icon: Users },
+  { title: "Jobs", url: "/organization/job-postings", icon: Briefcase },
 ];
 
 export default function DashboardSidebar() {
