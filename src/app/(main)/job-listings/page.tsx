@@ -33,6 +33,7 @@ import {
 import { useState } from "react";
 import JobPostCard from "./components/JobPostCard";
 import { useAuth } from "@/app/AuthProvider";
+import { UserType } from "@/services/auth-service";
 
 interface Filters {
   jobType: string[];
@@ -44,6 +45,7 @@ interface Filters {
 
 export default function JobBrowsePage() {
   const { user } = useAuth();
+  const isRecruiter = user?.userType.includes(UserType.RECRUITER);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(true);
   const [sortBy, setSortBy] = useState<
@@ -482,7 +484,12 @@ export default function JobBrowsePage() {
                 </Card>
               ) : jobs.length > 0 ? (
                 jobs.map((job: JobPostResponse) => (
-                  <JobPostCard user={user} key={job.id} jobPost={job} />
+                  <JobPostCard
+                    user={user}
+                    key={job.id}
+                    jobPost={job}
+                    isRecruiter={isRecruiter}
+                  />
                 ))
               ) : (
                 <Card className="border-gray-200 dark:border-gray-800">
