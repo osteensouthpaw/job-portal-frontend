@@ -101,10 +101,10 @@ export default function DashboardSidebar() {
                   JD
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-foreground truncate">{`${user?.firstName.toUpperCase()}`}</p>
+              <div className=" min-w-0">
+                <span className="text-foreground truncate">{`${user?.firstName.toUpperCase()}`}</span>{" "}
                 {user?.lastName && (
-                  <p className="text-foreground truncate">{`${user?.lastName.toUpperCase()}`}</p>
+                  <span className="text-foreground truncate">{`${user?.lastName.toUpperCase()}`}</span>
                 )}
                 <p className="text-muted-foreground text-sm">
                   {isJobSeeker && profile?.profession}

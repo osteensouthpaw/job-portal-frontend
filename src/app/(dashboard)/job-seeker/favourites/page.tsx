@@ -33,7 +33,7 @@ const UserFavouritesJobsPage = () => {
               </h4>
               <p className="text-green-700 dark:text-green-400 text-sm">
                 Jobs get more competitive over time. Apply within the first 3
-                UserJobApplicationsPage days for better chances.
+                days for better chances.
               </p>
             </div>
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
