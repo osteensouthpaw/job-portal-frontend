@@ -1,5 +1,4 @@
 "use client";
-import JobPostCard from "@/app/(main)/job-listings/components/JobPostCard";
 import { Button } from "@/components/ui/button";
 import { useJobApplications } from "@/hooks/useApplications";
 import { useJobPosts, useLikedJobPosts } from "@/hooks/useJobPosts";
@@ -13,13 +12,15 @@ import { JobSearchActivityChart } from "./JobSearchActivityChart";
 import { StatsCard } from "./StatsCard";
 
 export default function DashboardPage() {
-  const { data: applications } = useJobApplications();
+  const { data: applications, isLoading: applicationsLoading } =
+    useJobApplications();
   const interviewInvites = applications?.content.filter((items) =>
-    items.applicationStatus.includes(ApplicationStatus.ACCEPTED)
+    items.applicationStatus.includes(ApplicationStatus.ACCEPTED),
   ).length;
-  const { data: likedJobPosts } = useLikedJobPosts();
+  const { data: likedJobPosts, isLoading: likedJobsLoading } =
+    useLikedJobPosts();
   const router = useRouter();
-  const { data: jobPosts } = useJobPosts();
+  const { data: jobPosts, isLoading: jobPostsLoading } = useJobPosts();
 
   const stats = [
     {
@@ -47,7 +48,11 @@ export default function DashboardPage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {stats.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
+            <StatsCard
+              key={index}
+              {...stat}
+              isLoading={applicationsLoading || likedJobsLoading}
+            />
           ))}
         </div>
 
@@ -69,9 +74,30 @@ export default function DashboardPage() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {applications?.content.map((app, index) => (
-              <ApplicationCard application={app} key={index} />
-            ))}
+            {applicationsLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-card rounded-lg p-4 space-y-3 animate-pulse"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-muted" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-3/4 rounded bg-muted" />
+                      <div className="h-3 w-1/2 rounded bg-muted" />
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : applications?.content && applications.content.length > 0 ? (
+              applications.content.map((app, index) => (
+                <ApplicationCard application={app} key={index} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-muted-foreground">
+                No applications yet
+              </div>
+            )}
           </div>
         </div>
 

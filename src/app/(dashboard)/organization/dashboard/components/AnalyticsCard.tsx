@@ -1,17 +1,36 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LucideIcon } from "lucide-react";
 
 interface AnalyticsCardProps {
   title: string;
   value: string | number;
   icon: LucideIcon;
+  isLoading?: boolean;
 }
 
 export function AnalyticsCard({
   title,
   value,
   icon: Icon,
+  isLoading,
 }: AnalyticsCardProps) {
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+            <Skeleton className="h-12 w-12 rounded-lg" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardContent className="p-4 sm:p-6">

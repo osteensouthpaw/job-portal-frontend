@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Pagination from "@/components/general/Pagination";
 import { applicationStatusConfig } from "@/lib/application-status-config";
@@ -25,12 +26,14 @@ interface JobApplicationsListProps {
   jobTitle: string;
   applications: JobApplicationResponse[];
   onBack: () => void;
+  isLoading?: boolean;
 }
 
 export function JobApplicantsList({
   jobTitle,
   applications,
   onBack,
+  isLoading = false,
 }: JobApplicationsListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -142,7 +145,25 @@ export function JobApplicantsList({
 
       {/* Applications List */}
       <div className="space-y-4">
-        {filteredApplications.length > 0 ? (
+        {isLoading ? (
+          Array.from({ length: 5 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-4 sm:p-6 animate-pulse">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Skeleton className="h-12 w-12 sm:h-16 sm:w-16 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                    <div className="flex gap-2 mt-2">
+                      <Skeleton className="h-3 w-24" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        ) : filteredApplications.length > 0 ? (
           paginatedApplications.map((application) => {
             const config = statusConfig[application.applicationStatus];
             const candidateName =

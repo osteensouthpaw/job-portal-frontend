@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useJobApplications } from "@/hooks/useApplications";
 import {
   Area,
@@ -32,7 +33,19 @@ export function JobSearchActivityChart() {
   if (isLoading)
     return (
       <Card>
-        <CardContent>Loading...</CardContent>
+        <CardHeader>
+          <CardTitle>Your Activity This Week</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <Skeleton className="h-[250px] w-full" />
+            <div className="grid grid-cols-7 gap-2">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <Skeleton key={i} className="h-6 w-full" />
+              ))}
+            </div>
+          </div>
+        </CardContent>
       </Card>
     );
 

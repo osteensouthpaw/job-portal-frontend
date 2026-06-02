@@ -40,7 +40,8 @@ export default function RecruiterDashboard() {
     isLoading: isRecentApplicationsLoading,
     isError: isRecentApplicationsError,
   } = useRecentApplications();
-  const { data: totalOpenJobPosts = 0 } = useTotalOpenJobPosts();
+  const { data: totalOpenJobPosts = 0, isLoading: isTotalJobsLoading } =
+    useTotalOpenJobPosts();
   const [selectedJob, setSelectedJob] = useState<JobPostResponse | null>(null);
   const [selectedCandidate, setSelectedCandidate] =
     useState<JobApplicationResponse | null>(null);
@@ -121,7 +122,11 @@ export default function RecruiterDashboard() {
       {/* Analytics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {analyticsData.map((data, index) => (
-          <AnalyticsCard key={index} {...data} />
+          <AnalyticsCard
+            key={index}
+            {...data}
+            isLoading={isRecentApplicationsLoading || isTotalJobsLoading}
+          />
         ))}
       </div>
 
@@ -159,7 +164,23 @@ export default function RecruiterDashboard() {
           </div>
         </div>
         <div className="space-y-4">
-          {applications.length > 0 ? (
+          {isRecentApplicationsLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-lg border border-border bg-card p-4 animate-pulse"
+              >
+                <div className="flex gap-4">
+                  <div className="h-12 w-12 rounded-full bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 rounded bg-muted" />
+                    <div className="h-3 w-48 rounded bg-muted" />
+                    <div className="h-3 w-40 rounded bg-muted" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : applications.length > 0 ? (
             applications.map((candidate) => (
               <CandidateCard
                 key={candidate.appliedUser.id}
@@ -184,18 +205,40 @@ export default function RecruiterDashboard() {
           </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {activeJobs.map((job) => (
-            <JobPostingCard
-              key={job.id}
-              title={job.jobTitle}
-              department={job.organization.companyName}
-              postedDate={job.createdAt}
-              applicants={job.totalApplications}
-              likes={job.totalLikes}
-              deadline={job.applicationDeadline}
-              onViewApplications={() => handleViewApplications(job)}
-            />
-          ))}
+          {isJobPostsLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-lg border border-border bg-card p-4 animate-pulse"
+              >
+                <div className="space-y-3">
+                  <div className="h-5 w-3/4 rounded bg-muted" />
+                  <div className="h-3 w-1/2 rounded bg-muted" />
+                  <div className="flex justify-between">
+                    <div className="h-3 w-20 rounded bg-muted" />
+                    <div className="h-3 w-20 rounded bg-muted" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : activeJobs.length > 0 ? (
+            activeJobs.map((job) => (
+              <JobPostingCard
+                key={job.id}
+                title={job.jobTitle}
+                department={job.organization.companyName}
+                postedDate={job.createdAt}
+                applicants={job.totalApplications}
+                likes={job.totalLikes}
+                deadline={job.applicationDeadline}
+                onViewApplications={() => handleViewApplications(job)}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-8 text-muted-foreground">
+              No active job postings yet
+            </div>
+          )}
         </div>
       </div>
 
