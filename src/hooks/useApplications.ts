@@ -68,16 +68,20 @@ export const useUpdateApplicationStatus = () => {
   const acceptMutation = useMutation({
     mutationFn: (variables: { applicantId: number; jobPostId: number }) =>
       acceptApplication(variables).then((res) => res.data),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["applications", "recent"] }),
+    onSuccess: () => {
+      // Invalidate all applications-related queries
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
     onError: (error) => toast.error(error.message),
   });
 
   const rejectMutation = useMutation({
     mutationFn: (variables: { applicantId: number; jobPostId: number }) =>
       rejectApplication(variables).then((res) => res.data),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["applications", "recent"] }),
+    onSuccess: () => {
+      // Invalidate all applications-related queries
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
     onError: (error) => toast.error(error.message),
   });
 

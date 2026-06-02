@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Pagination from "@/components/general/Pagination";
 import { applicationStatusConfig } from "@/lib/application-status-config";
 import {
   ApplicationStatus,
@@ -17,7 +18,7 @@ import {
   Search,
   SlidersHorizontal,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CandidateProfileView } from "./CandidateProfileView";
 
 interface JobApplicationsListProps {
@@ -35,27 +36,41 @@ export function JobApplicantsList({
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedCandidate, setSelectedCandidate] =
     useState<JobApplicationResponse | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const applicationsPerPage = 10;
 
   const statusConfig = applicationStatusConfig;
 
-  const filteredApplications = applications.filter((app) => {
-    const searchTarget = [
-      app.appliedUser.firstName,
-      app.appliedUser.lastName,
-      app.appliedUser.email,
-      app.appliedPost.jobTitle,
-      app.appliedPost.organization.companyName,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+  const filteredApplications = useMemo(
+    () =>
+      applications.filter((app) => {
+        const searchTarget = [
+          app.appliedUser.firstName,
+          app.appliedUser.lastName,
+          app.appliedUser.email,
+          app.appliedPost.jobTitle,
+          app.appliedPost.organization.companyName,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
-    const matchesSearch = searchTarget.includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || app.applicationStatus === statusFilter;
+        const matchesSearch = searchTarget.includes(searchQuery.toLowerCase());
+        const matchesStatus =
+          statusFilter === "all" || app.applicationStatus === statusFilter;
 
-    return matchesSearch && matchesStatus;
-  });
+        return matchesSearch && matchesStatus;
+      }),
+    [applications, searchQuery, statusFilter],
+  );
+
+  const totalPages = Math.ceil(
+    filteredApplications.length / applicationsPerPage,
+  );
+  const paginatedApplications = useMemo(() => {
+    const startIdx = (currentPage - 1) * applicationsPerPage;
+    return filteredApplications.slice(startIdx, startIdx + applicationsPerPage);
+  }, [filteredApplications, currentPage]);
 
   const statusCounts: Record<ApplicationStatus | "all", number> = {
     all: applications.length,
@@ -128,7 +143,7 @@ export function JobApplicantsList({
       {/* Applications List */}
       <div className="space-y-4">
         {filteredApplications.length > 0 ? (
-          filteredApplications.map((application) => {
+          paginatedApplications.map((application) => {
             const config = statusConfig[application.applicationStatus];
             const candidateName =
               `${application.appliedUser.firstName} ${application.appliedUser.lastName ?? ""}`.trim();
@@ -212,6 +227,22 @@ export function JobApplicantsList({
           </Card>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-8">
+          <Pagination
+            pageNumber={currentPage - 1}
+            pageSize={applicationsPerPage}
+            totalPages={totalPages}
+            onPrevious={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            onNext={() =>
+              setCurrentPage((page) => Math.min(totalPages, page + 1))
+            }
+            onCurrent={(page) => setCurrentPage(page + 1)}
+          />
+        </div>
+      )}
 
       {/* Candidate Profile Modal */}
       {selectedCandidate && (

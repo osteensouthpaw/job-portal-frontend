@@ -9,6 +9,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -31,7 +40,9 @@ import {
   MapPin,
   Phone,
   X,
+  AlertCircle,
 } from "lucide-react";
+import { useState } from "react";
 
 interface CandidateProfileViewProps {
   open: boolean;
@@ -79,6 +90,7 @@ export function CandidateProfileView({
 }: CandidateProfileViewProps) {
   const { data: jobSeekerProfile, isLoading } = useJobSeekerProfile(userId);
   const { acceptMutation, rejectMutation } = useUpdateApplicationStatus();
+  const [showRejectConfirm, setShowRejectConfirm] = useState(false);
 
   // Merge loaded profile data with existing candidate info
   const enrichedCandidate = jobSeekerProfile
@@ -474,14 +486,7 @@ export function CandidateProfileView({
                     <Button
                       variant="outline"
                       className="flex-1 text-red-600 dark:text-red-400 border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      onClick={() => {
-                        rejectMutation.mutate(
-                          { applicantId, jobPostId },
-                          {
-                            onSuccess: onClose,
-                          },
-                        );
-                      }}
+                      onClick={() => setShowRejectConfirm(true)}
                       disabled={rejectMutation.isPending}
                     >
                       <X className="h-4 w-4 mr-2" />
@@ -495,6 +500,45 @@ export function CandidateProfileView({
           </>
         )}
       </DialogContent>
+      <AlertDialog open={showRejectConfirm} onOpenChange={setShowRejectConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex gap-3 items-start">
+              <div className="bg-red-100 dark:bg-red-900/30 p-2 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <AlertDialogTitle>Reject Application?</AlertDialogTitle>
+                <AlertDialogDescription className="mt-2">
+                  Are you sure you want to reject {enrichedCandidate.name}'s
+                  application for {enrichedCandidate.appliedFor}? This action
+                  cannot be undone.
+                </AlertDialogDescription>
+              </div>
+            </div>
+          </AlertDialogHeader>
+          <div className="flex justify-end gap-3">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                rejectMutation.mutate(
+                  { applicantId, jobPostId },
+                  {
+                    onSuccess: () => {
+                      setShowRejectConfirm(false);
+                      onClose();
+                    },
+                  },
+                );
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={rejectMutation.isPending}
+            >
+              {rejectMutation.isPending ? "Rejecting..." : "Reject"}
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
