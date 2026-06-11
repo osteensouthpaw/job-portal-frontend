@@ -140,7 +140,7 @@ export default function JobSeekerOnboarding({
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
             <Sparkles className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <h1 className="text-foreground mb-2">Welcome to Your Job Board</h1>
+          <h1 className="text-foreground mb-2">Welcome to JobMega</h1>
           <p className="text-muted-foreground">
             Let's set up your profile to help you find the perfect job
           </p>
@@ -178,8 +178,8 @@ export default function JobSeekerOnboarding({
                     isCompleted
                       ? "bg-green-600 dark:bg-green-500"
                       : isActive
-                      ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-600 dark:border-green-400"
-                      : "bg-muted"
+                        ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-600 dark:border-green-400"
+                        : "bg-muted"
                   }`}
                 >
                   {isCompleted ? (
