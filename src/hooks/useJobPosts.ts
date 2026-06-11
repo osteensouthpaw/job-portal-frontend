@@ -63,7 +63,7 @@ export const useCreateJobPost = () => {
       jobPostService.createJobPost(jobPost).then((res) => res.data),
     onSuccess: (data) => {
       toast.success("Jobpost created successfully");
-      router.push(`${data.id}`);
+      router.push(`job-listings/${data.id}`);
     },
     onError: (error) => {
       console.log(error.message);
