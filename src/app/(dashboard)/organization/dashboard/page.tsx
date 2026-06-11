@@ -1,6 +1,6 @@
 "use client";
+import { useAuth } from "@/app/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   useApplicationsForJobPost,
   useRecentApplications,
@@ -9,30 +9,26 @@ import {
   useRecruiterJobPosts,
   useTotalOpenJobPosts,
 } from "@/hooks/useJobPosts";
+import { JobApplicationResponse } from "@/services/application-service";
 import { JobPostResponse } from "@/services/jobPost-service";
-import {
-  Briefcase,
-  CheckCircle,
-  Download,
-  Filter,
-  Search,
-  Users,
-} from "lucide-react";
-import { useState } from "react";
+import { Briefcase, CheckCircle, Users } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ActivityFeed } from "./components/ActivityFeed";
 import { AnalyticsCard } from "./components/AnalyticsCard";
 import { ApplicationFunnelChart } from "./components/ApplicationFunnelChart";
 import { ApplicationsOverTimeChart } from "./components/ApplicationsOverTimeChart";
 import { CandidateCard } from "./components/CandidateCard";
+import { CandidateProfileView } from "./components/CandidateProfileView";
 import { JobApplicantsList } from "./components/JobApplicantsList";
 import { JobPostingCard } from "./components/JobPostingCard";
-import { TopPerformingJobs } from "./components/TopPerformingJobs";
-import { CandidateProfileView } from "./components/CandidateProfileView";
-import { JobApplicationResponse } from "@/services/application-service";
 import PerformanceSummaryCard from "./components/PerformanceSummaryCard";
-import Link from "next/link";
+import { TopPerformingJobs } from "./components/TopPerformingJobs";
 
 export default function RecruiterDashboard() {
+  const { user } = useAuth();
+  const router = useRouter();
   const { data: jobPosts, isLoading: isJobPostsLoading } =
     useRecruiterJobPosts();
   const {
@@ -75,6 +71,10 @@ export default function RecruiterDashboard() {
 
   const handleViewApplications = (job: JobPostResponse) => setSelectedJob(job);
 
+  useEffect(() => {
+    if (!user) router.push("/auth/login");
+  }, [user, router]);
+
   // Show job applications list when a job is selected
   if (selectedJob && applicationsData) {
     return (
@@ -98,29 +98,19 @@ export default function RecruiterDashboard() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Search & Export */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 sm:mb-8">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            placeholder="Search candidates, jobs, or skills..."
-            className="pl-10 bg-card"
-          />
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="gap-2 flex-1 sm:flex-initial">
-            <Filter className="h-5 w-5" />
-            <span className="hidden sm:inline">Filters</span>
-          </Button>
-          <Button variant="outline" className="gap-2 flex-1 sm:flex-initial">
-            <Download className="h-5 w-5" />
-            <span className="hidden sm:inline">Export</span>
-          </Button>
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-foreground mb-2">Recruiter Dashboard</h1>
+            <p className="text-muted-foreground">
+              {`Welcome back, ${user?.firstName}! Here's your recruitment overview.`}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Analytics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {analyticsData.map((data, index) => (
           <AnalyticsCard
             key={index}

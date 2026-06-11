@@ -74,7 +74,7 @@ export default function PersonalInfoStep({ onNext }: PersonalInfoStepProps) {
     }
     profile
       ? updateJobSeekerProfile(data).then(() =>
-          toast.success("Profile updated! ✓")
+          toast.success("Profile updated! ✓"),
         )
       : saveProfile(data);
     onNext();
@@ -163,9 +163,14 @@ export default function PersonalInfoStep({ onNext }: PersonalInfoStepProps) {
         <Textarea
           id="bio"
           {...register("bio", {
+            required: "Professional summary is required",
             maxLength: {
               value: 1000,
               message: "Bio must be less than 1000 characters",
+            },
+            minLength: {
+              value: 10,
+              message: "Bio must be at least 10 characters",
             },
           })}
           placeholder="Brief description of your professional background..."

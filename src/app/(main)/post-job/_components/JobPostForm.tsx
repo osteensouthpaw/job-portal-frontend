@@ -298,14 +298,17 @@ export default function JobPostForm({ jobPost }: Props) {
 
           <div className="col-span-4">
             <FormField
-              defaultValue={0}
               control={form.control}
               name="maxApplications"
-              render={({ field }) => (
+              render={({ field: { value, onChange } }) => (
                 <FormItem>
                   <FormLabel>Maximum Applications</FormLabel>
-                  <FormControl itemType="number">
-                    <Input type="number" {...field} />
+                  <FormControl>
+                    <Input
+                      type="number"
+                      value={value}
+                      onChange={(e) => onChange(Number(e.target.value))}
+                    />
                   </FormControl>
 
                   <FormMessage />
