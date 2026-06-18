@@ -2,27 +2,26 @@
 import { useAuth } from "@/app/AuthProvider";
 import { UserType } from "@/services/auth-service";
 import { useRouter } from "next/navigation";
-import RecruiterForm from "./RecruiterForm";
-import JobSeekerOnboarding from "./JobSeekerOnboarding";
-import { useJobSeekerProfile } from "@/hooks/useProfiles";
 import { useEffect } from "react";
+import JobSeekerOnboarding from "./JobSeekerOnboarding";
+import RecruiterForm from "./RecruiterForm";
+import { useJobSeekerProfile } from "@/hooks/useProfiles";
 
 const UserOnboading = () => {
   const { user } = useAuth();
   const router = useRouter();
-  const { data: profile } = useJobSeekerProfile();
 
   useEffect(() => {
-    if (profile) {
-      router.push("/job-listings");
-    } else if (user === null) {
-      router.push("/auth/login");
-    }
-  }, [profile, user, router]);
+    if (!user) router.push("auth/login");
+  }, [user, router]);
 
-  if (profile || user === null) {
-    return null;
-  }
+  const { data: profile } = useJobSeekerProfile(user?.id);
+
+  useEffect(() => {
+    if (profile) router.push("/job-listings");
+  }, [profile, router]);
+
+  if (!user) return null;
 
   return (
     <div className="w-full">

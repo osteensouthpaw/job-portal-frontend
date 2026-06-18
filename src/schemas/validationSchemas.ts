@@ -32,16 +32,22 @@ export const registerSchema = z
 export const recruiterSchema = z.object({
   companyName: z
     .string()
-    .min(3, { message: "Name must be at least 2 characters long" })
+    .min(3, { message: "Name must be at least 3 characters long" })
     .max(255),
-  companyLocation: z.tuple([z.string(), z.string().optional()]),
+  companyLocation: z
+    .string()
+    .min(1, { message: "Company location is required" }),
   websiteUrl: z.string().url({ message: "Invalid url" }).min(7).max(255),
-  businessStream: z.string(),
+  businessStreamId: z.coerce
+    .number()
+    .positive({ message: "Industry is required" }),
   establishmentDate: z.coerce.date().refine((date) => date <= new Date(), {
-    message: "Date should be before today ",
+    message: "Date should be before today",
   }),
-  description: z.string().optional(),
-  companyLogo: z.string().optional(),
+  description: z
+    .string()
+    .min(50)
+    .max(1000, { message: "Description cannot exceed 1000 characters" }),
 });
 
 export const jobSeekerSchema = z.object({

@@ -1,5 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+
 import {
   Card,
   CardContent,
@@ -9,77 +17,72 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+import BusinessStreamCombobox from "@/app/onboarding/components/BusinessStreamCombobox";
+
 import { Textarea } from "@/components/ui/textarea";
 import {
+  useBusinessStreams,
+  useCreateOrganization,
+} from "@/hooks/useRecruiterOrganization";
+import { recruiterSchema } from "@/schemas/validationSchemas";
+import { OrganizationCreateRequest } from "@/services/recruiter-organization-service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
   Building2,
-  Calendar,
+  CalendarIcon,
   CheckCircle2,
   Globe,
-  Mail,
   MapPin,
-  Phone,
   Sparkles,
   Upload,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import z from "zod";
+import { Progress } from "@/components/ui/progress";
 
-export interface RecruiterOnboardingFormData {
-  companyName: string;
-  industry: string;
-  companySize: string;
-  companyType: string;
-  website: string;
-  description: string;
-  headquarters: string;
-  foundedYear: string;
-  contactEmail: string;
-  contactPhone: string;
-  companyLogo?: FileList;
-}
+type RecruiterFormData = z.infer<typeof recruiterSchema>;
 export default function RecruiterForm() {
+  const router = useRouter();
+  const { data: businessStreams = [], isLoading } = useBusinessStreams();
+
+  const createOrganizationMutation = useCreateOrganization(() => {
+    toast.success("Organization profile created successfully!");
+    router.push("/organization/dashboard");
+  });
   const {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm<RecruiterOnboardingFormData>({
+  } = useForm<RecruiterFormData>({
+    resolver: zodResolver(recruiterSchema),
     defaultValues: {
       companyName: "",
-      industry: "",
-      companySize: "",
-      companyType: "",
-      website: "",
+      companyLocation: "",
+      businessStreamId: 0,
+      websiteUrl: "",
       description: "",
-      headquarters: "",
-      foundedYear: "",
-      contactEmail: "",
-      contactPhone: "",
+      establishmentDate: new Date(),
     },
   });
 
-  const onSubmit = async (data: RecruiterOnboardingFormData) => {
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  const description = watch("description");
+  const descriptionProgress = Math.min(
+    ((description?.length || 0) / 1000) * 100,
+    100,
+  );
 
-      toast.success("Organization profile created successfully!", {
-        description: "Welcome to the recruiter dashboard.",
-      });
-
-      // onComplete(data);
-    } catch (error) {
-      toast.error("Failed to create organization profile", {
-        description: "Please try again later.",
-      });
-    }
+  const onSubmit = async (data: RecruiterFormData) => {
+    const establishmentDate = format(
+      data.establishmentDate.toISOString(),
+      "yyyy-MM-dd",
+    );
+    const payload: OrganizationCreateRequest = { ...data, establishmentDate };
+    createOrganizationMutation.mutate(payload);
   };
 
   return (
@@ -125,7 +128,7 @@ export default function RecruiterForm() {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2 ">
                     <Label
                       htmlFor="companyName"
                       className="text-gray-700 dark:text-gray-300"
@@ -147,202 +150,83 @@ export default function RecruiterForm() {
                     )}
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 ">
                     <Label
-                      htmlFor="industry"
+                      htmlFor="businessStreamId"
                       className="text-gray-700 dark:text-gray-300"
                     >
                       Industry <span className="text-red-500">*</span>
                     </Label>
                     <Controller
-                      name="industry"
+                      name="businessStreamId"
                       control={control}
-                      rules={{ required: "Industry is required" }}
+                      rules={{
+                        required: "Industry is required",
+                      }}
                       render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
+                        <BusinessStreamCombobox
                           value={field.value}
-                        >
-                          <SelectTrigger
-                            className={errors.industry ? "border-red-500" : ""}
-                          >
-                            <SelectValue placeholder="Select industry" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="technology">
-                              Technology
-                            </SelectItem>
-                            <SelectItem value="finance">Finance</SelectItem>
-                            <SelectItem value="healthcare">
-                              Healthcare
-                            </SelectItem>
-                            <SelectItem value="education">Education</SelectItem>
-                            <SelectItem value="retail">Retail</SelectItem>
-                            <SelectItem value="manufacturing">
-                              Manufacturing
-                            </SelectItem>
-                            <SelectItem value="consulting">
-                              Consulting
-                            </SelectItem>
-                            <SelectItem value="marketing">
-                              Marketing & Advertising
-                            </SelectItem>
-                            <SelectItem value="real-estate">
-                              Real Estate
-                            </SelectItem>
-                            <SelectItem value="hospitality">
-                              Hospitality
-                            </SelectItem>
-                            <SelectItem value="transportation">
-                              Transportation & Logistics
-                            </SelectItem>
-                            <SelectItem value="energy">
-                              Energy & Utilities
-                            </SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          onChange={field.onChange}
+                          disabled={isLoading}
+                          error={Boolean(errors.businessStreamId)}
+                          options={businessStreams}
+                        />
                       )}
                     />
-                    {errors.industry && (
+                    {errors.businessStreamId && (
                       <p className="text-red-500 text-sm">
-                        {errors.industry.message}
+                        {errors.businessStreamId.message}
                       </p>
                     )}
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="companySize"
-                      className="text-gray-700 dark:text-gray-300"
-                    >
-                      Company Size <span className="text-red-500">*</span>
-                    </Label>
-                    <Controller
-                      name="companySize"
-                      control={control}
-                      rules={{ required: "Company size is required" }}
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger
-                            className={
-                              errors.companySize ? "border-red-500" : ""
-                            }
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="establishmentDate"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    Establishment Date <span className="text-red-500">*</span>
+                  </Label>
+                  <Controller
+                    name="establishmentDate"
+                    control={control}
+                    render={({ field }) => (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className={`w-full justify-start text-left font-normal ${
+                              errors.establishmentDate ? "border-red-500" : ""
+                            }`}
                           >
-                            <SelectValue placeholder="Select size" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1-10">1-10 employees</SelectItem>
-                            <SelectItem value="11-50">
-                              11-50 employees
-                            </SelectItem>
-                            <SelectItem value="51-200">
-                              51-200 employees
-                            </SelectItem>
-                            <SelectItem value="201-500">
-                              201-500 employees
-                            </SelectItem>
-                            <SelectItem value="501-1000">
-                              501-1000 employees
-                            </SelectItem>
-                            <SelectItem value="1001-5000">
-                              1001-5000 employees
-                            </SelectItem>
-                            <SelectItem value="5001+">
-                              5001+ employees
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.companySize && (
-                      <p className="text-red-500 text-sm">
-                        {errors.companySize.message}
-                      </p>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span className="text-gray-500">Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            captionLayout="dropdown"
+                            fromYear={1950}
+                            toYear={new Date().getFullYear()}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="companyType"
-                      className="text-gray-700 dark:text-gray-300"
-                    >
-                      Company Type <span className="text-red-500">*</span>
-                    </Label>
-                    <Controller
-                      name="companyType"
-                      control={control}
-                      rules={{ required: "Company type is required" }}
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger
-                            className={
-                              errors.companyType ? "border-red-500" : ""
-                            }
-                          >
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="startup">Startup</SelectItem>
-                            <SelectItem value="scaleup">Scaleup</SelectItem>
-                            <SelectItem value="sme">SME</SelectItem>
-                            <SelectItem value="enterprise">
-                              Enterprise
-                            </SelectItem>
-                            <SelectItem value="agency">Agency</SelectItem>
-                            <SelectItem value="non-profit">
-                              Non-Profit
-                            </SelectItem>
-                            <SelectItem value="government">
-                              Government
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.companyType && (
-                      <p className="text-red-500 text-sm">
-                        {errors.companyType.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="foundedYear"
-                      className="text-gray-700 dark:text-gray-300"
-                    >
-                      Founded Year
-                    </Label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        id="foundedYear"
-                        {...register("foundedYear", {
-                          pattern: {
-                            value: /^\d{4}$/,
-                            message: "Please enter a valid year",
-                          },
-                        })}
-                        placeholder="e.g., 2020"
-                        className={`pl-10 ${
-                          errors.foundedYear ? "border-red-500" : ""
-                        }`}
-                        maxLength={4}
-                      />
-                    </div>
-                    {errors.foundedYear && (
-                      <p className="text-red-500 text-sm">
-                        {errors.foundedYear.message}
-                      </p>
-                    )}
-                  </div>
+                  />
+                  {errors.establishmentDate && (
+                    <p className="text-red-500 text-sm">
+                      {errors.establishmentDate.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -354,13 +238,6 @@ export default function RecruiterForm() {
                   </Label>
                   <Textarea
                     id="description"
-                    {...register("description", {
-                      required: "Company description is required",
-                      minLength: {
-                        value: 50,
-                        message: "Description must be at least 50 characters",
-                      },
-                    })}
                     placeholder="Tell us about your company, mission, and culture..."
                     rows={4}
                     className={errors.description ? "border-red-500" : ""}
@@ -371,10 +248,16 @@ export default function RecruiterForm() {
                     </p>
                   )}
                 </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-muted-foreground">
+                    {description?.length || 0} / 1000 characters (minimum 50)
+                  </span>
+                  <Progress value={descriptionProgress} className="w-32 h-1" />
+                </div>
               </div>
 
               {/* Location & Contact */}
-              <div className="space-y-6">
+              <div className="space-y-6 ">
                 <div className="flex items-center gap-2 pb-2 border-b border-green-100 dark:border-green-900/30">
                   <MapPin className="w-4 h-4 text-green-600 dark:text-green-400" />
                   <h3 className="text-green-900 dark:text-green-100">
@@ -383,37 +266,36 @@ export default function RecruiterForm() {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2 ">
                     <Label
-                      htmlFor="headquarters"
+                      htmlFor="companyLocation"
                       className="text-gray-700 dark:text-gray-300"
                     >
-                      Headquarters Location{" "}
-                      <span className="text-red-500">*</span>
+                      Company Location <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input
-                        id="headquarters"
-                        {...register("headquarters", {
-                          required: "Headquarters location is required",
+                        id="companyLocation"
+                        {...register("companyLocation", {
+                          required: "Company location is required",
                         })}
                         placeholder="e.g., San Francisco, CA, USA"
                         className={`pl-10 ${
-                          errors.headquarters ? "border-red-500" : ""
+                          errors.companyLocation ? "border-red-500" : ""
                         }`}
                       />
                     </div>
-                    {errors.headquarters && (
+                    {errors.companyLocation && (
                       <p className="text-red-500 text-sm">
-                        {errors.headquarters.message}
+                        {errors.companyLocation.message}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     <Label
-                      htmlFor="website"
+                      htmlFor="websiteUrl"
                       className="text-gray-700 dark:text-gray-300"
                     >
                       Company Website
@@ -421,110 +303,20 @@ export default function RecruiterForm() {
                     <div className="relative">
                       <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <Input
-                        id="website"
+                        id="websiteUrl"
                         type="url"
-                        {...register("website", {
-                          pattern: {
-                            value: /^https?:\/\/.+/,
-                            message: "Please enter a valid URL",
-                          },
-                        })}
+                        {...register("websiteUrl")}
                         placeholder="https://example.com"
                         className={`pl-10 ${
-                          errors.website ? "border-red-500" : ""
+                          errors.websiteUrl ? "border-red-500" : ""
                         }`}
                       />
                     </div>
-                    {errors.website && (
+                    {errors.websiteUrl && (
                       <p className="text-red-500 text-sm">
-                        {errors.website.message}
+                        {errors.websiteUrl.message}
                       </p>
                     )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="contactEmail"
-                      className="text-gray-700 dark:text-gray-300"
-                    >
-                      Contact Email <span className="text-red-500">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        id="contactEmail"
-                        type="email"
-                        {...register("contactEmail", {
-                          required: "Contact email is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Invalid email address",
-                          },
-                        })}
-                        placeholder="contact@example.com"
-                        className={`pl-10 ${
-                          errors.contactEmail ? "border-red-500" : ""
-                        }`}
-                      />
-                    </div>
-                    {errors.contactEmail && (
-                      <p className="text-red-500 text-sm">
-                        {errors.contactEmail.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="contactPhone"
-                      className="text-gray-700 dark:text-gray-300"
-                    >
-                      Contact Phone
-                    </Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        id="contactPhone"
-                        type="tel"
-                        {...register("contactPhone")}
-                        placeholder="+1 (555) 123-4567"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Company Logo */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 pb-2 border-b border-green-100 dark:border-green-900/30">
-                  <Upload className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <h3 className="text-green-900 dark:text-green-100">
-                    Branding (Optional)
-                  </h3>
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="companyLogo"
-                    className="text-gray-700 dark:text-gray-300"
-                  >
-                    Company Logo
-                  </Label>
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <Input
-                        id="companyLogo"
-                        type="file"
-                        accept="image/*"
-                        {...register("companyLogo")}
-                        className="cursor-pointer"
-                      />
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                        Recommended: Square image, at least 200x200px, PNG or
-                        JPG format
-                      </p>
-                    </div>
                   </div>
                 </div>
               </div>
