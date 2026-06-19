@@ -215,6 +215,7 @@ export default function RecruiterDashboard() {
             activeJobs.map((job) => (
               <JobPostingCard
                 key={job.id}
+                jobId={job.id}
                 title={job.jobTitle}
                 department={job.organization.companyName}
                 postedDate={job.createdAt}

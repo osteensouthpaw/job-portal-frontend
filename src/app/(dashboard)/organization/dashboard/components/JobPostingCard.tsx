@@ -2,8 +2,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Calendar, MoreVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 interface JobPostingCardProps {
+  jobId: number;
   title: string;
   department: string;
   postedDate: string;
@@ -14,6 +16,7 @@ interface JobPostingCardProps {
 }
 
 export function JobPostingCard({
+  jobId,
   title,
   department,
   postedDate,
@@ -89,9 +92,11 @@ export function JobPostingCard({
           >
             View Applicants
           </Button>
-          <Button variant="outline" size="sm" className="flex-1">
-            Edit Posting
-          </Button>
+          <Link href={`/job-listings/${jobId}/edit`}>
+            <Button variant="outline" size="sm" className="flex-1">
+              Edit Posting
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
