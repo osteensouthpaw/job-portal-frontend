@@ -6,7 +6,6 @@ import { applicationStatusConfig } from "@/lib/application-status-config";
 import { JobApplicationResponse } from "@/services/application-service";
 import { formatTimeAgo } from "@/utils/formatRelativeTime";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Mail, MapPin, Phone } from "lucide-react";
 
 interface CandidateCardProps {
   jobApplication: JobApplicationResponse;
@@ -50,22 +49,6 @@ export function CandidateCard({ jobApplication, onClick }: CandidateCardProps) {
                 <config.icon className="h-4 w-4 mr-1" />
                 {config.label}
               </Badge>
-            </div>
-
-            {/* Contact & Location */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1 truncate">
-                <MapPin className="h-4 w-4 flex-shrink-0" />
-                {jobApplication.appliedPost.location}
-              </span>
-              <span className="flex items-center gap-1 truncate">
-                <Mail className="h-4 w-4 flex-shrink-0" />
-                {jobApplication.appliedUser.email}
-              </span>
-              <span className="flex items-center gap-1 truncate">
-                <Phone className="h-4 w-4 flex-shrink-0" />
-                {profile?.phone}
-              </span>
             </div>
 
             {/* Applied For */}

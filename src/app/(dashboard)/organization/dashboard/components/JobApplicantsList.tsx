@@ -205,18 +205,6 @@ export function JobApplicantsList({
                         </Badge>
                       </div>
 
-                      {/* Contact & Details */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-3 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1 truncate">
-                          <MapPin className="h-4 w-4 flex-shrink-0" />
-                          {companyLocation}
-                        </span>
-                        <span className="flex items-center gap-1 truncate">
-                          <Mail className="h-4 w-4 flex-shrink-0" />
-                          {application.appliedUser.email}
-                        </span>
-                      </div>
-
                       {/* Applied Date */}
                       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
                         <span className="text-sm text-muted-foreground">
