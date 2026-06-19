@@ -53,7 +53,7 @@ export default function RecruiterDashboard() {
     },
     {
       title: "Active Job Postings",
-      value: totalOpenJobPosts,
+      value: jobPosts?.totalElements || 0,
       icon: Briefcase,
     },
     {

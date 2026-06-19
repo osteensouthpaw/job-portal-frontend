@@ -46,7 +46,7 @@ export const recruiterSchema = z.object({
   }),
   description: z
     .string()
-    .min(50)
+    .min(50, { message: "Description cannot be less than 50 characters" })
     .max(1000, { message: "Description cannot exceed 1000 characters" }),
 });
 

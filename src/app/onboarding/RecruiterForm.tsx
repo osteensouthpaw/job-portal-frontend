@@ -238,10 +238,12 @@ export default function RecruiterForm() {
                   </Label>
                   <Textarea
                     id="description"
+                    {...register("description")}
                     placeholder="Tell us about your company, mission, and culture..."
                     rows={4}
                     className={errors.description ? "border-red-500" : ""}
                   />
+
                   {errors.description && (
                     <p className="text-red-500 text-sm">
                       {errors.description.message}
